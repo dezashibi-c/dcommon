@@ -37,41 +37,44 @@ typedef char byte;
 typedef ptrdiff_t size;
 typedef size_t usize;
 
+typedef byte* string;
+
 typedef enum
 {
     DC_ERR_MODE_CONTINUE,
     DC_ERR_MODE_STOP,
 } DC_ERROR_MODE;
 
-#define DC_LST_TERMINATOR_u8 UINT8_MAX   // 255
-#define DC_LST_TERMINATOR_i32 INT32_MAX  // 2147483647
-#define DC_LST_TERMINATOR_u32 UINT32_MAX // 4294967295
-#define DC_LST_TERMINATOR_u64 UINT64_MAX // 18446744073709551615
+#define DC_ARR_TERMINATOR_u8 UINT8_MAX   // 255
+#define DC_ARR_TERMINATOR_i32 INT32_MAX  // 2147483647
+#define DC_ARR_TERMINATOR_u32 UINT32_MAX // 4294967295
+#define DC_ARR_TERMINATOR_u64 UINT64_MAX // 18446744073709551615
 
-#define DC_LST_TERMINATOR_f32 NAN
-#define DC_LST_TERMINATOR_f64 NAN
+#define DC_ARR_TERMINATOR_f32 NAN
+#define DC_ARR_TERMINATOR_f64 NAN
 
-#define DC_LST_TERMINATOR_uptr (uptr) NULL // Using NULL for pointer-based types
+#define DC_ARR_TERMINATOR_uptr NULL
+#define DC_ARR_TERMINATOR_string NULL
 
-#define DC_LST_TERMINATOR_byte '\0' // Using null-terminator for char
+#define DC_ARR_TERMINATOR_byte '\0'
 
-#define DC_LST_TERMINATOR_size (size) - 1
-#define DC_LST_TERMINATOR_usize (usize) - 1
+#define DC_ARR_TERMINATOR_size (size) - 1
+#define DC_ARR_TERMINATOR_usize (usize) - 1
 
 // Terminator checks for each type
-#define DC_IS_LST_TERMINATOR_u8(EL) (EL == DC_LST_TERMINATOR_u8)
-#define DC_IS_LST_TERMINATOR_i32(EL) (EL == DC_LST_TERMINATOR_i32)
-#define DC_IS_LST_TERMINATOR_u32(EL) (EL == DC_LST_TERMINATOR_u32)
-#define DC_IS_LST_TERMINATOR_u64(EL) (EL == DC_LST_TERMINATOR_u64)
+#define DC_IS_ARR_TERMINATOR_u8(EL) (EL == DC_ARR_TERMINATOR_u8)
+#define DC_IS_ARR_TERMINATOR_i32(EL) (EL == DC_ARR_TERMINATOR_i32)
+#define DC_IS_ARR_TERMINATOR_u32(EL) (EL == DC_ARR_TERMINATOR_u32)
+#define DC_IS_ARR_TERMINATOR_u64(EL) (EL == DC_ARR_TERMINATOR_u64)
 
-#define DC_IS_LST_TERMINATOR_f32(EL) (isnan(EL))
-#define DC_IS_LST_TERMINATOR_f64(EL) (isnan(EL))
+#define DC_IS_ARR_TERMINATOR_f32(EL) (isnan(EL))
+#define DC_IS_ARR_TERMINATOR_f64(EL) (isnan(EL))
 
-#define DC_IS_LST_TERMINATOR_uptr(EL) (EL == DC_LST_TERMINATOR_uptr)
-#define DC_IS_LST_TERMINATOR_byte(EL) (EL == DC_LST_TERMINATOR_byte)
+#define DC_IS_ARR_TERMINATOR_uptr(EL) (EL == DC_ARR_TERMINATOR_uptr)
+#define DC_IS_ARR_TERMINATOR_string(EL) (EL == DC_ARR_TERMINATOR_string)
+#define DC_IS_ARR_TERMINATOR_byte(EL) (EL == DC_ARR_TERMINATOR_byte)
 
-#define DC_IS_LST_TERMINATOR_size(EL) (EL == DC_LST_TERMINATOR_size)
-#define DC_IS_LST_TERMINATOR_usize(EL) (EL == DC_LST_TERMINATOR_usize)
-
+#define DC_IS_ARR_TERMINATOR_size(EL) (EL == DC_ARR_TERMINATOR_size)
+#define DC_IS_ARR_TERMINATOR_usize(EL) (EL == DC_ARR_TERMINATOR_usize)
 
 #endif // DC_ALIASES_H

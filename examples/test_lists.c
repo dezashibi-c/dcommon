@@ -21,48 +21,96 @@ void print(u8* number)
     printf("%d\n", *number);
 }
 
+void print_str(string* text)
+{
+    printf("%s\n", *text);
+}
+
+typedef struct
+{
+    int a;
+    int b;
+} MyStruct;
+
+void print_my_struct(MyStruct* m)
+{
+    printf("a=%d, b=%d\n", m->a, m->b);
+}
+
 int main(void)
 {
-    dc_list_make(u8_list, u8, 10, 20, 30);
-    dc_list_make(i32_list, i32, 1, 2, 3);
-    dc_list_make(f32_list, f32, 1.1f, 2.2f);
-    dc_list_make(byte_list, byte, 'a', 'b', 'c');
+    dc_array(u8_list, u8, 10, 20, 30);
+    dc_array(i32_list, i32, 1, 2, 3);
+    dc_array(f32_list, f32, 1.1f, 2.2f);
+    dc_array(byte_list, byte, 'a', 'b', 'c');
 
     printf("u8_list's count=%zu, u8_list's length=%zu, last element=%d\n",
-           dc_list_count(u8_list), dc_list_len(u8_list),
-           dc_list_get_last(u8_list));
+           dc_count(u8_list), dc_len(u8_list), dc_last(u8_list));
 
-    dc_list_for_each(u8_list, u8, item)
+    dc_foreach(u8_list, u8, item)
     {
         printf("u8 item: %d\n", *item);
     }
 
-    dc_list_for_each(i32_list, i32, item)
+    dc_foreach(i32_list, i32, item)
     {
         printf("i32 item: %d\n", *item);
     }
 
-    dc_list_for_each(f32_list, f32, item)
+    dc_foreach(f32_list, f32, item)
     {
         printf("f32 item: %f\n", *item);
     }
 
-    dc_list_for_each(byte_list, byte, item)
+    dc_foreach(byte_list, byte, item)
     {
         printf("byte item: %c\n", *item);
     }
 
     puts("\n==========================");
-    dc_list_on_each(u8_list, u8, print);
+    dc_oneach(u8_list, u8, print);
     puts("==========================\n");
 
-    dc_list_lit_for_each(u8, item, 40, 50, 60)
+    dc_foreach_lit(u8, item, 40, 50, 60)
     {
         printf("Literal u8 item: %d\n", *item);
     }
 
     puts("\n==========================");
-    dc_list_lit_on_each(u8, print, 23, 24, 25);
+    dc_oneach_lit(u8, print, 23, 24, 25);
+    puts("==========================\n");
+
+    puts("\n==========================");
+    dc_oneach_lit(string, print_str, "Hello", "There", "Byte");
+    puts("==========================\n");
+
+    puts("\n==========================");
+    MyStruct m1 = {.a = 10, .b = 12};
+    MyStruct m2 = {.a = 20, .b = 14};
+    MyStruct m3 = {.a = 30, .b = 16};
+
+    dc_poneach_lit(MyStruct, print_my_struct, &m1, &m2, &m3);
+    puts("==========================\n");
+
+    puts("\n==========================");
+    dc_parray(my_struct_list, MyStruct, &m1, &m2, &m3);
+
+    dc_pforeach(my_struct_list, MyStruct, item)
+    {
+        print_my_struct(*item);
+    }
+    puts("==========================\n");
+
+    puts("\n==========================");
+    string s1 = "Hello";
+    string s2 = "There";
+    string s3 = "Hey";
+    dc_array(string_list, string, s1, s2, s3);
+
+    dc_foreach(string_list, string, item)
+    {
+        print_str(item);
+    }
     puts("==========================\n");
 
     return 0;
