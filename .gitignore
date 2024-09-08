@@ -1,0 +1,7 @@
+*.pdb
+*.obj
+*.o
+*.zip
+*.exe
+*.out
+output.txt
