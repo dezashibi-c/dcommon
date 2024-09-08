@@ -41,8 +41,8 @@ typedef byte* string;
 
 typedef enum
 {
-    DC_ERR_MODE_CONTINUE,
-    DC_ERR_MODE_STOP,
+    DC_ERR_MODE_NORMAL,
+    DC_ERR_MODE_ABORT,
 } DC_ERROR_MODE;
 
 #define DC_ARR_TERMINATOR_u8 UINT8_MAX   // 255

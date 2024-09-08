@@ -23,15 +23,15 @@
     {                                                                          \
         if (CONDITION)                                                         \
         {                                                                      \
-            fprintf(dc_error_log ? dc_error_log : stderr, __VA_ARGS__);        \
-            fprintf(dc_error_log ? dc_error_log : stderr, "\n");               \
-            if (dc_error_mode == DC_ERR_MODE_STOP)                             \
+            fprintf(dc_error_logs ? dc_error_logs : stderr, __VA_ARGS__);      \
+            fprintf(dc_error_logs ? dc_error_logs : stderr, "\n");             \
+            if (dc_error_mode == DC_ERR_MODE_ABORT)                            \
             {                                                                  \
                 abort();                                                       \
             }                                                                  \
             else                                                               \
             {                                                                  \
-                FAILURE_ACTION                                                 \
+                FAILURE_ACTION;                                                \
             }                                                                  \
         }                                                                      \
     } while (0)

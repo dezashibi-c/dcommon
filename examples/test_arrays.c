@@ -47,6 +47,8 @@ int main(void)
     printf("u8_list's count=%zu, u8_list's length=%zu, last element=%d\n",
            dc_count(u8_list), dc_len(u8_list), dc_last(u8_list));
 
+    dc_halt_when(dc_len(u8_list) != 3, return 1, "length calculation error");
+
     dc_foreach(u8_list, u8, item)
     {
         printf("u8 item: %d\n", *item);

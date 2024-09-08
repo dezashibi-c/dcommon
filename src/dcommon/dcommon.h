@@ -32,6 +32,6 @@
 #include "_headers/macros.h"
 
 FILE* dc_error_logs = NULL;
-DC_ERROR_MODE dc_error_mode = DC_ERR_MODE_CONTINUE;
+DC_ERROR_MODE dc_error_mode = DC_ERR_MODE_NORMAL;
 
 #endif // DC_MAIN_HEADER_H
