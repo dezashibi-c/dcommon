@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define __DC_BYPASS_PRIVATE_HEADER_PROTECTION
+
 #include "_headers/aliases.h"
 
 #include "_headers/macros.h"

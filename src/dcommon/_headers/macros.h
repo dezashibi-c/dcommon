@@ -18,6 +18,11 @@
 #ifndef DC_MACROS_H
 #define DC_MACROS_H
 
+#ifndef __DC_BYPASS_PRIVATE_HEADER_PROTECTION
+#error                                                                         \
+    "You cannot use this header (macros.h) directly, please consider including dcommon.h"
+#endif
+
 #define dc_halt_when(CONDITION, FAILURE_ACTION, ...)                           \
     do                                                                         \
     {                                                                          \

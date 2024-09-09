@@ -18,6 +18,11 @@
 #ifndef DC_ALIASES_H
 #define DC_ALIASES_H
 
+#ifndef __DC_BYPASS_PRIVATE_HEADER_PROTECTION
+#error                                                                         \
+    "You cannot use this header (aliases.h) directly, please consider including dcommon.h"
+#endif
+
 #include <limits.h>
 #include <math.h>
 #include <stddef.h>
