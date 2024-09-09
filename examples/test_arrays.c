@@ -34,7 +34,7 @@ typedef struct
 
 void print_my_struct(MyStruct* m)
 {
-    printf("a=%d, b=%d\n", m->a, m->b);
+    printf("a=%d, b=%d\n", m->a, m->b++);
 }
 
 int main(void)
