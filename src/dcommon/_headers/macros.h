@@ -36,17 +36,19 @@
         }                                                                      \
     } while (0)
 
-#define dc_arr_lit(TYPE, ...) {__VA_ARGS__, DC_ARR_TERMINATOR_##TYPE}
 
-#define dc_parr_lit(TYPE, ...)                                                 \
+// ***************************************************************************************
+// * NON-POINTER ARRAY MACROS
+// ***************************************************************************************
+
+#define dc_arr_lit(TYPE, ...)                                                  \
     (TYPE[])                                                                   \
     {                                                                          \
-        __VA_ARGS__, DC_ARR_TERMINATOR_uptr                                    \
+        __VA_ARGS__, DC_ARR_TERMINATOR_##TYPE                                  \
     }
 
-#define dc_array(NAME, TYPE, ...) TYPE NAME[] = dc_arr_lit(TYPE, __VA_ARGS__)
-
-#define dc_parray(NAME, TYPE, ...) TYPE** NAME = dc_parr_lit(TYPE*, __VA_ARGS__)
+#define dc_array(NAME, TYPE, ...)                                              \
+    TYPE NAME[] = {__VA_ARGS__, DC_ARR_TERMINATOR_##TYPE}
 
 #define dc_count(ARR) (size)(sizeof(ARR) / sizeof(*(ARR)))
 
@@ -60,20 +62,32 @@
 #define dc_oneach(ARR, TYPE, FN) dc_foreach(ARR, TYPE, ARR_item) FN(ARR_item)
 
 #define dc_foreach_lit(TYPE, IT, ...)                                          \
-    for (TYPE* IT = (TYPE[])dc_arr_lit(TYPE, __VA_ARGS__);                     \
+    for (TYPE* IT = dc_arr_lit(TYPE, __VA_ARGS__);                             \
          !DC_IS_ARR_TERMINATOR_##TYPE(*IT); ++IT)
 
 #define dc_oneach_lit(TYPE, FN, ...)                                           \
     dc_foreach_lit(TYPE, item, __VA_ARGS__) FN(item)
 
+
+// ***************************************************************************************
+// * POINTER ARRAY MACROS
+// ***************************************************************************************
+
+#define dc_parr_lit(TYPE, ...)                                                 \
+    (TYPE[])                                                                   \
+    {                                                                          \
+        __VA_ARGS__, DC_ARR_TERMINATOR_PTR                                     \
+    }
+#define dc_parray(NAME, TYPE, ...) TYPE** NAME = dc_parr_lit(TYPE*, __VA_ARGS__)
+
 #define dc_pforeach(ARR, TYPE, IT)                                             \
-    for (TYPE** IT = ARR; !DC_IS_ARR_TERMINATOR_uptr(*IT); ++IT)
+    for (TYPE** IT = ARR; !DC_IS_ARR_TERMINATOR_PTR(*IT); ++IT)
 
 #define dc_poneach(ARR, TYPE, FN) dc_pforeach(ARR, TYPE, ARR_item) FN(ARR_item)
 
 #define dc_pforeach_lit(TYPE, IT, ...)                                         \
     for (TYPE* IT = dc_parr_lit(TYPE, __VA_ARGS__);                            \
-         !DC_IS_ARR_TERMINATOR_uptr(*IT); ++IT)
+         !DC_IS_ARR_TERMINATOR_PTR(*IT); ++IT)
 
 #define dc_poneach_lit(TYPE, FN, ...)                                          \
     dc_pforeach_lit(TYPE*, item, __VA_ARGS__) FN(*item)

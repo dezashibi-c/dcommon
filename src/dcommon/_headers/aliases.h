@@ -53,8 +53,9 @@ typedef enum
 #define DC_ARR_TERMINATOR_f32 NAN
 #define DC_ARR_TERMINATOR_f64 NAN
 
-#define DC_ARR_TERMINATOR_uptr NULL
+#define DC_ARR_TERMINATOR_uptr (uptr) NULL
 #define DC_ARR_TERMINATOR_string NULL
+#define DC_ARR_TERMINATOR_PTR NULL
 
 #define DC_ARR_TERMINATOR_byte '\0'
 
@@ -72,6 +73,8 @@ typedef enum
 
 #define DC_IS_ARR_TERMINATOR_uptr(EL) (EL == DC_ARR_TERMINATOR_uptr)
 #define DC_IS_ARR_TERMINATOR_string(EL) (EL == DC_ARR_TERMINATOR_string)
+#define DC_IS_ARR_TERMINATOR_PTR(EL) (EL == DC_ARR_TERMINATOR_PTR)
+
 #define DC_IS_ARR_TERMINATOR_byte(EL) (EL == DC_ARR_TERMINATOR_byte)
 
 #define DC_IS_ARR_TERMINATOR_size(EL) (EL == DC_ARR_TERMINATOR_size)
