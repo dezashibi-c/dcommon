@@ -18,7 +18,7 @@
 #ifndef DC_MACROS_H
 #define DC_MACROS_H
 
-#ifndef __DC_BYPASS_PRIVATE_HEADER_PROTECTION
+#ifndef __DC_BYPASS_PRIVATE_PROTECTION
 #error                                                                         \
     "You cannot use this header (macros.h) directly, please consider including dcommon.h"
 #endif
@@ -41,6 +41,16 @@
         }                                                                      \
     } while (0)
 
+
+#define dc_def_enum(NAME, ...)                                                 \
+    typedef enum                                                               \
+    {                                                                          \
+        __VA_ARGS__                                                            \
+    } NAME
+
+#define tostr_enum_scase(ITEM)                                                 \
+    case ITEM:                                                                 \
+        return #ITEM
 
 // ***************************************************************************************
 // * NON-POINTER ARRAY MACROS
@@ -81,7 +91,7 @@
 #define dc_parr_lit(TYPE, ...)                                                 \
     (TYPE[])                                                                   \
     {                                                                          \
-        __VA_ARGS__, DC_ARR_TERMINATOR_PTR                                     \
+        __VA_ARGS__, DC_ARR_TERMINATOR_VOIDPTR                                 \
     }
 #define dc_parray(NAME, TYPE, ...) TYPE** NAME = dc_parr_lit(TYPE*, __VA_ARGS__)
 
@@ -96,5 +106,32 @@
 
 #define dc_poneach_lit(TYPE, FN, ...)                                          \
     dc_pforeach_lit(TYPE*, item, __VA_ARGS__) FN(*item)
+
+// ***************************************************************************************
+// * DYNAMIC ARRAY MACROS
+// ***************************************************************************************
+
+#ifndef DC_DYNARR_INITIAL_CAP
+#define DC_DYNARR_INITIAL_CAP 4
+#endif
+
+#define dc_value_type(TYPE) DC_DYN_VAL_TYPE_##TYPE
+
+#define dc_dynval_set(NAME, TYPE, VALUE)                                       \
+    NAME.type = dc_value_type(TYPE);                                           \
+    NAME.value.TYPE##_val = VALUE
+
+#define dc_dynval_lit(NAME, TYPE, VALUE)                                       \
+    (DCDynValue)                                                               \
+    {                                                                          \
+        .type = dc_value_type(TYPE), .value.TYPE##_val = VALUE                 \
+    }
+
+#define dc_dynval_make(NAME, TYPE, VALUE)                                      \
+    DCDynValue NAME = {.type = dc_value_type(TYPE), .value.TYPE##_val = VALUE}
+
+#define dc_dynval_is(NAME, TYPE) (NAME.type == dc_value_type(TYPE))
+
+#define dc_dynval_get(NAME, TYPE) (NAME.value.TYPE##_val)
 
 #endif // DC_MACROS_H

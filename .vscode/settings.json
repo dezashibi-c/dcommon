@@ -2,6 +2,8 @@
     "cSpell.words": [
         "arcname",
         "DCOMMON",
+        "DYNARR",
+        "dynval",
         "foreachp",
         "litp",
         "oneach",
@@ -9,6 +11,12 @@
         "parray",
         "pforeach",
         "poneach",
+        "voidptr",
         "zipf"
-    ]
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools",
+    "files.associations": {
+        "*.h": "c",
+        "type_traits": "c"
+    }
 }
