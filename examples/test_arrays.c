@@ -104,6 +104,20 @@ int main(void)
     puts("==========================\n");
 
     puts("\n==========================");
+    dc_soneach_lit(MyStruct, _element->a != 0, print_my_struct,
+                   {.a = 4, .b = 12}, {.a = 5, .b = 13}, {.a = 6, .b = 14},
+                   {.a = 0});
+    puts("==========================\n");
+
+    puts("\n==========================");
+    dc_sforeach_lit(MyStruct, item, item->a != 0, {.a = 4, .b = 12},
+                    {.a = 5, .b = 13}, {.a = 6, .b = 14}, {.a = 0})
+    {
+        print_my_struct(item);
+    }
+    puts("==========================\n");
+
+    puts("\n==========================");
     string s1 = "Hello";
     string s2 = "There";
     string s3 = "Hey";

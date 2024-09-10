@@ -25,9 +25,9 @@ void test1()
     // Add elements
     dc_dynarr_init_with_values(&darr, 3,
 
-                               dc_dynval_lit(val1, u8, 42),
-                               dc_dynval_lit(val2, i32, -12345),
-                               dc_dynval_lit(val3, string, strdup("Hello"))
+                               dc_dynval_lit(u8, 42),
+                               dc_dynval_lit(i32, -12345),
+                               dc_dynval_lit(string, strdup("Hello"))
 
     );
 

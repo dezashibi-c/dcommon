@@ -74,7 +74,7 @@
 #define dc_foreach(ARR, TYPE, IT)                                              \
     for (TYPE* IT = ARR; !DC_IS_ARR_TERMINATOR_##TYPE(*IT); ++IT)
 
-#define dc_oneach(ARR, TYPE, FN) dc_foreach(ARR, TYPE, ARR_item) FN(ARR_item)
+#define dc_oneach(ARR, TYPE, FN) dc_foreach(ARR, TYPE, _element) FN(_element)
 
 #define dc_foreach_lit(TYPE, IT, ...)                                          \
     for (TYPE* IT = dc_arr_lit(TYPE, __VA_ARGS__);                             \
@@ -98,7 +98,7 @@
 #define dc_pforeach(ARR, TYPE, IT)                                             \
     for (TYPE** IT = ARR; !DC_IS_ARR_TERMINATOR_PTR(*IT); ++IT)
 
-#define dc_poneach(ARR, TYPE, FN) dc_pforeach(ARR, TYPE, ARR_item) FN(ARR_item)
+#define dc_poneach(ARR, TYPE, FN) dc_pforeach(ARR, TYPE, _element) FN(_element)
 
 #define dc_pforeach_lit(TYPE, IT, ...)                                         \
     for (TYPE* IT = dc_parr_lit(TYPE, __VA_ARGS__);                            \
@@ -106,6 +106,30 @@
 
 #define dc_poneach_lit(TYPE, FN, ...)                                          \
     dc_pforeach_lit(TYPE*, item, __VA_ARGS__) FN(*item)
+
+// ***************************************************************************************
+// * STRUCT ARRAY MACROS
+// ***************************************************************************************
+
+#define dc_sarr_lit(TYPE, ...)                                                 \
+    (TYPE[])                                                                   \
+    {                                                                          \
+        __VA_ARGS__                                                            \
+    }
+#define dc_sarray(NAME, TYPE, ...) TYPE NAME[] = {__VA_ARGS__}
+
+#define dc_sforeach(ARR, TYPE, IT, TERMINATION_CONDITION)                      \
+    for (TYPE* IT = ARR; TERMINATION_CONDITION; ++IT)
+
+#define dc_soneach(ARR, TYPE, TERMINATION_CONDITION, FN)                       \
+    dc_sforeach(ARR, TYPE, _element, TERMINATION_CONDITION) FN(_element)
+
+#define dc_sforeach_lit(TYPE, IT, TERMINATION_CONDITION, ...)                  \
+    for (TYPE* IT = dc_sarr_lit(TYPE, __VA_ARGS__); TERMINATION_CONDITION; ++IT)
+
+#define dc_soneach_lit(TYPE, TERMINATION_CONDITION, FN, ...)                   \
+    dc_sforeach_lit(TYPE, _element, TERMINATION_CONDITION, __VA_ARGS__)        \
+        FN(_element)
 
 // ***************************************************************************************
 // * DYNAMIC ARRAY MACROS
@@ -121,7 +145,7 @@
     NAME.type = dc_value_type(TYPE);                                           \
     NAME.value.TYPE##_val = VALUE
 
-#define dc_dynval_lit(NAME, TYPE, VALUE)                                       \
+#define dc_dynval_lit(TYPE, VALUE)                                             \
     (DCDynValue)                                                               \
     {                                                                          \
         .type = dc_value_type(TYPE), .value.TYPE##_val = VALUE                 \

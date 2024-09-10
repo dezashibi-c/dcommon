@@ -11,6 +11,10 @@
         "parray",
         "pforeach",
         "poneach",
+        "sarr",
+        "sarray",
+        "sforeach",
+        "soneach",
         "voidptr",
         "zipf"
     ],
