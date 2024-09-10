@@ -1,8 +1,13 @@
 ## v0.1.0
 
-**Release Date: 2024-09-08**
+**Release Date: 2024-09-10**
 
-- Working example
+- literal arrays
+- dynamic arrays
+- for each
+- on each
+- struct arrays
+- Working examples
 
 =======
 
