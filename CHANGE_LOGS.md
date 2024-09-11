@@ -1,7 +1,8 @@
 ## v0.1.0
 
-**Release Date: 2024-09-10**
+**Release Date: 2024-09-11**
 
+- add conversion of dynamic array to flat array of same types
 - literal arrays
 - dynamic arrays
 - for each
