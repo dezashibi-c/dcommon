@@ -20,7 +20,6 @@
 void test1()
 {
     DCDynArr darr;
-    dc_dynarr_init(&darr);
 
     // Add elements
     dc_dynarr_init_with_values(&darr, 3,
@@ -111,7 +110,6 @@ void test2()
 void test3()
 {
     DCDynArr darr;
-    dc_dynarr_init(&darr);
 
     dc_dynarr_init_with_values(
         &darr, 5,
@@ -142,7 +140,6 @@ void test3()
 void test4()
 {
     DCDynArr darr;
-    dc_dynarr_init(&darr);
 
     dc_dynarr_init_with_values(&darr, 5,
 
@@ -174,7 +171,6 @@ void test4()
 void test5()
 {
     DCDynArr darr;
-    dc_dynarr_init(&darr);
 
     dc_dynarr_init_with_values(&darr, 5,
 
@@ -206,7 +202,6 @@ void test5()
 void test6()
 {
     DCDynArr darr;
-    dc_dynarr_init(&darr);
 
     dc_dynarr_init_with_values(&darr, 5,
 
