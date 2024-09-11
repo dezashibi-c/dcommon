@@ -24,7 +24,7 @@ ifeq ($(OS),Windows_NT)
 	TARGET_EXT = .exe
 	CFLAGS +=
 else
-	TARGET_EXT =
+	TARGET_EXT = .out
 	CFLAGS += -lpthread
 endif
 
