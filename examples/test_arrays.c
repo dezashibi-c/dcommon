@@ -49,33 +49,33 @@ int main(void)
 
     dc_halt_when(dc_len(u8_list) != 3, return 1, "length calculation error");
 
-    dc_foreach(u8_list, u8, item)
+    dc_foreach(u8_list, u8)
     {
-        printf("u8 item: %d\n", *item);
+        printf("u8 item: %d\n", *_it);
     }
 
-    dc_foreach(i32_list, i32, item)
+    dc_foreach(i32_list, i32)
     {
-        printf("i32 item: %d\n", *item);
+        printf("i32 item: %d\n", *_it);
     }
 
-    dc_foreach(f32_list, f32, item)
+    dc_foreach(f32_list, f32)
     {
-        printf("f32 item: %f\n", *item);
+        printf("f32 item: %f\n", *_it);
     }
 
-    dc_foreach(byte_list, byte, item)
+    dc_foreach(byte_list, byte)
     {
-        printf("byte item: %c\n", *item);
+        printf("byte item: %c\n", *_it);
     }
 
     puts("\n==========================");
     dc_oneach(u8_list, u8, print);
     puts("==========================\n");
 
-    dc_foreach_lit(u8, item, 40, 50, 60)
+    dc_foreach_lit(u8, 40, 50, 60)
     {
-        printf("Literal u8 item: %d\n", *item);
+        printf("Literal u8 item: %d\n", *_it);
     }
 
     puts("\n==========================");
@@ -97,23 +97,22 @@ int main(void)
     puts("\n==========================");
     dc_parray(my_struct_list, MyStruct, &m1, &m2, &m3);
 
-    dc_pforeach(my_struct_list, MyStruct, item)
+    dc_pforeach(my_struct_list, MyStruct)
     {
-        print_my_struct(*item);
+        print_my_struct(*_it);
     }
     puts("==========================\n");
 
     puts("\n==========================");
-    dc_soneach_lit(MyStruct, _element->a != 0, print_my_struct,
-                   {.a = 4, .b = 12}, {.a = 5, .b = 13}, {.a = 6, .b = 14},
-                   {.a = 0});
+    dc_soneach_lit(MyStruct, _it->a != 0, print_my_struct, {.a = 4, .b = 12},
+                   {.a = 5, .b = 13}, {.a = 6, .b = 14}, {.a = 0});
     puts("==========================\n");
 
     puts("\n==========================");
-    dc_sforeach_lit(MyStruct, item, item->a != 0, {.a = 4, .b = 12},
-                    {.a = 5, .b = 13}, {.a = 6, .b = 14}, {.a = 0})
+    dc_sforeach_lit(MyStruct, _it->a != 0, {.a = 4, .b = 12}, {.a = 5, .b = 13},
+                    {.a = 6, .b = 14}, {.a = 0})
     {
-        print_my_struct(item);
+        print_my_struct(_it);
     }
     puts("==========================\n");
 
@@ -123,9 +122,9 @@ int main(void)
     string s3 = "Hey";
     dc_array(string_list, string, s1, s2, s3);
 
-    dc_foreach(string_list, string, item)
+    dc_foreach(string_list, string)
     {
-        print_str(item);
+        print_str(_it);
     }
     puts("==========================\n");
 
