@@ -3,6 +3,7 @@
         "arcname",
         "DCOMMON",
         "DYNARR",
+        "DYNARRPTR",
         "dynval",
         "foreachp",
         "litp",
