@@ -116,10 +116,14 @@ void test3()
 
         dc_dynval_lit(byte, 'H'), dc_dynval_lit(byte, 'e'),
         dc_dynval_lit(byte, 'l'), dc_dynval_lit(byte, 'l'),
-        dc_dynval_lit(byte, 'o'));
+        dc_dynval_lit(u8, 12), dc_dynval_lit(byte, 'o'));
 
     string result_str = NULL;
-    usize len = dc_byte_dynarr_to_flat_arr(&darr, &result_str);
+    /**
+     * Convert the `darr` to byte flat array and don't fail (bypass the unwanted
+     * value)
+     */
+    usize len = dc_byte_dynarr_to_flat_arr(&darr, &result_str, false);
 
     if (result_str)
     {
@@ -148,7 +152,7 @@ void test4()
     );
 
     u8* result = NULL;
-    usize len = dc_u8_dynarr_to_flat_arr(&darr, &result);
+    usize len = dc_u8_dynarr_to_flat_arr(&darr, &result, true);
 
     printf("========\n got %zu elements\n========\n", len);
 
@@ -179,7 +183,7 @@ void test5()
     );
 
     usize* result = NULL;
-    usize len = dc_usize_dynarr_to_flat_arr(&darr, &result);
+    usize len = dc_usize_dynarr_to_flat_arr(&darr, &result, true);
 
     printf("========\n got %zu elements\n========\n", len);
 
@@ -210,7 +214,7 @@ void test6()
     );
 
     size* result = NULL;
-    usize len = dc_size_dynarr_to_flat_arr(&darr, &result);
+    usize len = dc_size_dynarr_to_flat_arr(&darr, &result, true);
 
     printf("========\n got %zu elements\n========\n", len);
 
