@@ -52,7 +52,7 @@ void test1()
     }
 
     // Free everything
-    dc_dynarr_free(&darr);
+    dc_dynarr_free(&darr, NULL);
 }
 
 void test2()
@@ -102,7 +102,7 @@ void test2()
     }
 
     // Free the dynamic array
-    dc_dynarr_free(&darr);
+    dc_dynarr_free(&darr, NULL);
 
     dc_dynarr_value_free(&search_val, NULL);
 }
@@ -136,7 +136,7 @@ void test3()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr);
+    dc_dynarr_free(&darr, NULL);
 }
 
 void test4()
@@ -167,7 +167,7 @@ void test4()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr);
+    dc_dynarr_free(&darr, NULL);
 }
 
 void test5()
@@ -198,7 +198,7 @@ void test5()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr);
+    dc_dynarr_free(&darr, NULL);
 }
 
 void test6()
@@ -229,7 +229,7 @@ void test6()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr);
+    dc_dynarr_free(&darr, NULL);
 }
 
 

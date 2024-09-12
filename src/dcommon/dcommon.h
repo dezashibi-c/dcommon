@@ -35,7 +35,7 @@ void ___dc_dynarr_init_with_values(DCDynArr* darr, usize count,
 void dc_dynarr_add(DCDynArr* darr, DCDynValue value);
 DCDynValue* dc_dynarr_find(DCDynArr* darr, DCDynValue* el);
 void dc_dynarr_value_free(DCDynValue* element, void (*custom_free)(void*));
-void dc_dynarr_free(DCDynArr* darr);
+void dc_dynarr_free(DCDynArr* darr, void (*custom_free)(void*));
 void dc_dynarr_delete(DCDynArr* darr, usize index, void (*custom_free)(void*));
 
 ___dc_dynval_converters_decl(u8);
@@ -51,9 +51,9 @@ ___dc_dynval_converters_decl(usize);
 ___dc_dynval_converters_decl(string);
 ___dc_dynval_converters_decl(voidptr);
 
-DCStringView dc_string_view_create(string base, size start, size length);
-string dc_string_view_as_cstr(DCStringView* sv);
-void dc_string_view_free(DCStringView* sv);
+DCStringView dc_sv_create(string base, size start, size length);
+string dc_sv_as_cstr(DCStringView* sv);
+void dc_sv_free(DCStringView* sv);
 
 // ***************************************************************************************
 // * IMPLEMENTATIONS

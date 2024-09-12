@@ -210,6 +210,8 @@
 // ***************************************************************************************
 
 #define DC_SV_FMT "%.*s"
-#define dc_string_view_fmt_values(SV) (u32) SV.len, SV.str
+#define dc_sv_fmt_val(SV) (u32)((SV).len), (SV).str
+
+#define dc_sv_cmp(SV, TEXT) strncmp((SV).str, TEXT, (SV).len)
 
 #endif // DC_MACROS_H

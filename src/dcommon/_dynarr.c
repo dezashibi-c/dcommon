@@ -179,11 +179,11 @@ void dc_dynarr_value_free(DCDynValue* element, void (*custom_free)(void*))
 
 
 // Function to free the dynamic array
-void dc_dynarr_free(DCDynArr* darr)
+void dc_dynarr_free(DCDynArr* darr, void (*custom_free)(void*))
 {
     for (usize i = 0; i < darr->count; ++i)
     {
-        dc_dynarr_value_free(&darr->elements[i], NULL);
+        dc_dynarr_value_free(&darr->elements[i], custom_free);
     }
 
     free(darr->elements);

@@ -25,7 +25,7 @@
 #include "_headers/general.h"
 #include "_headers/macros.h"
 
-DCStringView dc_string_view_create(string base, size start, size length)
+DCStringView dc_sv_create(string base, size start, size length)
 {
     DCStringView view;
     view.cstr = NULL;
@@ -35,7 +35,7 @@ DCStringView dc_string_view_create(string base, size start, size length)
     return view;
 }
 
-string dc_string_view_as_cstr(DCStringView* sv)
+string dc_sv_as_cstr(DCStringView* sv)
 {
     if (sv->cstr != NULL) return sv->cstr;
 
@@ -49,7 +49,7 @@ string dc_string_view_as_cstr(DCStringView* sv)
     return sv->cstr;
 }
 
-void dc_string_view_free(DCStringView* sv)
+void dc_sv_free(DCStringView* sv)
 {
     if (sv->cstr == NULL) return;
 
