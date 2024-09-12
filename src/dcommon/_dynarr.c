@@ -147,7 +147,7 @@ DCDynValue* dc_dynarr_find(DCDynArr* darr, DCDynValue* el)
 
 void dc_dynarr_value_free(DCDynValue* element, void (*custom_free)(DCDynValue*))
 {
-    if (custom_free) custom_free(element->value.voidptr_val);
+    if (custom_free) custom_free(element);
 
     switch (element->type)
     {
