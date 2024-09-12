@@ -152,7 +152,7 @@ void test4()
     u8* result = NULL;
     usize len = dc_u8_dynarr_to_flat_arr(&darr, &result);
 
-    printf("========\n got %zu elements\n=======\n", len);
+    printf("========\n got %zu elements\n========\n", len);
 
     if (result)
     {
@@ -183,7 +183,7 @@ void test5()
     usize* result = NULL;
     usize len = dc_usize_dynarr_to_flat_arr(&darr, &result);
 
-    printf("========\n got %zu elements\n=======\n", len);
+    printf("========\n got %zu elements\n========\n", len);
 
     if (result)
     {
@@ -214,7 +214,7 @@ void test6()
     size* result = NULL;
     usize len = dc_size_dynarr_to_flat_arr(&darr, &result);
 
-    printf("========\n got %zu elements\n=======\n", len);
+    printf("========\n got %zu elements\n========\n", len);
 
     if (result)
     {
