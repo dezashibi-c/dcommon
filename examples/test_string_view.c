@@ -36,4 +36,5 @@ int main()
 
     // don't forget to free it!
     dc_sv_free(&view);
+    // free(world); // or this (just one of them of course)
 }
