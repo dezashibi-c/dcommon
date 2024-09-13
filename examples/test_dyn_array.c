@@ -114,16 +114,16 @@ void test3()
     dc_dynarr_init_with_values(
         &darr,
 
-        dc_dynval_lit(byte, 'H'), dc_dynval_lit(byte, 'e'),
-        dc_dynval_lit(byte, 'l'), dc_dynval_lit(byte, 'l'),
-        dc_dynval_lit(u8, 12), dc_dynval_lit(byte, 'o'));
+        dc_dynval_lit(char, 'H'), dc_dynval_lit(char, 'e'),
+        dc_dynval_lit(char, 'l'), dc_dynval_lit(char, 'l'),
+        dc_dynval_lit(u8, 12), dc_dynval_lit(char, 'o'));
 
     string result_str = NULL;
     /**
-     * Convert the `darr` to byte flat array and don't fail (bypass the unwanted
+     * Convert the `darr` to char flat array and don't fail (bypass the unwanted
      * value)
      */
-    usize len = dc_byte_dynarr_to_flat_arr(&darr, &result_str, false);
+    usize len = dc_char_dynarr_to_flat_arr(&darr, &result_str, false);
 
     if (result_str)
     {

@@ -43,4 +43,24 @@ int main(int argc, string argv[])
     free(s);
 
     puts("This " dc_colorize_fg(LRED, "color") " is red!");
+
+    const char* homeDir = dc_get_home_dir_path();
+    if (homeDir != NULL)
+    {
+        printf("Home directory: %s\n", homeDir);
+    }
+    else
+    {
+        printf("Failed to get home directory.\n");
+    }
+
+    const char* username = dc_get_username();
+    if (username != NULL)
+    {
+        printf("Username: %s\n", username);
+    }
+    else
+    {
+        printf("Failed to retrieve username.\n");
+    }
 }

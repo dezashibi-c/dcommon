@@ -42,7 +42,7 @@ int main(void)
     dc_array(u8_list, u8, 10, 20, 30);
     dc_array(i32_list, i32, 1, 2, 3);
     dc_array(f32_list, f32, 1.1f, 2.2f);
-    dc_array(byte_list, byte, 'a', 'b', 'c');
+    dc_array(char_list, char, 'a', 'b', 'c');
 
     printf("u8_list's count=%zu, u8_list's length=%zu, last element=%d\n",
            dc_count(u8_list), dc_len(u8_list), dc_last(u8_list));
@@ -64,9 +64,9 @@ int main(void)
         printf("f32 item: %f\n", *_it);
     }
 
-    dc_foreach(byte_list, byte)
+    dc_foreach(char_list, char)
     {
-        printf("byte item: %c\n", *_it);
+        printf("char item: %c\n", *_it);
     }
 
     puts("\n==========================");
@@ -83,7 +83,7 @@ int main(void)
     puts("==========================\n");
 
     puts("\n==========================");
-    dc_oneach_lit(string, print_str, "Hello", "There", "Byte");
+    dc_oneach_lit(string, print_str, "Hello", "There", "char");
     puts("==========================\n");
 
     puts("\n==========================");
