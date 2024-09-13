@@ -38,6 +38,9 @@ int main(int argc, string argv[])
     printf("exec path: %s\n", argv[0]);
 
     s = dc_replace_file_in_path(argv[0], "my_config.ini");
-    printf("config path close to exec: %s\n", s);
+    printf("config path close to exec: " DC_FG_LGREEN "%s" DC_COLOR_RESET "\n",
+           s);
     free(s);
+
+    puts("This " dc_colorize_fg(LRED, "color") " is red!");
 }
