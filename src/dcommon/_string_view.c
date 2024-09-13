@@ -25,7 +25,7 @@
 #include "_headers/general.h"
 #include "_headers/macros.h"
 
-DCStringView dc_sv_create(string base, size start, size length)
+DCStringView dc_sv_create(string base, usize start, usize length)
 {
     DCStringView view;
     view.cstr = NULL;

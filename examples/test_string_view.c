@@ -40,11 +40,17 @@ int main()
     printf("yes '%s' one more time!\n", world);
     printf("yes '%s' one more time!\n", hello);
 
-    if (dc_sv_cmp(view, "World") == 0)
+    if (dc_sv_str_eq(view, "World")) printf("Yes they are the same!\n");
+
+    if (dc_sv_str_eq(view2, "Hello")) printf("Yes they are the same!\n");
+
+    if (dc_sv_str_eq(view, world))
         printf("Yes for heaven sake, they are the same!\n");
 
-    if (dc_sv_cmp(view2, "Hello") == 0)
+    if (dc_sv_str_eq(view2, hello))
         printf("Yes for heaven sake, they are the same!\n");
+
+    if (dc_sv_sv_eq(view, view2)) printf("Do you really expect that!?");
 
     // don't forget to free it!
     dc_sv_free(&view);
