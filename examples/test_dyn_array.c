@@ -26,7 +26,7 @@ void test1()
 
                                dc_dynval_lit(u8, 42),
                                dc_dynval_lit(i32, -12345),
-                               dc_dynval_lit(string, strdup("Hello"))
+                               dc_dynval_lit(string, dc_strdup("Hello"))
 
     );
 
@@ -72,7 +72,7 @@ void test2()
     dc_dynarr_add(&darr, val);
 
     // Adding a string
-    dc_dynval_set(val, string, strdup("Hello, Dynamic Array!"));
+    dc_dynval_set(val, string, dc_strdup("Hello, Dynamic Array!"));
     dc_dynarr_add(&darr, val);
 
     // Finding an element (search for u8 value 42)
@@ -89,7 +89,7 @@ void test2()
         printf("Element not found.\n");
     }
 
-    dc_dynval_set(search_val, string, strdup("Hello, Dynamic Array!"));
+    dc_dynval_set(search_val, string, dc_strdup("Hello, Dynamic Array!"));
 
     found = dc_dynarr_find(&darr, &search_val);
     if (found)
