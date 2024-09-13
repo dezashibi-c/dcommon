@@ -3,6 +3,10 @@
 **Release Date: 2024-09-13**
 
 - add utils
+  - path utils
+  - colorization
+  - get user basic data
+  - string utils
 - add string view
 - simplify all the for loops
 - add conversion of dynamic array to flat array of same types
