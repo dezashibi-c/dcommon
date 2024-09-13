@@ -213,7 +213,7 @@
 #define dc_sv_fmt_val(SV) (u32)((SV).len), (SV).str
 
 #define dc_sv_str_eq(SV, STR)                                                  \
-    (strlen(STR) == (SV).len && strncmp((SV).str, STR, (SV).len) == 0)
+    ((strlen(STR) == (SV).len) && (strncmp((SV).str, STR, (SV).len) == 0))
 
 #define dc_sv_sv_eq(SV1, SV2)                                                  \
     (((SV1).len == (SV2).len) &&                                               \
