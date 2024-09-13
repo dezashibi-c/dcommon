@@ -216,6 +216,7 @@
     (strlen(STR) == (SV).len && strncmp((SV).str, STR, (SV).len) == 0)
 
 #define dc_sv_sv_eq(SV1, SV2)                                                  \
-    ((SV1).len == (SV2).len && strncmp((SV1).str, (SV2).str, (SV1).len) == 0)
+    (((SV1).len == (SV2).len) &&                                               \
+     (strncmp((SV1).str, (SV2).str, (SV1).len) == 0))
 
 #endif // DC_MACROS_H
