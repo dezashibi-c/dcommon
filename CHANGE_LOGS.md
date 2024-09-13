@@ -1,7 +1,9 @@
 ## v0.4.0
 
-**Release Date: 2024-09-11**
+**Release Date: 2024-09-13**
 
+- add utils
+- add string view
 - simplify all the for loops
 - add conversion of dynamic array to flat array of same types
 - literal arrays
