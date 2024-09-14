@@ -232,6 +232,74 @@ void test6()
     dc_dynarr_free(&darr, NULL);
 }
 
+struct MyStruct
+{
+    int a;
+    float b;
+};
+
+void print_struct(void* data)
+{
+    struct MyStruct* s =
+        (struct MyStruct*)data; // Cast it back to the appropriate type
+    printf("a: %d, b: %f\n", s->a, s->b);
+}
+
+static void custom_free(DCDynValue* item)
+{
+    switch (item->type)
+    {
+        case dc_value_type(voidptr):
+            dc_dynval_set(*item, voidptr, NULL);
+            break;
+
+        default:
+            break;
+    }
+}
+
+void test7()
+{
+    DCDynArr darr;
+
+    dc_dynarr_init_with_values(
+        &darr,
+
+        dc_dynval_lit(voidptr, (&(struct MyStruct){42, 1.2})),
+        dc_dynval_lit(voidptr, (&(struct MyStruct){43, 3.14})),
+        dc_dynval_lit(voidptr, (&(struct MyStruct){44, 1.0})),
+        dc_dynval_lit(voidptr, (&(struct MyStruct){45, 0.5})),
+        dc_dynval_lit(voidptr, (&(struct MyStruct){46, 3.6}))
+
+    );
+
+    voidptr* result = NULL;
+    usize len = dc_voidptr_dynarr_to_flat_arr(&darr, &result, true);
+
+    printf("========\n got %zu elements\n========\n", len);
+
+    if (result)
+    {
+        for (usize i = 0; i < len; ++i) print_struct(result[i]);
+
+        free(result);
+    }
+    else
+    {
+        printf("Conversion failed\n");
+    }
+
+    /**
+     * What happens here?
+     *  dc_dynarr_free does nothing when the values are literal types on each
+     *  type however, when it comes to voidptr it tries to free the memories if
+     *  they are not null, what we generally in situations like this is to call
+     *  a custom function that just mark the values as null so that
+     *  dc_dynval_free won't fail
+     */
+    dc_dynarr_free(&darr, custom_free);
+}
+
 
 // Example usage of the dynamic array
 int main()
@@ -247,6 +315,8 @@ int main()
     test5();
 
     test6();
+
+    test7();
 
     return 0;
 }
