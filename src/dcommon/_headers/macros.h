@@ -47,7 +47,7 @@
         }                                                                      \
     } while (0)
 
-#define tostr_enum_scase(ITEM)                                                 \
+#define dc_make_tostr_enum_case(ITEM)                                          \
     case ITEM:                                                                 \
         return #ITEM
 
