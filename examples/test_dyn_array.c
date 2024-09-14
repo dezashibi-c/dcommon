@@ -34,20 +34,20 @@ void test1()
     dc_dynarr_delete(&darr, 1, NULL);
 
     // Print remaining elements
-    for (usize i = 0; i < darr.count; i++)
+    dc_dynarr_for(darr)
     {
-        printf("[%zu] ", i);
-        if (dc_dynval_is(darr.elements[i], u8))
+        printf("[%zu] ", _idx);
+        if (dc_dynarr_is(darr, _idx, u8))
         {
-            printf("u8: %u\n", dc_dynval_get(darr.elements[i], u8));
+            printf("u8: %u\n", dc_dynarr_get(darr, _idx, u8));
         }
-        else if (dc_dynval_is(darr.elements[i], i32))
+        else if (dc_dynarr_is(darr, _idx, i32))
         {
-            printf("i32: %d\n", dc_dynval_get(darr.elements[i], i32));
+            printf("i32: %d\n", dc_dynarr_get(darr, _idx, i32));
         }
-        else if (dc_dynval_is(darr.elements[i], string))
+        else if (dc_dynarr_is(darr, _idx, string))
         {
-            printf("string: %s\n", dc_dynval_get(darr.elements[i], string));
+            printf("string: %s\n", dc_dynarr_get(darr, _idx, string));
         }
     }
 
