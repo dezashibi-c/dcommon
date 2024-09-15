@@ -1,7 +1,8 @@
-## v0.6.0
+## v0.8.0
 
-Release Date: 2024-09-13
+Release Date: 2024-09-15
 
+- add hash map
 - add utils
 - path utils
 - colorization

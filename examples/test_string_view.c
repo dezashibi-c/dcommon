@@ -45,10 +45,10 @@ int main()
     if (dc_sv_str_eq(view2, "Hello")) printf("Yes they are the same!\n");
 
     if (dc_sv_str_eq(view, world))
-        printf("Yes for heaven sake, they are the same!\n");
+        printf("Yes for heaven's sake, they are the same!\n");
 
     if (dc_sv_str_eq(view2, hello))
-        printf("Yes for heaven sake, they are the same!\n");
+        printf("Yes for heaven's sake, they are the same!\n");
 
     if (dc_sv_sv_eq(view, view2)) printf("Do you really expect that!?");
 

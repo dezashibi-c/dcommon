@@ -4,6 +4,8 @@
         "DCOMMON",
         "DYNARR",
         "DYNARRPTR",
+        "dynhm",
+        "dynht",
         "dynval",
         "foreachp",
         "Klemens",

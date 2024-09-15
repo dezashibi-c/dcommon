@@ -17,6 +17,19 @@
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
+static void custom_free(DCDynValue* item)
+{
+    switch (item->type)
+    {
+        case dc_value_type(string):
+            dc_dynval_set(*item, voidptr, NULL);
+            break;
+
+        default:
+            break;
+    }
+}
+
 void print_dynarr(DCDynArr* darr)
 {
     dc_dynarr_for(*darr)
@@ -24,15 +37,15 @@ void print_dynarr(DCDynArr* darr)
         printf("[%zu] ", _idx);
         if (dc_dynarr_is(*darr, _idx, u8))
         {
-            printf("u8: %u\n", dc_dynarr_get(*darr, _idx, u8));
+            printf("u8: %u\n", dc_dynarr_get_as(darr, _idx, u8));
         }
         else if (dc_dynarr_is(*darr, _idx, i32))
         {
-            printf("i32: %d\n", dc_dynarr_get(*darr, _idx, i32));
+            printf("i32: %d\n", dc_dynarr_get_as(darr, _idx, i32));
         }
         else if (dc_dynarr_is(*darr, _idx, string))
         {
-            printf("string: %s\n", dc_dynarr_get(*darr, _idx, string));
+            printf("string: %s\n", dc_dynarr_get_as(darr, _idx, string));
         }
     }
 }
@@ -42,11 +55,11 @@ void test1()
     DCDynArr darr;
 
     // Add elements
-    dc_dynarr_init_with_values(&darr,
+    dc_dynarr_init_with_values(&darr, custom_free,
 
                                dc_dynval_lit(u8, 42),
                                dc_dynval_lit(i32, -12345),
-                               dc_dynval_lit(string, dc_strdup("Hello"))
+                               dc_dynval_lit(string, "Hello")
 
     );
 
@@ -54,7 +67,7 @@ void test1()
     print_dynarr(&darr);
 
     // Delete the second element (index 1)
-    dc_dynarr_delete(&darr, 1, NULL);
+    dc_dynarr_delete(&darr, 1);
 
     // Print remaining elements
     printf("========\nElement 2 is removed\n========\n");
@@ -62,20 +75,20 @@ void test1()
 
     // inserting
     dc_dynarr_insert(&darr, 1, dc_dynval_lit(u8, 100));
-    dc_dynarr_insert(&darr, 2, dc_dynval_lit(string, dc_strdup("New Item")));
+    dc_dynarr_insert(&darr, 2, dc_dynval_lit(string, "New Item"));
 
     // Print remaining elements
     printf("========\nInserting 2 elements\n========\n");
     print_dynarr(&darr);
 
     // Free everything
-    dc_dynarr_free(&darr, NULL);
+    dc_dynarr_free(&darr);
 }
 
 void test2()
 {
     DCDynArr darr;
-    dc_dynarr_init(&darr);
+    dc_dynarr_init(&darr, NULL);
 
     // Adding different types of values
     DCDynValue val;
@@ -119,9 +132,17 @@ void test2()
     }
 
     // Free the dynamic array
-    dc_dynarr_free(&darr, NULL);
+    /**
+     * What happens here?
+     *  dc_dynarr_free does nothing when the values are literal types on each
+     *  type however, when it comes to strings it tries to free the memories if
+     *  they are not null, what we generally in situations like this is to call
+     *  a custom function that just mark the values as null so that
+     *  dc_dynval_free won't fail
+     */
+    dc_dynarr_free(&darr);
 
-    dc_dynarr_value_free(&search_val, NULL);
+    dc_dynval_free(&search_val, NULL);
 }
 
 void test3()
@@ -129,7 +150,7 @@ void test3()
     DCDynArr darr;
 
     dc_dynarr_init_with_values(
-        &darr,
+        &darr, NULL,
 
         dc_dynval_lit(char, 'H'), dc_dynval_lit(char, 'e'),
         dc_dynval_lit(char, 'l'), dc_dynval_lit(char, 'l'),
@@ -153,14 +174,14 @@ void test3()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr, NULL);
+    dc_dynarr_free(&darr);
 }
 
 void test4()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(&darr,
+    dc_dynarr_init_with_values(&darr, NULL,
 
                                dc_dynval_lit(u8, 1), dc_dynval_lit(u8, 2),
                                dc_dynval_lit(u8, 3), dc_dynval_lit(u8, 4),
@@ -184,14 +205,14 @@ void test4()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr, NULL);
+    dc_dynarr_free(&darr);
 }
 
 void test5()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(&darr,
+    dc_dynarr_init_with_values(&darr, NULL,
 
                                dc_dynval_lit(usize, 6), dc_dynval_lit(usize, 7),
                                dc_dynval_lit(usize, 8), dc_dynval_lit(usize, 9),
@@ -215,14 +236,14 @@ void test5()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr, NULL);
+    dc_dynarr_free(&darr);
 }
 
 void test6()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(&darr,
+    dc_dynarr_init_with_values(&darr, NULL,
 
                                dc_dynval_lit(size, 11), dc_dynval_lit(size, 12),
                                dc_dynval_lit(size, 13), dc_dynval_lit(size, 14),
@@ -246,7 +267,7 @@ void test6()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr, NULL);
+    dc_dynarr_free(&darr);
 }
 
 typedef struct
@@ -255,38 +276,38 @@ typedef struct
     float b;
 } MyStruct;
 
-void print_struct(void* data)
+void print_struct(MyStruct* s)
 {
-    MyStruct* s = (MyStruct*)data; // Cast it back to the appropriate type
     printf("a: %d, b: %g\n", s->a, s->b);
 }
 
-static void custom_free(DCDynValue* item)
+MyStruct* new_ms(int a, float b)
 {
-    switch (item->type)
-    {
-        case dc_value_type(voidptr):
-            dc_dynval_set(*item, voidptr, NULL);
-            break;
+    MyStruct* ms = malloc(sizeof(MyStruct));
+    ms->a = a;
+    ms->b = b;
 
-        default:
-            break;
-    }
+    return ms;
 }
 
 void test7()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(&darr,
+    dc_dynarr_init_with_values(&darr, custom_free,
 
-                               dc_dynval_lit(voidptr, (&(MyStruct){42, 1.2})),
-                               dc_dynval_lit(voidptr, (&(MyStruct){43, 3.14})),
-                               dc_dynval_lit(voidptr, (&(MyStruct){44, 1.0})),
-                               dc_dynval_lit(voidptr, (&(MyStruct){45, 0.5})),
-                               dc_dynval_lit(voidptr, (&(MyStruct){46, 3.6}))
+                               dc_dynval_lit(voidptr, new_ms(42, 1.2)),
+                               dc_dynval_lit(voidptr, new_ms(43, 3.14)),
+                               dc_dynval_lit(voidptr, new_ms(44, 1.0)),
+                               dc_dynval_lit(voidptr, new_ms(45, 0.5)),
+                               dc_dynval_lit(voidptr, new_ms(46, 3.6))
 
     );
+
+    dc_dynarr_for(darr)
+    {
+        print_struct((MyStruct*)dc_dynarr_get_as(&darr, _idx, voidptr));
+    }
 
     voidptr* result = NULL;
     usize len = dc_voidptr_dynarr_to_flat_arr(&darr, &result, true);
@@ -295,7 +316,7 @@ void test7()
 
     if (result)
     {
-        for (usize i = 0; i < len; ++i) print_struct(result[i]);
+        for (usize i = 0; i < len; ++i) print_struct((MyStruct*)result[i]);
 
         free(result);
     }
@@ -304,15 +325,7 @@ void test7()
         printf("Conversion failed\n");
     }
 
-    /**
-     * What happens here?
-     *  dc_dynarr_free does nothing when the values are literal types on each
-     *  type however, when it comes to voidptr it tries to free the memories if
-     *  they are not null, what we generally in situations like this is to call
-     *  a custom function that just mark the values as null so that
-     *  dc_dynval_free won't fail
-     */
-    dc_dynarr_free(&darr, custom_free);
+    dc_dynarr_free(&darr);
 }
 
 
