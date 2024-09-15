@@ -17,11 +17,11 @@
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
-u32 string_hash(void* key)
+u32 string_hash(voidptr key)
 {
     string str = (string)key;
-    unsigned long hash = 5381;
-    int c;
+    u32 hash = 5381;
+    i32 c;
     while ((c = *str++))
     {
         hash = ((hash << 5) + hash) + c; // hash * 33 + c
@@ -29,7 +29,7 @@ u32 string_hash(void* key)
     return hash;
 }
 
-bool string_key_cmp(void* key1, void* key2)
+bool string_key_cmp(voidptr key1, voidptr key2)
 {
     return strcmp((string)key1, (string)key2) == 0;
 }
