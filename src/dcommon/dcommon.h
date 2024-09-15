@@ -32,13 +32,15 @@
 void dc_dynarr_init(DCDynArr* darr);
 void ___dc_dynarr_init_with_values(DCDynArr* darr, usize count,
                                    DCDynValue values[]);
-void dc_dynarr_add(DCDynArr* darr, DCDynValue value);
+void dc_dynarr_push(DCDynArr* darr, DCDynValue value);
 DCDynValue* dc_dynarr_find(DCDynArr* darr, DCDynValue* el);
 void dc_dynarr_value_free(DCDynValue* element,
                           void (*custom_free)(DCDynValue*));
 void dc_dynarr_free(DCDynArr* darr, void (*custom_free)(DCDynValue*));
 void dc_dynarr_delete(DCDynArr* darr, usize index,
                       void (*custom_free)(DCDynValue*));
+void dc_dynarr_insert(DCDynArr* darr, usize index, DCDynValue value);
+
 
 ___dc_dynval_converters_decl(u8);
 ___dc_dynval_converters_decl(i32);

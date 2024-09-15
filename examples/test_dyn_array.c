@@ -17,6 +17,26 @@
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
+void print_dynarr(DCDynArr* darr)
+{
+    dc_dynarr_for(*darr)
+    {
+        printf("[%zu] ", _idx);
+        if (dc_dynarr_is(*darr, _idx, u8))
+        {
+            printf("u8: %u\n", dc_dynarr_get(*darr, _idx, u8));
+        }
+        else if (dc_dynarr_is(*darr, _idx, i32))
+        {
+            printf("i32: %d\n", dc_dynarr_get(*darr, _idx, i32));
+        }
+        else if (dc_dynarr_is(*darr, _idx, string))
+        {
+            printf("string: %s\n", dc_dynarr_get(*darr, _idx, string));
+        }
+    }
+}
+
 void test1()
 {
     DCDynArr darr;
@@ -30,26 +50,23 @@ void test1()
 
     );
 
+    printf("========\nOriginal Array\n========\n");
+    print_dynarr(&darr);
+
     // Delete the second element (index 1)
     dc_dynarr_delete(&darr, 1, NULL);
 
     // Print remaining elements
-    dc_dynarr_for(darr)
-    {
-        printf("[%zu] ", _idx);
-        if (dc_dynarr_is(darr, _idx, u8))
-        {
-            printf("u8: %u\n", dc_dynarr_get(darr, _idx, u8));
-        }
-        else if (dc_dynarr_is(darr, _idx, i32))
-        {
-            printf("i32: %d\n", dc_dynarr_get(darr, _idx, i32));
-        }
-        else if (dc_dynarr_is(darr, _idx, string))
-        {
-            printf("string: %s\n", dc_dynarr_get(darr, _idx, string));
-        }
-    }
+    printf("========\nElement 2 is removed\n========\n");
+    print_dynarr(&darr);
+
+    // inserting
+    dc_dynarr_insert(&darr, 1, dc_dynval_lit(u8, 100));
+    dc_dynarr_insert(&darr, 2, dc_dynval_lit(string, dc_strdup("New Item")));
+
+    // Print remaining elements
+    printf("========\nInserting 2 elements\n========\n");
+    print_dynarr(&darr);
 
     // Free everything
     dc_dynarr_free(&darr, NULL);
@@ -65,15 +82,15 @@ void test2()
 
     // Adding a u8 value
     dc_dynval_set(val, u8, 42);
-    dc_dynarr_add(&darr, val);
+    dc_dynarr_push(&darr, val);
 
     // Adding an i32 value
     dc_dynval_set(val, i32, -12345);
-    dc_dynarr_add(&darr, val);
+    dc_dynarr_push(&darr, val);
 
     // Adding a string
     dc_dynval_set(val, string, dc_strdup("Hello, Dynamic Array!"));
-    dc_dynarr_add(&darr, val);
+    dc_dynarr_push(&darr, val);
 
     // Finding an element (search for u8 value 42)
     DCDynValue search_val;
@@ -232,17 +249,16 @@ void test6()
     dc_dynarr_free(&darr, NULL);
 }
 
-struct MyStruct
+typedef struct
 {
     int a;
     float b;
-};
+} MyStruct;
 
 void print_struct(void* data)
 {
-    struct MyStruct* s =
-        (struct MyStruct*)data; // Cast it back to the appropriate type
-    printf("a: %d, b: %f\n", s->a, s->b);
+    MyStruct* s = (MyStruct*)data; // Cast it back to the appropriate type
+    printf("a: %d, b: %g\n", s->a, s->b);
 }
 
 static void custom_free(DCDynValue* item)
@@ -262,14 +278,13 @@ void test7()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(
-        &darr,
+    dc_dynarr_init_with_values(&darr,
 
-        dc_dynval_lit(voidptr, (&(struct MyStruct){42, 1.2})),
-        dc_dynval_lit(voidptr, (&(struct MyStruct){43, 3.14})),
-        dc_dynval_lit(voidptr, (&(struct MyStruct){44, 1.0})),
-        dc_dynval_lit(voidptr, (&(struct MyStruct){45, 0.5})),
-        dc_dynval_lit(voidptr, (&(struct MyStruct){46, 3.6}))
+                               dc_dynval_lit(voidptr, (&(MyStruct){42, 1.2})),
+                               dc_dynval_lit(voidptr, (&(MyStruct){43, 3.14})),
+                               dc_dynval_lit(voidptr, (&(MyStruct){44, 1.0})),
+                               dc_dynval_lit(voidptr, (&(MyStruct){45, 0.5})),
+                               dc_dynval_lit(voidptr, (&(MyStruct){46, 3.6}))
 
     );
 

@@ -54,12 +54,12 @@ void ___dc_dynarr_init_with_values(DCDynArr* darr, usize count,
 
     for (usize i = 0; i < count; ++i)
     {
-        dc_dynarr_add(darr, values[i]);
+        dc_dynarr_push(darr, values[i]);
     }
 }
 
 // Function to add an element to the dynamic array
-void dc_dynarr_add(DCDynArr* darr, DCDynValue value)
+void dc_dynarr_push(DCDynArr* darr, DCDynValue value)
 {
     if (darr->count >= darr->cap)
     {
@@ -147,19 +147,25 @@ DCDynValue* dc_dynarr_find(DCDynArr* darr, DCDynValue* el)
 
 void dc_dynarr_value_free(DCDynValue* element, void (*custom_free)(DCDynValue*))
 {
-    if (custom_free) custom_free(element);
-
     switch (element->type)
     {
         case DC_DYN_VAL_TYPE_string:
+        {
+            if (custom_free) custom_free(element);
+
             if (dc_dynval_get(*element, string) != NULL)
                 free(dc_dynval_get(*element, string));
             break;
+        }
 
         case DC_DYN_VAL_TYPE_voidptr:
+        {
+            if (custom_free) custom_free(element);
+
             if (dc_dynval_get(*element, voidptr) != NULL)
                 free(dc_dynval_get(*element, voidptr));
             break;
+        }
 
         // Do nothing for literal types (integer, float, etc.)
         default:
@@ -195,14 +201,12 @@ void dc_dynarr_delete(DCDynArr* darr, usize index,
     dc_dynarr_value_free(&darr->elements[index], custom_free);
 
     // Shift the elements after the deleted one to fill the gap
-    for (usize i = index; i < darr->count - 1; i++)
-    {
-        darr->elements[i] = darr->elements[i + 1];
-    }
+    memmove(&darr->elements[index], &darr->elements[index + 1],
+            (darr->count - index - 1) * sizeof(DCDynValue));
 
     darr->count--;
 
-    // Optional: shrink the capacity if too much unused space
+    // shrink the capacity if too much unused space
     if (darr->count < darr->cap / 4 && darr->cap > DC_DYNARR_INITIAL_CAP)
     {
         darr->cap /= 2;
@@ -214,6 +218,29 @@ void dc_dynarr_delete(DCDynArr* darr, usize index,
             exit(EXIT_FAILURE);
         }
     }
+}
+
+void dc_dynarr_insert(DCDynArr* darr, usize index, DCDynValue value)
+{
+    if (darr->count >= darr->cap)
+    {
+        // Resize the array if needed (double the capacity by default)
+        darr->cap *= DC_DYNARR_CAP_MULTIPLIER;
+        darr->elements =
+            realloc(darr->elements, darr->cap * sizeof(DCDynValue));
+        if (darr->elements == NULL)
+        {
+            fprintf(stderr, "Memory reallocation failed\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    memmove(&darr->elements[index + 1], &darr->elements[index],
+            (darr->count - index) * sizeof(DCDynValue));
+
+    // Add the new value at the desired index
+    darr->elements[index] = value;
+    darr->count++;
 }
 
 ___dc_dynval_converters_decl(u8)
