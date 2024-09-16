@@ -39,7 +39,7 @@ DCDynValue* dc_dynarr_get(DCDynArr* darr, usize index);
 DCDynValue* dc_dynarr_find(DCDynArr* darr, DCDynValue* el);
 void dc_dynval_free(DCDynValue* element, void (*custom_free)(DCDynValue*));
 void dc_dynarr_free(DCDynArr* darr);
-void dc_dynarr_delete(DCDynArr* darr, usize index);
+bool dc_dynarr_delete(DCDynArr* darr, usize index);
 void dc_dynarr_insert(DCDynArr* darr, usize index, DCDynValue value);
 
 ___dc_dynarr_converters_decl(u8);
@@ -62,6 +62,7 @@ void dc_ht_free(DCHashTable* ht);
 usize dc_ht_find_by_key(DCHashTable* ht, voidptr key, DCDynValue** out_result);
 void dc_ht_set(DCHashTable* ht, voidptr key, DCDynValue value);
 bool dc_ht_delete(DCHashTable* ht, voidptr key);
+usize dc_ht_keys(DCHashTable* ht, voidptr** out_arr);
 
 DCStringView dc_sv_create(string base, usize start, usize length);
 string dc_sv_as_cstr(DCStringView* sv);

@@ -32,6 +32,7 @@ DCHashTable* dc_ht_create(usize capacity, DCHashFunc hash_func,
     ht->elements = (DCDynArr*)calloc(capacity, sizeof(DCDynArr));
 
     ht->cap = capacity;
+    ht->key_count = 0;
 
     ht->hash_func = hash_func;
     ht->key_cmp_func = key_cmp_func;
@@ -100,6 +101,7 @@ void dc_ht_set(DCHashTable* ht, voidptr key, DCDynValue value)
     {
         dc_dynarr_init(current, ht->element_free_func);
         dc_dynarr_push(current, dc_dynval_lit(voidptr, new_entry));
+        ht->key_count++;
 
         return;
     }
@@ -117,6 +119,7 @@ void dc_ht_set(DCHashTable* ht, voidptr key, DCDynValue value)
     }
 
     dc_dynarr_push(current, dc_dynval_lit(voidptr, new_entry));
+    ht->key_count++;
 }
 
 bool dc_ht_delete(DCHashTable* ht, voidptr key)
@@ -133,6 +136,50 @@ bool dc_ht_delete(DCHashTable* ht, voidptr key)
     if (existed == NULL) return false;
 
     dc_dynarr_delete(current, existed_index);
+    ht->key_count--;
 
     return true;
+}
+
+usize dc_ht_keys(DCHashTable* ht, voidptr** out_arr)
+{
+    if (!ht || ht->key_count == 0 || !out_arr)
+    {
+        return 0;
+    }
+
+    *out_arr = (voidptr*)malloc((ht->key_count + 1) * sizeof(voidptr));
+    if (!(*out_arr))
+    {
+        return 0;
+    }
+
+    usize key_count = 0;
+    for (usize i = 0; i < ht->cap; ++i)
+    {
+        dc_ht_get_element(darr, *ht, i);
+
+        if (darr->cap == 0) continue;
+
+        dc_dynarr_for(*darr)
+        {
+            DCDynValue* elem = &darr->elements[_idx];
+            if (elem->type != DC_DYN_VAL_TYPE_voidptr)
+            {
+                puts("here!!!!!!");
+
+                free(*out_arr);
+                *out_arr = ((void*)0);
+                return 0;
+            }
+
+            voidptr element_key = ((DCHashEntry*)elem->value.voidptr_val)->key;
+
+            (*out_arr)[key_count] = element_key;
+            key_count++;
+        }
+    }
+
+    (*out_arr)[ht->key_count] = (((void*)0));
+    return ht->key_count;
 }

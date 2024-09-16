@@ -155,6 +155,7 @@ typedef struct
 {
     DCDynArr* elements;
     usize cap;
+    usize key_count;
 
     DCHashFunc hash_func;
     DCKeyCompFunc key_cmp_func;

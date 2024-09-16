@@ -50,6 +50,8 @@ int main()
     DCDynValue* found = NULL;
     usize found_index = dc_ht_find_by_key(table, key1, &found);
 
+    assert(table->key_count == 3);
+
     printf("Found index: %zu\n", found_index);
 
     if (found != NULL)
@@ -79,6 +81,8 @@ int main()
 
     dc_ht_delete(table, key2);
 
+    assert(table->key_count == 2);
+
     found = NULL;
     found_index = dc_ht_find_by_key(table, key2, &found);
 
@@ -96,6 +100,8 @@ int main()
 
     dc_ht_set(table, key1, dc_dynval_lit(u8, 36));
     dc_ht_set(table, key2, dc_dynval_lit(u8, 100));
+
+    assert(table->key_count == 3);
 
     found = NULL;
     found_index = dc_ht_find_by_key(table, key1, &found);
@@ -127,5 +133,21 @@ int main()
         printf("Key '%s' not found\n", key2);
     }
 
+    // get all keys
+    voidptr* all_keys = NULL;
+    usize len = dc_ht_keys(table, &all_keys);
+
+    printf("=========\n got %zu elements\n=========\n", len);
+    assert(len == 3);
+
+    for (usize i = 0; i < len; ++i)
+    {
+        printf("key #%zu -> %s\n", i, (string)all_keys[i]);
+    }
+
+    // Don't forget to free all_keys!
+    free(all_keys);
+
+    // and the hash table
     dc_ht_free(table);
 }

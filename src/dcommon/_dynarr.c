@@ -205,12 +205,9 @@ void dc_dynarr_free(DCDynArr* darr)
     darr->count = 0;
 }
 
-void dc_dynarr_delete(DCDynArr* darr, usize index)
+bool dc_dynarr_delete(DCDynArr* darr, usize index)
 {
-    if (index >= darr->count)
-    {
-        return;
-    }
+    if (index >= darr->count) return false;
 
     // Free the element at the specified index
     dc_dynval_free(&darr->elements[index], darr->element_free_func);
@@ -233,6 +230,8 @@ void dc_dynarr_delete(DCDynArr* darr, usize index)
             exit(EXIT_FAILURE);
         }
     }
+
+    return true;
 }
 
 void dc_dynarr_insert(DCDynArr* darr, usize index, DCDynValue value)
