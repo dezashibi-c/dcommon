@@ -47,6 +47,14 @@ test: $(TARGETS)
 		./$$target || exit 1; \
 	done
 
+memtest: $(TARGETS)
+	@for target in $(TARGETS); do \
+		echo "========================================="; \
+		echo " valgrind $$target"; \
+		echo "========================================="; \
+		valgrind ./$$target || exit 1; \
+	done
+
 $(SRCDIR)/%$(TARGET_EXT): $(SRCDIR)/%.c
 	$(BUILDCMD) $< -o $@
 

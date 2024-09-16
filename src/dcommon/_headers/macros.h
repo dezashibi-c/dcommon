@@ -229,6 +229,12 @@
 #define dc_ht_get_element(VAR_NAME, HT, HASH)                                  \
     DCDynArr* VAR_NAME = &((HT).elements[HASH])
 
+#define dc_ht_entry(KEY, VAL)                                                  \
+    (DCHashEntry)                                                              \
+    {                                                                          \
+        .key = (KEY), .value = (VAL)                                           \
+    }
+
 // ***************************************************************************************
 // * STRING VIEW MACROS
 // ***************************************************************************************

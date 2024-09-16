@@ -57,7 +57,12 @@ void dc_ht_free(DCHashTable* ht)
     }
 
     free(ht->elements);
-    free(ht);
+
+    ht->cap = 0;
+    ht->key_count = 0;
+    ht->hash_func = NULL;
+    ht->key_cmp_func = NULL;
+    ht->element_free_func = NULL;
 }
 
 usize dc_ht_find_by_key(DCHashTable* ht, voidptr key, DCDynValue** out_result)
