@@ -1,6 +1,6 @@
-## v0.8.0
+## v0.8.2
 
-Release Date: 2024-09-15
+Release Date: 2024-09-16
 
 - add hash map
 - add utils
