@@ -170,7 +170,7 @@ void test1()
 
     printf("========\nPopping last 5 items\n========\n");
     DCDynValue* popped;
-    dc_dynarr_pop(&darr, 5, &popped);
+    dc_dynarr_pop(&darr, 5, &popped, false);
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
     // Print elements
