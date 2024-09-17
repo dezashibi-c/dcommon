@@ -185,6 +185,22 @@
                                       FREE_FUNC, __initial_values);            \
     } while (0)
 
+#define dc_dynarr_append_values(DYNARRPTR, ...)                                \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        ___dc_dynarr_append_values(DYNARRPTR, dc_count(__initial_values),      \
+                                   __initial_values);                          \
+    } while (0)
+
+#define dc_dynarr_insert_values(DYNARRPTR, INDEX, ...)                         \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        ___dc_dynarr_insert_values(                                            \
+            DYNARRPTR, INDEX, dc_count(__initial_values), __initial_values);   \
+    } while (0)
+
 #define ___dc_dynarr_converters_decl(ORIGIN_TYPE)                              \
     usize dc_##ORIGIN_TYPE##_dynarr_to_flat_arr(                               \
         DCDynArr* arr, ORIGIN_TYPE** out_arr, bool must_fail)

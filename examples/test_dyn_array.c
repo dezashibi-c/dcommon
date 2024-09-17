@@ -30,23 +30,28 @@ static void custom_free(DCDynValue* item)
     }
 }
 
+void print_dynval(DCDynValue* dval)
+{
+    if (dc_dynval_is(*dval, u8))
+    {
+        printf("u8: %u\n", dc_dynval_get(*dval, u8));
+    }
+    else if (dc_dynval_is(*dval, i32))
+    {
+        printf("i32: %d\n", dc_dynval_get(*dval, i32));
+    }
+    else if (dc_dynval_is(*dval, string))
+    {
+        printf("string: %s\n", dc_dynval_get(*dval, string));
+    }
+}
+
 void print_dynarr(DCDynArr* darr)
 {
     dc_dynarr_for(*darr)
     {
         printf("[%zu] ", _idx);
-        if (dc_dynarr_is(*darr, _idx, u8))
-        {
-            printf("u8: %u\n", dc_dynarr_get_as(darr, _idx, u8));
-        }
-        else if (dc_dynarr_is(*darr, _idx, i32))
-        {
-            printf("i32: %d\n", dc_dynarr_get_as(darr, _idx, i32));
-        }
-        else if (dc_dynarr_is(*darr, _idx, string))
-        {
-            printf("string: %s\n", dc_dynarr_get_as(darr, _idx, string));
-        }
+        print_dynval(dc_dynarr_get(darr, _idx));
     }
 }
 
@@ -64,25 +69,121 @@ void test1()
     );
 
     printf("========\nOriginal Array\n========\n");
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
     print_dynarr(&darr);
 
-    // Delete the second element (index 1)
-    dc_dynarr_delete(&darr, 1);
 
     // Print remaining elements
     printf("========\nElement 2 is removed\n========\n");
+    // Delete the second element (index 1)
+    dc_dynarr_delete(&darr, 1);
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
     print_dynarr(&darr);
 
     // inserting
-    dc_dynarr_insert(&darr, 1, dc_dynval_lit(u8, 100));
-    dc_dynarr_insert(&darr, 2, dc_dynval_lit(string, "New Item"));
-
-    // Print remaining elements
     printf("========\nInserting 2 elements\n========\n");
+    dc_dynarr_insert(&darr, 1, dc_dynval_lit(u8, 100));
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
+
+    dc_dynarr_insert(&darr, 2, dc_dynval_lit(string, "New Item"));
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
+    // Print elements
     print_dynarr(&darr);
+
+
+    printf("========\nAppending 5 more elements\n========\n");
+    dc_dynarr_append_values(
+        &darr, dc_dynval_lit(string, "Using append_values started"),
+        dc_dynval_lit(u8, 11), dc_dynval_lit(u8, 12), dc_dynval_lit(u8, 13),
+        dc_dynval_lit(string, "Using append_values finished"));
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
+    // Print elements
+    print_dynarr(&darr);
+
+    DCDynArr darr2;
+
+    // Add elements
+    dc_dynarr_init_with_values(&darr2, custom_free,
+
+                               dc_dynval_lit(string, "Using append started"),
+                               dc_dynval_lit(u8, 14), dc_dynval_lit(u8, 15),
+                               dc_dynval_lit(u8, 16),
+                               dc_dynval_lit(string, "Using append finished")
+
+    );
+
+    printf("========\nAppending 5 more elements from array\n========\n");
+    dc_dynarr_append(&darr, &darr2);
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
+    // Print elements
+    print_dynarr(&darr);
+
+    printf("========\nInserting 5 more elements in the middle\n========\n");
+    dc_dynarr_insert_values(
+        &darr, 9, dc_dynval_lit(string, "Using insert_values started"),
+        dc_dynval_lit(u8, 11), dc_dynval_lit(u8, 12), dc_dynval_lit(u8, 13),
+        dc_dynval_lit(string, "Using insert_values finished"));
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
+    // Print elements
+    print_dynarr(&darr);
+
+
+    DCDynArr darr3;
+
+    // Add elements
+    dc_dynarr_init_with_values(
+        &darr3, custom_free,
+
+        dc_dynval_lit(string, "Using insert_from started"),
+        dc_dynval_lit(u8, 14), dc_dynval_lit(u8, 15), dc_dynval_lit(u8, 16),
+        dc_dynval_lit(string, "Using insert_from finished")
+
+    );
+    printf("========\nInserting 5 more elements from another array in the "
+           "middle\n========\n");
+    dc_dynarr_insert_from(&darr, 14, &darr3);
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
+    // Print elements
+    print_dynarr(&darr);
+
+    printf("========\nGrowing to current cap + 20\n========\n");
+    dc_dynarr_grow_by(&darr, 20);
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
+    // Print elements
+    print_dynarr(&darr);
+
+    printf("========\nTruncate\n========\n");
+    dc_dynarr_trunc(&darr);
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
+    // Print elements
+    print_dynarr(&darr);
+
+    printf("========\nPopping last 5 items\n========\n");
+    DCDynValue* popped;
+    dc_dynarr_pop(&darr, 5, &popped);
+    printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
+           darr.count);
+    // Print elements
+    print_dynarr(&darr);
+
+    printf("========\nPopped Items\n========\n");
+    for (usize i = 0; i < 5; ++i) print_dynval(&popped[i]);
 
     // Free everything
     dc_dynarr_free(&darr);
+    dc_dynarr_free(&darr2);
+    dc_dynarr_free(&darr3);
+    free(popped);
 }
 
 void test2()
