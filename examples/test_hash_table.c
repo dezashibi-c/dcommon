@@ -176,14 +176,11 @@ int main()
     DCHashTable table2;
     dc_ht_init(&table2, 10, string_hash, string_key_cmp, NULL);
 
-    dc_ht_set_multiple(&table2,
+    dc_ht_set_multiple(
+        &table2,
 
-                       dc_ht_entry("maria", dc_dynval_lit(u8, 20)),
-                       dc_ht_entry("jesse", dc_dynval_lit(u8, 6)),
-                       dc_ht_entry("sophia", dc_dynval_lit(u8, 12)),
-                       dc_ht_entry("erisa", dc_dynval_lit(u8, 20))
-
-    );
+        {"maria", dc_dynval_lit(u8, 20)}, {"jesse", dc_dynval_lit(u8, 6)},
+        {"sophia", dc_dynval_lit(u8, 12)}, {"erisa", dc_dynval_lit(u8, 20)});
 
     dc_ht_merge(&table, &table2);
 
