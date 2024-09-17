@@ -243,13 +243,21 @@
     u32 VAR_NAME = (HT).hash_func((KEY)) % (HT).cap
 
 #define dc_ht_get_element(VAR_NAME, HT, HASH)                                  \
-    DCDynArr* VAR_NAME = &((HT).elements[HASH])
+    DCDynArr* VAR_NAME = &((HT).container[HASH])
 
 #define dc_ht_entry(KEY, VAL)                                                  \
     (DCHashEntry)                                                              \
     {                                                                          \
         .key = (KEY), .value = (VAL)                                           \
     }
+
+#define dc_ht_set_multiple(HT, ...)                                            \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCHashEntry, __VA_ARGS__);                 \
+        ___dc_ht_set_multiple(HT, dc_count(__initial_values),                  \
+                              __initial_values);                               \
+    } while (0)
 
 // ***************************************************************************************
 // * STRING VIEW MACROS

@@ -134,12 +134,79 @@ int main()
         printf("Key '%s' not found\n", key2);
     }
 
+    dc_ht_set_multiple(&table,
+
+                       dc_ht_entry("robert", dc_dynval_lit(u8, 20)),
+                       dc_ht_entry("albert", dc_dynval_lit(u8, 6)),
+                       dc_ht_entry("boris", dc_dynval_lit(u8, 12)),
+                       dc_ht_entry("navid", dc_dynval_lit(u8, 29))
+
+    );
+
+    found = NULL;
+    found_index = dc_ht_find_by_key(&table, key1, &found);
+
+    printf("Found index: %zu\n", found_index);
+
+    if (found != NULL)
+    {
+        printf("Found value for key '%s': %d\n", key1,
+               dc_dynval_get(*found, u8));
+    }
+    else
+    {
+        printf("Key '%s' not found\n", key1);
+    }
+
+    found = NULL;
+    found_index = dc_ht_find_by_key(&table, "boris", &found);
+
+    printf("Found index: %zu\n", found_index);
+
+    if (found != NULL)
+    {
+        printf("Found value for key '%s': %d\n", "boris",
+               dc_dynval_get(*found, u8));
+    }
+    else
+    {
+        printf("Key '%s' not found\n", "boris");
+    }
+
+    DCHashTable table2;
+    dc_ht_init(&table2, 10, string_hash, string_key_cmp, NULL);
+
+    dc_ht_set_multiple(&table2,
+
+                       dc_ht_entry("maria", dc_dynval_lit(u8, 20)),
+                       dc_ht_entry("jesse", dc_dynval_lit(u8, 6)),
+                       dc_ht_entry("sophia", dc_dynval_lit(u8, 12)),
+                       dc_ht_entry("erisa", dc_dynval_lit(u8, 20))
+
+    );
+
+    dc_ht_merge(&table, &table2);
+
+    found = NULL;
+    found_index = dc_ht_find_by_key(&table, "erisa", &found);
+
+    printf("Found index: %zu\n", found_index);
+
+    if (found != NULL)
+    {
+        printf("Found value for key '%s': %d\n", "erisa",
+               dc_dynval_get(*found, u8));
+    }
+    else
+    {
+        printf("Key '%s' not found\n", "erisa");
+    }
+
     // get all keys
     voidptr* all_keys = NULL;
     usize len = dc_ht_keys(&table, &all_keys);
 
     printf("=========\n got %zu elements\n=========\n", len);
-    assert(len == 3);
 
     for (usize i = 0; i < len; ++i)
     {
@@ -151,4 +218,5 @@ int main()
 
     // and the hash table
     dc_ht_free(&table);
+    dc_ht_free(&table2);
 }

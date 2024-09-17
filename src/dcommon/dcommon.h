@@ -74,6 +74,8 @@ DCHashTable* dc_ht_create(usize capacity, DCHashFunc hash_func,
 void dc_ht_free(DCHashTable* ht);
 usize dc_ht_find_by_key(DCHashTable* ht, voidptr key, DCDynValue** out_result);
 void dc_ht_set(DCHashTable* ht, voidptr key, DCDynValue value);
+void ___dc_ht_set_multiple(DCHashTable* ht, usize count, DCHashEntry entries[]);
+void dc_ht_merge(DCHashTable* ht, DCHashTable* from);
 bool dc_ht_delete(DCHashTable* ht, voidptr key);
 usize dc_ht_keys(DCHashTable* ht, voidptr** out_arr);
 
