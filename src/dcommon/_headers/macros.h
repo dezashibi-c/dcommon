@@ -33,19 +33,23 @@
 #define __dc_attribute(A)
 #endif
 
-#define dc_log(...)                                                            \
+#define ____dc_log(CAT, ...)                                                   \
     do                                                                         \
     {                                                                          \
+        fprintf(dc_error_logs ? dc_error_logs : stderr, "[%s] %s:%d: ", CAT,   \
+                __FILE__, __LINE__);                                           \
         fprintf(dc_error_logs ? dc_error_logs : stderr, __VA_ARGS__);          \
         fprintf(dc_error_logs ? dc_error_logs : stderr, "\n");                 \
     } while (0)
 
-#define dc_action_on(CONDITION, FAILURE_ACTION, ...)                           \
+#define dc_log(...) ____dc_log("LOG", __VA_ARGS__)
+
+#define ____dc_action_on(CAT, CONDITION, FAILURE_ACTION, ...)                  \
     do                                                                         \
     {                                                                          \
         if (CONDITION)                                                         \
         {                                                                      \
-            dc_log(__VA_ARGS__);                                               \
+            ____dc_log(CAT, __VA_ARGS__);                                      \
             if (dc_error_mode == DC_ERR_MODE_ABORT)                            \
             {                                                                  \
                 abort();                                                       \
@@ -57,16 +61,19 @@
         }                                                                      \
     } while (0)
 
+#define dc_action_on(CONDITION, FAILURE_ACTION, ...)                           \
+    ____dc_action_on("LOG", CONDITION, FAILURE_ACTION, __VA_ARGS__)
+
 #define dc_str_case(ITEM)                                                      \
     case ITEM:                                                                 \
         return #ITEM
 
 #ifdef DC_DEBUG
 
-#define dc_dbg_log(...) dc_log(__VA_ARGS__)
+#define dc_dbg_log(...) ____dc_log("DEBUG", __VA_ARGS__)
 
 #define dc_dbg_log_if(CONDITION, FAILURE_ACTION, ...)                          \
-    dc_action_on(CONDITION, FAILURE_ACTION, __VA_ARGS__)
+    ____dc_action_on("DEBUG", CONDITION, FAILURE_ACTION, __VA_ARGS__)
 
 #else
 

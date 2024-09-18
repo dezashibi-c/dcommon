@@ -1,7 +1,8 @@
-## v0.8.10
+## v0.8.20
 
-Release Date: 2024-09-17
+Release Date: 2024-09-18
 
+- add debug macros
 - add hash map
 - add utils
 - path utils

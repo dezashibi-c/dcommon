@@ -14,6 +14,7 @@
 // *  Description:
 // ***************************************************************************************
 
+#define DC_DEBUG
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
@@ -68,4 +69,7 @@ int main(int argc, string argv[])
     int out;
     dc_system(out, "ls %s", argv[0]);
     dc_log("running command returned: %d", out);
+
+    dc_dbg_log_if(out == 0, ;, "Operation was successful: %d", out);
+    dc_dbg_log_if(out != 0, ;, "Operation was not successful: %d", out);
 }
