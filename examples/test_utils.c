@@ -63,4 +63,9 @@ int main(int argc, string argv[])
     {
         printf("Failed to retrieve username.\n");
     }
+
+    dc_log("Some logging information: running 'ls %s'", argv[0]);
+    int out;
+    dc_system(out, "ls %s", argv[0]);
+    dc_log("running command returned: %d", out);
 }
