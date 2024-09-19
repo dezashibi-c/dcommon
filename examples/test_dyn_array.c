@@ -17,12 +17,12 @@
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
-static void custom_free(DCDynValue* item)
+static dc_dynval_free_func_decl(custom_free)
 {
-    switch (item->type)
+    switch (_value->type)
     {
         case dc_value_type(string):
-            dc_dynval_set(*item, voidptr, NULL);
+            dc_dynval_set(*_value, voidptr, NULL);
             break;
 
         default:

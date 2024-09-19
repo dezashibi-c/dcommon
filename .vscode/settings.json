@@ -27,6 +27,8 @@
         "scase",
         "sforeach",
         "soneach",
+        "UNLEN",
+        "USERPROFILE",
         "voidptr",
         "zipf"
     ],

@@ -1,7 +1,9 @@
-## v0.8.20
+## v0.9.0
 
-Release Date: 2024-09-18
+Release Date: 2024-09-19
 
+- add mem cleanup on exit global
+- add deferred mem cleanup local
 - add debug macros
 - add hash map
 - add utils
