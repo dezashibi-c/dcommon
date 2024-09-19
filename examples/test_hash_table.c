@@ -46,13 +46,13 @@ int main()
     dc_cleanups_push(table, free);
 
     string key1 = "navid";
-    dc_ht_set(table, key1, dc_dynval_lit(u8, 30));
+    dc_ht_set(table, key1, dc_dv(u8, 30));
 
     string key2 = "james";
-    dc_ht_set(table, key2, dc_dynval_lit(u8, 40));
+    dc_ht_set(table, key2, dc_dv(u8, 40));
 
     string key3 = "bob";
-    dc_ht_set(table, key3, dc_dynval_lit(u8, 50));
+    dc_ht_set(table, key3, dc_dv(u8, 50));
 
     DCDynValue* found = NULL;
     usize found_index = dc_ht_find_by_key(table, key1, &found);
@@ -63,8 +63,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key1,
-               dc_dynval_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key1, dc_dv_get(*found, u8));
     }
     else
     {
@@ -78,8 +77,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key2,
-               dc_dynval_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key2, dc_dv_get(*found, u8));
     }
     else
     {
@@ -97,16 +95,15 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key2,
-               dc_dynval_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key2, dc_dv_get(*found, u8));
     }
     else
     {
         printf("Key '%s' not found\n", key2);
     }
 
-    dc_ht_set(table, key1, dc_dynval_lit(u8, 36));
-    dc_ht_set(table, key2, dc_dynval_lit(u8, 100));
+    dc_ht_set(table, key1, dc_dv(u8, 36));
+    dc_ht_set(table, key2, dc_dv(u8, 100));
 
     dc_action_on(table->key_count != 3, dc_return(1), "key_count must be 3");
 
@@ -117,8 +114,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key1,
-               dc_dynval_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key1, dc_dv_get(*found, u8));
     }
     else
     {
@@ -132,8 +128,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key2,
-               dc_dynval_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key2, dc_dv_get(*found, u8));
     }
     else
     {
@@ -142,10 +137,10 @@ int main()
 
     dc_ht_set_multiple(table,
 
-                       dc_ht_entry("robert", dc_dynval_lit(u8, 20)),
-                       dc_ht_entry("albert", dc_dynval_lit(u8, 6)),
-                       dc_ht_entry("boris", dc_dynval_lit(u8, 12)),
-                       dc_ht_entry("navid", dc_dynval_lit(u8, 29))
+                       dc_ht_entry("robert", dc_dv(u8, 20)),
+                       dc_ht_entry("albert", dc_dv(u8, 6)),
+                       dc_ht_entry("boris", dc_dv(u8, 12)),
+                       dc_ht_entry("navid", dc_dv(u8, 29))
 
     );
 
@@ -156,8 +151,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key1,
-               dc_dynval_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key1, dc_dv_get(*found, u8));
     }
     else
     {
@@ -172,7 +166,7 @@ int main()
     if (found != NULL)
     {
         printf("Found value for key '%s': %d\n", "boris",
-               dc_dynval_get(*found, u8));
+               dc_dv_get(*found, u8));
     }
     else
     {
@@ -183,11 +177,10 @@ int main()
     dc_ht_init(&table2, 10, string_hash, string_key_cmp, NULL);
     dc_local_cleanups_push_ht(&table2);
 
-    dc_ht_set_multiple(
-        &table2,
+    dc_ht_set_multiple(&table2,
 
-        {"maria", dc_dynval_lit(u8, 20)}, {"jesse", dc_dynval_lit(u8, 6)},
-        {"sophia", dc_dynval_lit(u8, 12)}, {"erisa", dc_dynval_lit(u8, 20)});
+                       {"maria", dc_dv(u8, 20)}, {"jesse", dc_dv(u8, 6)},
+                       {"sophia", dc_dv(u8, 12)}, {"erisa", dc_dv(u8, 20)});
 
     dc_ht_merge(table, &table2);
 
@@ -199,7 +192,7 @@ int main()
     if (found != NULL)
     {
         printf("Found value for key '%s': %d\n", "erisa",
-               dc_dynval_get(*found, u8));
+               dc_dv_get(*found, u8));
     }
     else
     {

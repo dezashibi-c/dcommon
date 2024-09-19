@@ -17,12 +17,12 @@
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
-static dc_dynval_free_func_decl(custom_free)
+static dc_dv_free_func_decl(custom_free)
 {
     switch (_value->type)
     {
         case dc_value_type(string):
-            dc_dynval_set(*_value, voidptr, NULL);
+            dc_dv_set(*_value, voidptr, NULL);
             break;
 
         default:
@@ -30,28 +30,28 @@ static dc_dynval_free_func_decl(custom_free)
     }
 }
 
-void print_dynval(DCDynValue* dval)
+void print_dv(DCDynValue* dval)
 {
-    if (dc_dynval_is(*dval, u8))
+    if (dc_dv_is(*dval, u8))
     {
-        printf("u8: %u\n", dc_dynval_get(*dval, u8));
+        printf("u8: %u\n", dc_dv_get(*dval, u8));
     }
-    else if (dc_dynval_is(*dval, i32))
+    else if (dc_dv_is(*dval, i32))
     {
-        printf("i32: %d\n", dc_dynval_get(*dval, i32));
+        printf("i32: %d\n", dc_dv_get(*dval, i32));
     }
-    else if (dc_dynval_is(*dval, string))
+    else if (dc_dv_is(*dval, string))
     {
-        printf("string: %s\n", dc_dynval_get(*dval, string));
+        printf("string: %s\n", dc_dv_get(*dval, string));
     }
 }
 
-void print_dynarr(DCDynArr* darr)
+void print_da(DCDynArr* darr)
 {
-    dc_dynarr_for(*darr)
+    dc_da_for(*darr)
     {
         printf("[%zu] ", _idx);
-        print_dynval(dc_dynarr_get(darr, _idx));
+        print_dv(dc_da_get(darr, _idx));
     }
 }
 
@@ -60,172 +60,167 @@ void test1()
     DCDynArr darr;
 
     // Add elements
-    dc_dynarr_init_with_values(&darr, custom_free,
+    dc_da_init_with_values(&darr, custom_free,
 
-                               dc_dynval_lit(u8, 42),
-                               dc_dynval_lit(i32, -12345),
-                               dc_dynval_lit(string, "Hello")
+                           dc_dv(u8, 42), dc_dv(i32, -12345),
+                           dc_dv(string, "Hello")
 
     );
 
     printf("========\nOriginal Array\n========\n");
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
-    print_dynarr(&darr);
+    print_da(&darr);
 
 
     // Print remaining elements
     printf("========\nElement 2 is removed\n========\n");
     // Delete the second element (index 1)
-    dc_dynarr_delete(&darr, 1);
+    dc_da_delete(&darr, 1);
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
-    print_dynarr(&darr);
+    print_da(&darr);
 
     // inserting
     printf("========\nInserting 2 elements\n========\n");
-    dc_dynarr_insert(&darr, 1, dc_dynval_lit(u8, 100));
+    dc_da_insert(&darr, 1, dc_dv(u8, 100));
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
 
-    dc_dynarr_insert(&darr, 2, dc_dynval_lit(string, "New Item"));
+    dc_da_insert(&darr, 2, dc_dv(string, "New Item"));
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
     // Print elements
-    print_dynarr(&darr);
+    print_da(&darr);
 
 
     printf("========\nAppending 5 more elements\n========\n");
-    dc_dynarr_append_values(
-        &darr, dc_dynval_lit(string, "Using append_values started"),
-        dc_dynval_lit(u8, 11), dc_dynval_lit(u8, 12), dc_dynval_lit(u8, 13),
-        dc_dynval_lit(string, "Using append_values finished"));
+    dc_da_append_values(&darr, dc_dv(string, "Using append_values started"),
+                        dc_dv(u8, 11), dc_dv(u8, 12), dc_dv(u8, 13),
+                        dc_dv(string, "Using append_values finished"));
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
     // Print elements
-    print_dynarr(&darr);
+    print_da(&darr);
 
     DCDynArr darr2;
 
     // Add elements
-    dc_dynarr_init_with_values(&darr2, custom_free,
+    dc_da_init_with_values(&darr2, custom_free,
 
-                               dc_dynval_lit(string, "Using append started"),
-                               dc_dynval_lit(u8, 14), dc_dynval_lit(u8, 15),
-                               dc_dynval_lit(u8, 16),
-                               dc_dynval_lit(string, "Using append finished")
+                           dc_dv(string, "Using append started"), dc_dv(u8, 14),
+                           dc_dv(u8, 15), dc_dv(u8, 16),
+                           dc_dv(string, "Using append finished")
 
     );
 
     printf("========\nAppending 5 more elements from array\n========\n");
-    dc_dynarr_append(&darr, &darr2);
+    dc_da_append(&darr, &darr2);
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
     // Print elements
-    print_dynarr(&darr);
+    print_da(&darr);
 
     printf("========\nInserting 5 more elements in the middle\n========\n");
-    dc_dynarr_insert_values(
-        &darr, 9, dc_dynval_lit(string, "Using insert_values started"),
-        dc_dynval_lit(u8, 11), dc_dynval_lit(u8, 12), dc_dynval_lit(u8, 13),
-        dc_dynval_lit(string, "Using insert_values finished"));
+    dc_da_insert_values(&darr, 9, dc_dv(string, "Using insert_values started"),
+                        dc_dv(u8, 11), dc_dv(u8, 12), dc_dv(u8, 13),
+                        dc_dv(string, "Using insert_values finished"));
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
     // Print elements
-    print_dynarr(&darr);
+    print_da(&darr);
 
 
     DCDynArr darr3;
 
     // Add elements
-    dc_dynarr_init_with_values(
-        &darr3, custom_free,
+    dc_da_init_with_values(&darr3, custom_free,
 
-        dc_dynval_lit(string, "Using insert_from started"),
-        dc_dynval_lit(u8, 14), dc_dynval_lit(u8, 15), dc_dynval_lit(u8, 16),
-        dc_dynval_lit(string, "Using insert_from finished")
+                           dc_dv(string, "Using insert_from started"),
+                           dc_dv(u8, 14), dc_dv(u8, 15), dc_dv(u8, 16),
+                           dc_dv(string, "Using insert_from finished")
 
     );
     printf("========\nInserting 5 more elements from another array in the "
            "middle\n========\n");
-    dc_dynarr_insert_from(&darr, 14, &darr3);
+    dc_da_insert_from(&darr, 14, &darr3);
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
     // Print elements
-    print_dynarr(&darr);
+    print_da(&darr);
 
     printf("========\nGrowing to current cap + 20\n========\n");
-    dc_dynarr_grow_by(&darr, 20);
+    dc_da_grow_by(&darr, 20);
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
     // Print elements
-    print_dynarr(&darr);
+    print_da(&darr);
 
     printf("========\nTruncate\n========\n");
-    dc_dynarr_trunc(&darr);
+    dc_da_trunc(&darr);
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
     // Print elements
-    print_dynarr(&darr);
+    print_da(&darr);
 
     printf("========\nPopping last 5 items\n========\n");
     DCDynValue* popped;
-    dc_dynarr_pop(&darr, 5, &popped, false);
+    dc_da_pop(&darr, 5, &popped, false);
     printf("-- current capacity: %zu, current count: %zu\n", darr.cap,
            darr.count);
     // Print elements
-    print_dynarr(&darr);
+    print_da(&darr);
 
     printf("========\nPopped Items\n========\n");
-    for (usize i = 0; i < 5; ++i) print_dynval(&popped[i]);
+    for (usize i = 0; i < 5; ++i) print_dv(&popped[i]);
 
     // Free everything
-    dc_dynarr_free(&darr);
-    dc_dynarr_free(&darr2);
-    dc_dynarr_free(&darr3);
+    dc_da_free(&darr);
+    dc_da_free(&darr2);
+    dc_da_free(&darr3);
     free(popped);
 }
 
 void test2()
 {
     DCDynArr darr;
-    dc_dynarr_init(&darr, NULL);
+    dc_da_init(&darr, NULL);
 
     // Adding different types of values
     DCDynValue val;
 
     // Adding a u8 value
-    dc_dynval_set(val, u8, 42);
-    dc_dynarr_push(&darr, val);
+    dc_dv_set(val, u8, 42);
+    dc_da_push(&darr, val);
 
     // Adding an i32 value
-    dc_dynval_set(val, i32, -12345);
-    dc_dynarr_push(&darr, val);
+    dc_dv_set(val, i32, -12345);
+    dc_da_push(&darr, val);
 
     // Adding a string
-    dc_dynval_set(val, string, dc_strdup("Hello, Dynamic Array!"));
-    dc_dynarr_push(&darr, val);
+    dc_dv_set(val, string, dc_strdup("Hello, Dynamic Array!"));
+    dc_da_push(&darr, val);
 
     // Finding an element (search for u8 value 42)
     DCDynValue search_val;
-    dc_dynval_set(search_val, u8, 42);
+    dc_dv_set(search_val, u8, 42);
 
-    DCDynValue* found = dc_dynarr_find(&darr, &search_val);
+    DCDynValue* found = dc_da_find(&darr, &search_val);
     if (found)
     {
-        printf("Found u8: %d\n", dc_dynval_get((*found), u8));
+        printf("Found u8: %d\n", dc_dv_get((*found), u8));
     }
     else
     {
         printf("Element not found.\n");
     }
 
-    dc_dynval_set(search_val, string, dc_strdup("Hello, Dynamic Array!"));
+    dc_dv_set(search_val, string, dc_strdup("Hello, Dynamic Array!"));
 
-    found = dc_dynarr_find(&darr, &search_val);
+    found = dc_da_find(&darr, &search_val);
     if (found)
     {
-        printf("Found string: %s\n", dc_dynval_get((*found), string));
+        printf("Found string: %s\n", dc_dv_get((*found), string));
     }
     else
     {
@@ -235,34 +230,32 @@ void test2()
     // Free the dynamic array
     /**
      * What happens here?
-     *  dc_dynarr_free does nothing when the values are literal types on each
+     *  dc_da_free does nothing when the values are literal types on each
      *  type however, when it comes to strings it tries to free the memories if
      *  they are not null, what we generally in situations like this is to call
      *  a custom function that just mark the values as null so that
-     *  dc_dynval_free won't fail
+     *  dc_dv_free won't fail
      */
-    dc_dynarr_free(&darr);
+    dc_da_free(&darr);
 
-    dc_dynval_free(&search_val, NULL);
+    dc_dv_free(&search_val, NULL);
 }
 
 void test3()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(
-        &darr, NULL,
+    dc_da_init_with_values(&darr, NULL,
 
-        dc_dynval_lit(char, 'H'), dc_dynval_lit(char, 'e'),
-        dc_dynval_lit(char, 'l'), dc_dynval_lit(char, 'l'),
-        dc_dynval_lit(u8, 12), dc_dynval_lit(char, 'o'));
+                           dc_dv(char, 'H'), dc_dv(char, 'e'), dc_dv(char, 'l'),
+                           dc_dv(char, 'l'), dc_dv(u8, 12), dc_dv(char, 'o'));
 
     string result_str = NULL;
     /**
      * Convert the `darr` to char flat array and don't fail (bypass the unwanted
      * value)
      */
-    usize len = dc_char_dynarr_to_flat_arr(&darr, &result_str, false);
+    usize len = dc_char_da_to_flat_arr(&darr, &result_str, false);
 
     if (result_str)
     {
@@ -275,23 +268,22 @@ void test3()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr);
+    dc_da_free(&darr);
 }
 
 void test4()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(&darr, NULL,
+    dc_da_init_with_values(&darr, NULL,
 
-                               dc_dynval_lit(u8, 1), dc_dynval_lit(u8, 2),
-                               dc_dynval_lit(u8, 3), dc_dynval_lit(u8, 4),
-                               dc_dynval_lit(u8, 5)
+                           dc_dv(u8, 1), dc_dv(u8, 2), dc_dv(u8, 3),
+                           dc_dv(u8, 4), dc_dv(u8, 5)
 
     );
 
     u8* result = NULL;
-    usize len = dc_u8_dynarr_to_flat_arr(&darr, &result, true);
+    usize len = dc_u8_da_to_flat_arr(&darr, &result, true);
 
     printf("========\n got %zu elements\n========\n", len);
 
@@ -306,23 +298,22 @@ void test4()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr);
+    dc_da_free(&darr);
 }
 
 void test5()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(&darr, NULL,
+    dc_da_init_with_values(&darr, NULL,
 
-                               dc_dynval_lit(usize, 6), dc_dynval_lit(usize, 7),
-                               dc_dynval_lit(usize, 8), dc_dynval_lit(usize, 9),
-                               dc_dynval_lit(usize, 10)
+                           dc_dv(usize, 6), dc_dv(usize, 7), dc_dv(usize, 8),
+                           dc_dv(usize, 9), dc_dv(usize, 10)
 
     );
 
     usize* result = NULL;
-    usize len = dc_usize_dynarr_to_flat_arr(&darr, &result, true);
+    usize len = dc_usize_da_to_flat_arr(&darr, &result, true);
 
     printf("========\n got %zu elements\n========\n", len);
 
@@ -337,23 +328,22 @@ void test5()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr);
+    dc_da_free(&darr);
 }
 
 void test6()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(&darr, NULL,
+    dc_da_init_with_values(&darr, NULL,
 
-                               dc_dynval_lit(size, 11), dc_dynval_lit(size, 12),
-                               dc_dynval_lit(size, 13), dc_dynval_lit(size, 14),
-                               dc_dynval_lit(size, 15)
+                           dc_dv(size, 11), dc_dv(size, 12), dc_dv(size, 13),
+                           dc_dv(size, 14), dc_dv(size, 15)
 
     );
 
     size* result = NULL;
-    usize len = dc_size_dynarr_to_flat_arr(&darr, &result, true);
+    usize len = dc_size_da_to_flat_arr(&darr, &result, true);
 
     printf("========\n got %zu elements\n========\n", len);
 
@@ -368,7 +358,7 @@ void test6()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr);
+    dc_da_free(&darr);
 }
 
 typedef struct
@@ -395,23 +385,22 @@ void test7()
 {
     DCDynArr darr;
 
-    dc_dynarr_init_with_values(&darr, custom_free,
+    dc_da_init_with_values(
+        &darr, custom_free,
 
-                               dc_dynval_lit(voidptr, new_ms(42, 1.2)),
-                               dc_dynval_lit(voidptr, new_ms(43, 3.14)),
-                               dc_dynval_lit(voidptr, new_ms(44, 1.0)),
-                               dc_dynval_lit(voidptr, new_ms(45, 0.5)),
-                               dc_dynval_lit(voidptr, new_ms(46, 3.6))
+        dc_dv(voidptr, new_ms(42, 1.2)), dc_dv(voidptr, new_ms(43, 3.14)),
+        dc_dv(voidptr, new_ms(44, 1.0)), dc_dv(voidptr, new_ms(45, 0.5)),
+        dc_dv(voidptr, new_ms(46, 3.6))
 
     );
 
-    dc_dynarr_for(darr)
+    dc_da_for(darr)
     {
-        print_struct((MyStruct*)dc_dynarr_get_as(&darr, _idx, voidptr));
+        print_struct((MyStruct*)dc_da_get_as(&darr, _idx, voidptr));
     }
 
     voidptr* result = NULL;
-    usize len = dc_voidptr_dynarr_to_flat_arr(&darr, &result, true);
+    usize len = dc_voidptr_da_to_flat_arr(&darr, &result, true);
 
     printf("========\n got %zu elements\n========\n", len);
 
@@ -426,7 +415,7 @@ void test7()
         printf("Conversion failed\n");
     }
 
-    dc_dynarr_free(&darr);
+    dc_da_free(&darr);
 }
 
 
