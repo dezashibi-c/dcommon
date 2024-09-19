@@ -72,4 +72,6 @@ int main(int argc, string argv[])
 
     dc_dbg_log_if(out == 0, "Operation was successful: %d", out);
     dc_dbg_log_if(out != 0, "Operation was not successful: %d", out);
+
+    dc_log("running on: %s, %s", dc_get_os(), dc_get_arch());
 }
