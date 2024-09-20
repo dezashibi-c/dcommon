@@ -34,15 +34,15 @@ void print_dv(DCDynValue* dval)
 {
     if (dc_dv_is(*dval, u8))
     {
-        printf("u8: %u\n", dc_dv_get(*dval, u8));
+        printf("u8: %u\n", dc_dv_as(*dval, u8));
     }
     else if (dc_dv_is(*dval, i32))
     {
-        printf("i32: %d\n", dc_dv_get(*dval, i32));
+        printf("i32: %d\n", dc_dv_as(*dval, i32));
     }
     else if (dc_dv_is(*dval, string))
     {
-        printf("string: %s\n", dc_dv_get(*dval, string));
+        printf("string: %s\n", dc_dv_as(*dval, string));
     }
 }
 
@@ -208,7 +208,7 @@ void test2()
     DCDynValue* found = dc_da_find(&darr, &search_val);
     if (found)
     {
-        printf("Found u8: %d\n", dc_dv_get((*found), u8));
+        printf("Found u8: %d\n", dc_dv_as((*found), u8));
     }
     else
     {
@@ -220,7 +220,7 @@ void test2()
     found = dc_da_find(&darr, &search_val);
     if (found)
     {
-        printf("Found string: %s\n", dc_dv_get((*found), string));
+        printf("Found string: %s\n", dc_dv_as((*found), string));
     }
     else
     {

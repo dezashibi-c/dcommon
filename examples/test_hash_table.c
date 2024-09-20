@@ -63,7 +63,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key1, dc_dv_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key1, dc_dv_as(*found, u8));
     }
     else
     {
@@ -77,7 +77,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key2, dc_dv_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key2, dc_dv_as(*found, u8));
     }
     else
     {
@@ -95,7 +95,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key2, dc_dv_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key2, dc_dv_as(*found, u8));
     }
     else
     {
@@ -114,7 +114,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key1, dc_dv_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key1, dc_dv_as(*found, u8));
     }
     else
     {
@@ -128,7 +128,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key2, dc_dv_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key2, dc_dv_as(*found, u8));
     }
     else
     {
@@ -151,7 +151,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key1, dc_dv_get(*found, u8));
+        printf("Found value for key '%s': %d\n", key1, dc_dv_as(*found, u8));
     }
     else
     {
@@ -165,8 +165,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", "boris",
-               dc_dv_get(*found, u8));
+        printf("Found value for key '%s': %d\n", "boris", dc_dv_as(*found, u8));
     }
     else
     {
@@ -191,8 +190,7 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", "erisa",
-               dc_dv_get(*found, u8));
+        printf("Found value for key '%s': %d\n", "erisa", dc_dv_as(*found, u8));
     }
     else
     {
