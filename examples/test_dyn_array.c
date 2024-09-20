@@ -21,7 +21,7 @@ static dc_dv_free_func_decl(custom_free)
 {
     switch (_value->type)
     {
-        case dc_value_type(string):
+        case dc_dvt(string):
             dc_dv_set(*_value, voidptr, NULL);
             break;
 
