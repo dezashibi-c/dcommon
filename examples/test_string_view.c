@@ -52,6 +52,11 @@ int main()
 
     if (dc_sv_sv_eq(view, view2)) printf("Do you really expect that!?");
 
+    string some_text = NULL;
+    dc_sprintf(&some_text, DC_SV_FMT " - whatever", dc_sv_fmt_val(view));
+    dc_log("%s", some_text);
+    free(some_text);
+
     // don't forget to free it!
     dc_sv_free(&view);
     // free(world); // or this (just one of them of course)
