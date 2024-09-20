@@ -36,6 +36,13 @@ int main(int argc, string argv[])
     printf("Zero: %s\n", s);
     free(s);
 
+    string my_str = NULL;
+
+    dc_sappend(&my_str, "Hello");
+    dc_sappend(&my_str, ", World!");
+    printf("%s\n", my_str);
+    free(my_str);
+
     printf("exec path: %s\n", argv[0]);
 
     s = dc_replace_file_in_path(argv[0], "my_config.ini");

@@ -1,7 +1,8 @@
-## v0.9.0
+## v0.9.2
 
-Release Date: 2024-09-19
+Release Date: 2024-09-20
 
+- add string append func
 - add mem cleanup on exit global
 - add deferred mem cleanup local
 - add debug macros
