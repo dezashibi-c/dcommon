@@ -17,19 +17,6 @@
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
-// static dc_dv_free_func_decl(custom_free)
-// {
-//     switch (_value->type)
-//     {
-//         case dc_dvt(string):
-//             dc_dv_set(*_value, voidptr, NULL);
-//             break;
-
-//         default:
-//             break;
-//     }
-// }
-
 void print_dv(DCDynValue* dval)
 {
     if (dc_dv_is(*dval, u8))
@@ -60,10 +47,12 @@ void test1()
     DCDynArr darr;
 
     // Add elements
-    dc_da_init_with_values(&darr, NULL,
+    dc_da_init_with_values(
+        &darr, NULL,
 
-                           dc_dv(u8, 42), dc_dv(i32, -12345),
-                           dc_dv(string, "Hello")
+        dc_dv(u8, 42), dc_dv(i32, -12345),
+        dc_dv(string, "Hello") // here it is a literal string so it doesn't need
+                               // to be mark as allocated
 
     );
 
@@ -215,6 +204,8 @@ void test2()
         printf("Element not found.\n");
     }
 
+    // dc_strdup allocates memory so we use the allocated version of dc_dv_set
+    // (with an 'a' at the end)
     dc_dv_seta(search_val, string, dc_strdup("Hello, Dynamic Array!"));
 
     found = dc_da_find(&darr, &search_val);
@@ -227,15 +218,6 @@ void test2()
         printf("Element not found.\n");
     }
 
-    // Free the dynamic array
-    /**
-     * What happens here?
-     *  dc_da_free does nothing when the values are literal types on each
-     *  type however, when it comes to strings it tries to free the memories if
-     *  they are not null, what we generally in situations like this is to call
-     *  a custom function that just mark the values as null so that
-     *  dc_dv_free won't fail
-     */
     dc_da_free(&darr);
 
     dc_dv_free(&search_val, NULL);
