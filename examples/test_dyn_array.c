@@ -370,6 +370,8 @@ void test7()
     dc_da_init_with_values(
         &darr, NULL,
 
+        // These are allocated instances of MyStruct
+        // So We must use dc_dva (Allocated Dynamic Value)
         dc_dva(voidptr, new_ms(42, 1.2)), dc_dva(voidptr, new_ms(43, 3.14)),
         dc_dva(voidptr, new_ms(44, 1.0)), dc_dva(voidptr, new_ms(45, 0.5)),
         dc_dva(voidptr, new_ms(46, 3.6))
