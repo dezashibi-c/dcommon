@@ -17,18 +17,18 @@
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
-static dc_dv_free_func_decl(custom_free)
-{
-    switch (_value->type)
-    {
-        case dc_dvt(string):
-            dc_dv_set(*_value, voidptr, NULL);
-            break;
+// static dc_dv_free_func_decl(custom_free)
+// {
+//     switch (_value->type)
+//     {
+//         case dc_dvt(string):
+//             dc_dv_set(*_value, voidptr, NULL);
+//             break;
 
-        default:
-            break;
-    }
-}
+//         default:
+//             break;
+//     }
+// }
 
 void print_dv(DCDynValue* dval)
 {
@@ -60,7 +60,7 @@ void test1()
     DCDynArr darr;
 
     // Add elements
-    dc_da_init_with_values(&darr, custom_free,
+    dc_da_init_with_values(&darr, NULL,
 
                            dc_dv(u8, 42), dc_dv(i32, -12345),
                            dc_dv(string, "Hello")
@@ -106,7 +106,7 @@ void test1()
     DCDynArr darr2;
 
     // Add elements
-    dc_da_init_with_values(&darr2, custom_free,
+    dc_da_init_with_values(&darr2, NULL,
 
                            dc_dv(string, "Using append started"), dc_dv(u8, 14),
                            dc_dv(u8, 15), dc_dv(u8, 16),
@@ -134,7 +134,7 @@ void test1()
     DCDynArr darr3;
 
     // Add elements
-    dc_da_init_with_values(&darr3, custom_free,
+    dc_da_init_with_values(&darr3, NULL,
 
                            dc_dv(string, "Using insert_from started"),
                            dc_dv(u8, 14), dc_dv(u8, 15), dc_dv(u8, 16),
@@ -198,7 +198,7 @@ void test2()
     dc_da_push(&darr, val);
 
     // Adding a string
-    dc_dv_set(val, string, dc_strdup("Hello, Dynamic Array!"));
+    dc_dv_seta(val, string, dc_strdup("Hello, Dynamic Array!"));
     dc_da_push(&darr, val);
 
     // Finding an element (search for u8 value 42)
@@ -215,7 +215,7 @@ void test2()
         printf("Element not found.\n");
     }
 
-    dc_dv_set(search_val, string, dc_strdup("Hello, Dynamic Array!"));
+    dc_dv_seta(search_val, string, dc_strdup("Hello, Dynamic Array!"));
 
     found = dc_da_find(&darr, &search_val);
     if (found)
@@ -386,11 +386,11 @@ void test7()
     DCDynArr darr;
 
     dc_da_init_with_values(
-        &darr, custom_free,
+        &darr, NULL,
 
-        dc_dv(voidptr, new_ms(42, 1.2)), dc_dv(voidptr, new_ms(43, 3.14)),
-        dc_dv(voidptr, new_ms(44, 1.0)), dc_dv(voidptr, new_ms(45, 0.5)),
-        dc_dv(voidptr, new_ms(46, 3.6))
+        dc_dva(voidptr, new_ms(42, 1.2)), dc_dva(voidptr, new_ms(43, 3.14)),
+        dc_dva(voidptr, new_ms(44, 1.0)), dc_dva(voidptr, new_ms(45, 0.5)),
+        dc_dva(voidptr, new_ms(46, 3.6))
 
     );
 

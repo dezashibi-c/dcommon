@@ -1,7 +1,8 @@
-## v0.9.2
+## v0.9.5
 
 Release Date: 2024-09-20
 
+- add allocated field to dynamic values
 - add string append func
 - add mem cleanup on exit global
 - add deferred mem cleanup local
