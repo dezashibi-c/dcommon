@@ -1,7 +1,8 @@
-## v0.9.5
+## v0.9.6
 
-Release Date: 2024-09-20
+Release Date: 2024-09-21
 
+- simplify global cleanup procedure
 - add allocated field to dynamic values
 - add string append func
 - add mem cleanup on exit global

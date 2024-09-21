@@ -38,11 +38,16 @@ dc_ht_key_comp_func_decl(string_key_cmp)
 int main()
 {
     dc_global_cleanups_init(10);
-    dc_local_cleanup_decl(int, 0, 10);
+    dc_ret_val_decl(u8, 0);
 
     DCHashTable* table = dc_ht_create(10, string_hash, string_key_cmp, NULL);
     dc_dbg_log("hash table address: %p", (voidptr)table);
-    dc_cleanups_push(table, dc_ht_free__);
+
+    // we don't this as we have a shortcut for it
+    // dc_cleanups_push(table, dc_ht_free__);
+    dc_cleanups_push_ht(table);
+    // we also need this as after we cleaned the hash table we need to free
+    // local allocated hash table
     dc_cleanups_push(table, free);
 
     string key1 = "navid";
@@ -174,7 +179,7 @@ int main()
 
     DCHashTable table2;
     dc_ht_init(&table2, 10, string_hash, string_key_cmp, NULL);
-    dc_local_cleanups_push_ht(&table2);
+    dc_cleanups_push_ht(&table2);
 
     dc_ht_set_multiple(&table2,
 
@@ -209,5 +214,5 @@ int main()
         printf("- %s\n", (string)(*_it));
     }
 
-    dc_def_local_cleanups_label();
+    dc_def_exit_label();
 }
