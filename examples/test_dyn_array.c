@@ -201,7 +201,7 @@ void test2()
     }
     else
     {
-        printf("Element not found.\n");
+        dc_log("Element not found.\n");
     }
 
     // dc_strdup allocates memory so we use the allocated version of dc_dv_set
@@ -215,7 +215,7 @@ void test2()
     }
     else
     {
-        printf("Element not found.\n");
+        dc_log("Element not found.\n");
     }
 
     dc_da_free(&darr);
@@ -247,7 +247,7 @@ void test3()
     }
     else
     {
-        printf("Conversion failed\n");
+        dc_log("Conversion failed\n");
     }
 
     dc_da_free(&darr);
@@ -277,7 +277,7 @@ void test4()
     }
     else
     {
-        printf("Conversion failed\n");
+        dc_log("Conversion failed\n");
     }
 
     dc_da_free(&darr);
@@ -307,7 +307,7 @@ void test5()
     }
     else
     {
-        printf("Conversion failed\n");
+        dc_log("Conversion failed\n");
     }
 
     dc_da_free(&darr);
@@ -337,7 +337,7 @@ void test6()
     }
     else
     {
-        printf("Conversion failed\n");
+        dc_log("Conversion failed\n");
     }
 
     dc_da_free(&darr);
@@ -396,7 +396,7 @@ void test7()
     }
     else
     {
-        printf("Conversion failed\n");
+        dc_log("Conversion failed\n");
     }
 
     dc_da_free(&darr);
