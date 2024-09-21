@@ -1,7 +1,8 @@
-## v0.9.6
+## v0.9.7
 
 Release Date: 2024-09-21
 
+- add string converters to literal numbers
 - simplify global cleanup procedure
 - add allocated field to dynamic values
 - add string append func

@@ -14,6 +14,7 @@
 // *  Description:
 // ***************************************************************************************
 
+#define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
 void print(u8* number)
@@ -39,6 +40,40 @@ void print_my_struct(MyStruct* m)
 
 int main(void)
 {
+    const string i8Str = "127";
+    i8 int8Value;
+    if (dc_str_to_i8(i8Str, &int8Value))
+    {
+        printf("Converted i8: %" PRId8 "\n", int8Value);
+    }
+    else
+    {
+        printf("Failed to convert to i8.\n");
+    }
+
+    // Repeat for other types as needed...
+    const string u32Str = "4294967295";
+    u32 uint32Value;
+    if (dc_str_to_u32(u32Str, &uint32Value))
+    {
+        printf("Converted u32: %" PRIu32 "\n", uint32Value);
+    }
+    else
+    {
+        printf("Failed to convert to u32.\n");
+    }
+
+    const string f64Str = "3.14";
+    f64 float64Value;
+    if (dc_str_to_f64(f64Str, &float64Value))
+    {
+        printf("Converted f64: %f\n", float64Value);
+    }
+    else
+    {
+        printf("Failed to convert to f64.\n");
+    }
+
     dc_array(u8_list, u8, 10, 20, 30);
     dc_array(i16_list, i16, -10, 2, -30);
     dc_array(i32_list, i32, -1, -2, 3);
