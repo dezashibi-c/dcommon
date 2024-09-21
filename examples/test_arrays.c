@@ -40,7 +40,8 @@ void print_my_struct(MyStruct* m)
 int main(void)
 {
     dc_array(u8_list, u8, 10, 20, 30);
-    dc_array(i32_list, i32, 1, 2, 3);
+    dc_array(i16_list, i16, -10, 2, -30);
+    dc_array(i32_list, i32, -1, -2, 3);
     dc_array(f32_list, f32, 1.1f, 2.2f);
     dc_array(char_list, char, 'a', 'b', 'c');
 
@@ -52,6 +53,11 @@ int main(void)
     dc_foreach(u8_list, u8)
     {
         printf("u8 item: %d\n", *_it);
+    }
+
+    dc_foreach(i16_list, i16)
+    {
+        printf("i16 item: %d\n", *_it);
     }
 
     dc_foreach(i32_list, i32)
