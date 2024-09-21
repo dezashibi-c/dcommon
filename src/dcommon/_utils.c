@@ -316,7 +316,14 @@ void __dc_perform_cleanup(DCCleanups* cleanups_arr)
     }
 
     // clean up the dc_cleanup itself
+    dc_dbg_log("freeing cleanups dynamic array, current capacity: %zu, current "
+               "count: %zu",
+               cleanups_arr->cap, cleanups_arr->count);
     dc_da_free(cleanups_arr);
+    dc_dbg_log(
+        "cleanups dynamic array has been freed, current capacity: %zu, current "
+        "count: %zu",
+        cleanups_arr->cap, cleanups_arr->count);
 }
 
 void dc_perform_cleanup(void)
