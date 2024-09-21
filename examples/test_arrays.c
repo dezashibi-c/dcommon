@@ -74,6 +74,7 @@ int main(void)
         printf("Failed to convert to f64.\n");
     }
 
+    dc_array(bool_list, u8, 10, 0, false, true);
     dc_array(u8_list, u8, 10, 20, 30);
     dc_array(i16_list, i16, -10, 2, -30);
     dc_array(i32_list, i32, -1, -2, 3);
@@ -84,6 +85,11 @@ int main(void)
            dc_count(u8_list), dc_len(u8_list), dc_last(u8_list));
 
     dc_action_on(dc_len(u8_list) != 3, return 1, "length calculation error");
+
+    dc_foreach(bool_list, u8)
+    {
+        printf("bool item: %s\n", dc_tostr_bool(dc_u8_as_bool(*_it)));
+    }
 
     dc_foreach(u8_list, u8)
     {
