@@ -36,7 +36,7 @@ typedef enum
 {
     DC_ERR_MODE_NORMAL,
     DC_ERR_MODE_ABORT,
-} DC_ERROR_MODE;
+} DCErrorMode;
 
 // ***************************************************************************************
 // * PRIMITIVE TYPES DECLARATIONS
@@ -180,5 +180,32 @@ typedef struct
     voidptr element;
     DCCleanupFunc cleanup_func;
 } DCCleanupEntry;
+
+// ***************************************************************************************
+// * RETURN TYPE DECLARATIONS
+// ***************************************************************************************
+
+typedef enum
+{
+    DC_RESULT_OK,
+    DC_RESULT_ERR,
+} DCResultStatus;
+
+typedef struct
+{
+    u8 code;
+    string message;
+    bool allocated;
+} DCError;
+
+typedef struct
+{
+    DCResultStatus status;
+    union
+    {
+        DCDynValue value;
+        DCError error;
+    } data;
+} DCResult;
 
 #endif // DC_ALIASES_H

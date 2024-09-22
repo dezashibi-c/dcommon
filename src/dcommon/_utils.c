@@ -95,7 +95,7 @@ int dc_sappend(string* str, const string fmt, ...)
     size_t current_len = *str ? strlen(*str) : 0;
 
     // Allocate memory for the new string (old length + new formatted part)
-    char* new_str = realloc(*str, current_len + len + 1);
+    string new_str = realloc(*str, current_len + len + 1);
     if (!new_str)
     {
         dc_log("Couldn't allocate memory for string extension.");
@@ -357,4 +357,21 @@ void __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
     item->cleanup_func = cleanup_func;
 
     dc_da_push(cleanup_arr, dc_dva(voidptr, item));
+}
+
+// ***************************************************************************************
+// * RESULT
+// ***************************************************************************************
+
+void dc_result_free(DCResult* result, DCDynValFreeFunc custom_free)
+{
+    if (result->status == DC_RESULT_OK)
+    {
+        dc_dv_free(&result->data.value, custom_free);
+        return;
+    }
+
+    if (result->data.error.allocated) free(result->data.error.message);
+
+    result->data.error.message = "";
 }

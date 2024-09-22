@@ -582,4 +582,70 @@
     __dc_ret_val = RETVAL;                                                     \
     goto __dc_exit_label
 
+// ***************************************************************************************
+// * RESULT MACROS
+// ***************************************************************************************
+
+#define dc_res_def() DCResult result;
+
+#define dc_res_e_ex(RES, NUM, MSG)                                             \
+    do                                                                         \
+    {                                                                          \
+        (RES).status = DC_RESULT_ERR;                                          \
+        (RES).data.error = (DCError){NUM, MSG, 0};                             \
+    } while (0)
+
+#define dc_res_e(NUM, MSG) dc_res_e_ex(result, NUM, MSG)
+
+#define dc_res_ea_ex(RES, NUM, ...)                                            \
+    do                                                                         \
+    {                                                                          \
+        string __err;                                                          \
+        dc_sprintf(&__err, __VA_ARGS__);                                       \
+        (RES).status = DC_RESULT_ERR;                                          \
+        (RES).data.error = (DCError){NUM, __err, 1};                           \
+    } while (0)
+
+#define dc_res_ea(NUM, ...) dc_res_ea_ex(result, NUM, __VA_ARGS__)
+
+#define dc_res_ok_ex(RES, TYPE, VALUE)                                         \
+    do                                                                         \
+    {                                                                          \
+        (RES).status = DC_RESULT_OK;                                           \
+        result.data.value = dc_dv(TYPE, VALUE);                                \
+    } while (0)
+
+#define dc_res_ok(TYPE, VALUE) dc_res_ok_ex(result, TYPE, VALUE)
+
+#define dc_res_oka_ex(RES, TYPE, VALUE)                                        \
+    do                                                                         \
+    {                                                                          \
+        (RES).status = DC_RESULT_OK;                                           \
+        result.data.value = dc_dva(TYPE, VALUE);                               \
+    } while (0)
+
+#define dc_res_oka(RES, TYPE, VALUE) dc_res_oka_ex(result, TYPE, VALUE)
+
+#define dc_ret_if_err_ex(RES)                                                  \
+    if ((RES).status == DC_RESULT_ERR) return RES
+
+#define dc_ret_if_err() dc_ret_if_err_ex(result)
+
+#define dc_try_ex(RES, CALL)                                                   \
+    DCResult RES = CALL;                                                       \
+    dc_ret_if_err_ex(RES)
+
+#define dc_try(CALL) dc_try_ex(result, CALL)
+
+#define dc_try_call_ex(RES, CALL)                                              \
+    do                                                                         \
+    {                                                                          \
+        dc_try_ex(RES, CALL);                                                  \
+    } while (0)
+
+#define dc_try_call(CALL) dc_try_call_ex(result, CALL)
+
+#define dc_res_as_ex(RES, TYPE) dc_dv_as((RES).data.value, TYPE)
+#define dc_res_as(TYPE) dc_dv_as(result.data.value, TYPE)
+
 #endif // DC_MACROS_H

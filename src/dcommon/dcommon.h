@@ -123,6 +123,8 @@ void dc_perform_cleanup(void);
 void __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
                                DCCleanupFunc cleanup_func);
 
+void dc_result_free(DCResult* result, DCDynValFreeFunc custom_free);
+
 // ***************************************************************************************
 // * IMPLEMENTATIONS
 // ***************************************************************************************
@@ -130,7 +132,7 @@ void __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
 #ifdef DCOMMON_IMPL
 
 FILE* dc_error_logs = NULL;
-DC_ERROR_MODE dc_error_mode = DC_ERR_MODE_NORMAL;
+DCErrorMode dc_error_mode = DC_ERR_MODE_NORMAL;
 DCCleanups dc_cleanups = {0};
 
 #include "_dynarr.c"
@@ -142,7 +144,7 @@ DCCleanups dc_cleanups = {0};
 #else
 
 extern FILE* dc_error_logs;
-extern DC_ERROR_MODE dc_error_mode;
+extern DCErrorMode dc_error_mode;
 extern DCCleanups dc_cleanups;
 
 #endif
