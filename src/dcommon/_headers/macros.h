@@ -207,7 +207,7 @@
         if (CONDITION)                                                         \
         {                                                                      \
             __dc_log(CAT, __VA_ARGS__);                                        \
-            if (dc_error_mode == DC_ERR_MODE_ABORT)                            \
+            if (dc_error_mode == DC_HALT_MODE_ABORT)                           \
             {                                                                  \
                 abort();                                                       \
             }                                                                  \

@@ -132,7 +132,7 @@ void dc_result_free(DCResult* result, DCDynValFreeFunc custom_free);
 #ifdef DCOMMON_IMPL
 
 FILE* dc_error_logs = NULL;
-DCErrorMode dc_error_mode = DC_ERR_MODE_NORMAL;
+DCHaltMode dc_error_mode = DC_HALT_MODE_CONTINUE;
 DCCleanups dc_cleanups = {0};
 
 #include "_dynarr.c"
@@ -144,7 +144,7 @@ DCCleanups dc_cleanups = {0};
 #else
 
 extern FILE* dc_error_logs;
-extern DCErrorMode dc_error_mode;
+extern DCHaltMode dc_error_mode;
 extern DCCleanups dc_cleanups;
 
 #endif

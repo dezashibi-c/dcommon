@@ -34,9 +34,9 @@
 
 typedef enum
 {
-    DC_ERR_MODE_NORMAL,
-    DC_ERR_MODE_ABORT,
-} DCErrorMode;
+    DC_HALT_MODE_CONTINUE,
+    DC_HALT_MODE_ABORT,
+} DCHaltMode;
 
 // ***************************************************************************************
 // * PRIMITIVE TYPES DECLARATIONS
