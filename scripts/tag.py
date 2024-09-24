@@ -77,7 +77,7 @@ folder_to_zip = ['src/dcommon']
 
 # you can list name of file or files you would like to be added individually to github
 # releases
-release_files = ["dcommon.zip", "src/scripts/tag.py"]
+release_files = ["src/dcommon.zip", "src/scripts/tag.py"]
 
 
 #########################################################################################
