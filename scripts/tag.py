@@ -128,7 +128,8 @@ def create_github_release(version, description):
     if any(key in version for key in ["stable", "rc", "beta"]):
         try:
             if folder_to_zip != '':
-                zip_folder(folder_to_zip, f"{folder_to_zip}.zip")
+                for folder in folder_to_zip:
+                    zip_folder(folder, f"{folder}.zip")
 
             release_command = ['gh', 'release', 'create', version, *release_files, '--title', version, '--notes', description]
             if "stable" not in version:
