@@ -65,6 +65,64 @@ typedef char* string;
 typedef void* voidptr;
 
 // ***************************************************************************************
+// * RETURN TYPE DECLARATIONS
+// ***************************************************************************************
+
+typedef enum
+{
+    DC_RESULT_OK,
+    DC_RESULT_ERR,
+} DCResultStatus;
+
+typedef struct
+{
+    i8 code;
+    string message;
+    bool allocated;
+} DCError;
+
+#define DCResultType(TYPE, NAME)                                               \
+    typedef struct                                                             \
+    {                                                                          \
+        DCResultStatus status;                                                 \
+        union                                                                  \
+        {                                                                      \
+            DCError e;                                                         \
+            TYPE v;                                                            \
+        } data;                                                                \
+    } NAME
+
+typedef struct
+{
+    DCResultStatus status;
+    union
+    {
+        DCError e;
+    } data;
+} DCResultVoid;
+
+// ***************************************************************************************
+// * DEFAULT PRIMITIVE RETURN TYPE DECLARATIONS
+// ***************************************************************************************
+DCResultType(i8, DCResultI8);
+DCResultType(i16, DCResultI16);
+DCResultType(i32, DCResultI32);
+DCResultType(i64, DCResultI64);
+DCResultType(u8, DCResultU8);
+DCResultType(u16, DCResultU16);
+DCResultType(u32, DCResultU32);
+DCResultType(u64, DCResultU64);
+DCResultType(f32, DCResultF32);
+DCResultType(f64, DCResultF64);
+DCResultType(uptr, DCResultUptr);
+DCResultType(size, DCResultSize);
+DCResultType(usize, DCResultUsize);
+DCResultType(string, DCResultString);
+DCResultType(voidptr, DCResultVoidptr);
+
+DCResultType(bool, DCResultBool);
+
+// ***************************************************************************************
 // * DYNAMIC ARRAY TYPE DECLARATIONS
 // ***************************************************************************************
 
@@ -120,7 +178,7 @@ typedef struct
     } value;
 } DCDynValue;
 
-typedef void (*DCDynValFreeFunc)(DCDynValue*);
+typedef DCResultVoid (*DCDynValFreeFn)(DCDynValue*);
 
 typedef struct
 {
@@ -129,7 +187,7 @@ typedef struct
     usize count;
     usize multiplier;
 
-    DCDynValFreeFunc element_free_func;
+    DCDynValFreeFn element_free_fn;
 } DCDynArr;
 
 // ***************************************************************************************
@@ -153,8 +211,8 @@ typedef struct
     DCDynValue value;
 } DCHashEntry;
 
-typedef u32 (*DCHashFunc)(voidptr);
-typedef bool (*DCKeyCompFunc)(voidptr, voidptr);
+typedef DCResultU32 (*DCHashFn)(voidptr);
+typedef DCResultBool (*DCKeyCompFn)(voidptr, voidptr);
 
 typedef struct
 {
@@ -162,9 +220,9 @@ typedef struct
     usize cap;
     usize key_count;
 
-    DCHashFunc hash_func;
-    DCKeyCompFunc key_cmp_func;
-    DCDynValFreeFunc element_free_func;
+    DCHashFn hash_fn;
+    DCKeyCompFn key_cmp_fn;
+    DCDynValFreeFn element_free_fn;
 } DCHashTable;
 
 // ***************************************************************************************
@@ -173,39 +231,22 @@ typedef struct
 
 typedef DCDynArr DCCleanups;
 
-typedef void (*DCCleanupFunc)(voidptr);
+typedef DCResultVoid (*DCCleanupFn)(voidptr);
 
 typedef struct
 {
     voidptr element;
-    DCCleanupFunc cleanup_func;
+    DCCleanupFn cleanup_fn;
 } DCCleanupEntry;
 
 // ***************************************************************************************
-// * RETURN TYPE DECLARATIONS
+// * DCOMMON CUSTOM TYPES RETURN TYPE DECLARATIONS
 // ***************************************************************************************
 
-typedef enum
-{
-    DC_RESULT_OK,
-    DC_RESULT_ERR,
-} DCResultStatus;
-
-typedef struct
-{
-    u8 code;
-    string message;
-    bool allocated;
-} DCError;
-
-typedef struct
-{
-    DCResultStatus status;
-    union
-    {
-        DCDynValue value;
-        DCError error;
-    } data;
-} DCResult;
+DCResultType(DCDynValue, DCResult);
+DCResultType(DCStringView, DCResultSv);
+DCResultType(DCDynArr*, DCResultDa);
+DCResultType(DCHashTable*, DCResultHt);
+DCResultType(DCDynValue*, DCResultDv);
 
 #endif // DC_ALIASES_H

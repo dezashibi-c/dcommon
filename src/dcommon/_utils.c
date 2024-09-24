@@ -38,8 +38,17 @@
 // * STRINGS AND PATHS
 // ***************************************************************************************
 
-int dc_sprintf(string* str, string fmt, ...)
+DCResultUsize dc_sprintf(string* str, string fmt, ...)
 {
+    dc_res_usize();
+
+    if (!str)
+    {
+        dc_dbg_log("got NULL str");
+
+        dc_res_ret_e(1, "got NULL str");
+    }
+
     va_list argp;
     va_start(argp, fmt);
 
@@ -47,34 +56,41 @@ int dc_sprintf(string* str, string fmt, ...)
     int len = vsnprintf(one_char, 1, fmt, argp);
     if (len < 1)
     {
-        dc_log(
+        dc_dbg_log(
             "An encoding error occurred. Setting the input pointer to NULL.");
         *str = NULL;
         va_end(argp);
-        return len;
+
+        dc_res_ret_e(
+            5,
+            "An encoding error occurred. Setting the input pointer to NULL.");
     }
     va_end(argp);
 
     *str = malloc(len + 1);
     if (!str)
     {
-        dc_log("Couldn't allocate %i chars.", len + 1);
-        return -1;
+        dc_dbg_log("Couldn't allocate %i chars.", len + 1);
+
+        dc_res_ret_e(1, "Memory allocation failed");
     }
 
     va_start(argp, fmt);
     vsnprintf(*str, len + 1, fmt, argp);
     va_end(argp);
 
-    return len;
+    dc_res_ret_ok((usize)len);
 }
 
-int dc_sappend(string* str, const string fmt, ...)
+DCResultUsize dc_sappend(string* str, const string fmt, ...)
 {
+    dc_res_usize();
+
     if (!str)
     {
-        dc_log("Invalid input pointer.");
-        return -1;
+        dc_dbg_log("got NULL str");
+
+        dc_res_ret_e(1, "got NULL str");
     }
 
     va_list argp;
@@ -85,9 +101,14 @@ int dc_sappend(string* str, const string fmt, ...)
     int len = vsnprintf(one_char, 1, fmt, argp);
     if (len < 0)
     {
-        dc_log("An encoding error occurred.");
+        dc_dbg_log(
+            "An encoding error occurred. Setting the input pointer to NULL.");
+        *str = NULL;
         va_end(argp);
-        return len;
+
+        dc_res_ret_e(
+            5,
+            "An encoding error occurred. Setting the input pointer to NULL.");
     }
     va_end(argp);
 
@@ -98,8 +119,9 @@ int dc_sappend(string* str, const string fmt, ...)
     string new_str = realloc(*str, current_len + len + 1);
     if (!new_str)
     {
-        dc_log("Couldn't allocate memory for string extension.");
-        return -1;
+        dc_dbg_log("Couldn't allocate %i chars.", len + 1);
+
+        dc_res_ret_e(1, "Memory allocation failed");
     }
 
     // Update the string pointer
@@ -110,22 +132,38 @@ int dc_sappend(string* str, const string fmt, ...)
     vsnprintf(*str + current_len, len + 1, fmt, argp);
     va_end(argp);
 
-    return current_len + len;
+    dc_res_ret_ok(current_len + len);
 }
 
-string dc_strdup(const string in)
+DCResultString dc_strdup(const string in)
 {
-    if (!in) return NULL;
+    dc_res_string();
+
+    if (!in)
+    {
+        dc_dbg_log("got NULL input str");
+
+        dc_res_ret_e(1, "got NULL input str");
+    }
 
     string out;
 
-    dc_sprintf(&out, "%s", in);
+    dc_try_fail_temp(DCResultUsize, dc_sprintf(&out, "%s", in));
 
-    return out;
+    dc_res_ret_ok(out);
 }
 
-void dc_normalize_path_to_posix(string path)
+DCResultVoid dc_normalize_path_to_posix(string path)
 {
+    dc_res_void();
+
+    if (!path)
+    {
+        dc_dbg_log("got NULL path");
+
+        dc_res_ret_e(1, "got NULL path");
+    }
+
 #if defined(DC_WINDOWS)
     for (string p = path; *p; ++p)
     {
@@ -134,35 +172,42 @@ void dc_normalize_path_to_posix(string path)
             *p = '/';
         }
     }
-#else
-    (void)path;
 #endif
+
+    dc_res_ret();
 }
 
-string dc_replace_file_in_path(string path, const string new_file)
+DCResultString dc_replace_file_in_path(string path, const string file_name)
 {
-    dc_normalize_path_to_posix(path);
+    dc_res_string();
+
+    if (!path || !file_name)
+    {
+        dc_dbg_log("got NULL path or file_name");
+
+        dc_res_ret_e(1, "got NULL path or file_name");
+    }
+
+    dc_try_fail_temp(DCResultVoid, dc_normalize_path_to_posix(path));
     const string last_sep = strrchr(path, '/');
 
     size_t dir_length = (last_sep != NULL) ? (last_sep - path + 1) : 0;
 
-    size_t new_path_length = dir_length + strlen(new_file) + 1;
+    size_t new_path_length = dir_length + strlen(file_name) + 1;
     string new_path = (string)malloc(new_path_length);
 
     if (new_path == NULL)
     {
-        dc_log("Memory allocation failed");
-        return NULL;
+        dc_dbg_log("Memory allocation failed");
+
+        dc_res_ret_e(1, "Memory allocation failed");
     }
 
-    if (dir_length > 0)
-    {
-        strncpy(new_path, path, dir_length);
-    }
+    if (dir_length > 0) strncpy(new_path, path, dir_length);
 
-    strcpy(new_path + dir_length, new_file);
+    strcpy(new_path + dir_length, file_name);
 
-    return new_path;
+    dc_res_ret_ok(new_path);
 }
 
 string dc_get_home_dir_path()
@@ -289,57 +334,77 @@ void __dc_handle_signal(int sig)
             break;
     };
 
-    if (sig != SIGSEGV) dc_perform_cleanup();
+    if (sig != SIGSEGV)
+    {
+        DCResultVoid res = dc_perform_cleanup();
+        dc_action_on(dc_res_is_err2(res), exit(dc_res_err_code2(res)), "%s",
+                     dc_res_err_msg2(res));
+    }
 
     exit(sig);
 }
 
-void __dc_perform_cleanup(DCCleanups* cleanups_arr)
+DCResultVoid __dc_perform_cleanup(DCCleanups* cleanups_arr)
 {
+    dc_res_void();
+
     dc_dbg_log_if(cleanups_arr->cap == 0 || cleanups_arr->count == 0,
                   "cleanups_arr is not initialized or has no "
                   "elements registered, exiting now...");
 
-    if (cleanups_arr->cap == 0 || cleanups_arr->count == 0) return;
+    if (cleanups_arr->cap == 0 || cleanups_arr->count == 0) dc_res_ret();
 
-    dc_dbg_log("cleaning up %zu elements", cleanups_arr->count);
+    dc_dbg_log("cleaning up '%" PRIuMAX "' elements", cleanups_arr->count);
 
     // run cleanup of each item
     dc_da_for(*cleanups_arr)
     {
         DCCleanupEntry* entry = dc_da_get_as(cleanups_arr, _idx, voidptr);
 
-        dc_dbg_log("cleaning index: %zu, cleanup perform: %p", _idx,
+        dc_dbg_log("cleaning index: '%" PRIuMAX "', cleanup perform: %p", _idx,
                    (*entry).element);
 
-        dc_cleanup_do(*entry);
+        dc_try_fail(dc_cleanup_do(*entry));
     }
 
     // clean up the dc_cleanup itself
-    dc_dbg_log("freeing cleanups dynamic array, current capacity: %zu, current "
-               "count: %zu",
+    dc_dbg_log("freeing cleanups dynamic array, current capacity: '%" PRIuMAX
+               "', current "
+               "count: '%" PRIuMAX "'",
                cleanups_arr->cap, cleanups_arr->count);
-    dc_da_free(cleanups_arr);
+
+    dc_try_fail(dc_da_free(cleanups_arr));
+
     dc_dbg_log(
-        "cleanups dynamic array has been freed, current capacity: %zu, current "
-        "count: %zu",
+        "cleanups dynamic array has been freed, current capacity: '%" PRIuMAX
+        "', current "
+        "count: '%" PRIuMAX "'",
         cleanups_arr->cap, cleanups_arr->count);
+
+    dc_result_free(&dc_cleanups_res);
+
+    dc_dbg_log("cleanups result has been freed");
+
+    dc_res_ret();
 }
 
-void dc_perform_cleanup(void)
+DCResultVoid dc_perform_cleanup()
 {
     dc_dbg_log("performing global cleanups");
-    __dc_perform_cleanup(&dc_cleanups);
+
+    return __dc_perform_cleanup(&dc_cleanups);
 }
 
-void __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
-                               DCCleanupFunc cleanup_func)
+DCResultVoid __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
+                                       DCCleanupFn cleanup_fn)
 {
-    if (!element || !cleanup_func)
-    {
-        dc_log("got null element or cleanup_func");
+    dc_res_void();
 
-        exit(1);
+    if (!element || !cleanup_fn)
+    {
+        dc_dbg_log("got null element or cleanup_fn");
+
+        dc_res_ret_e(1, "got null element or cleanup_fn");
     }
 
     __dc_cleanups_arr_init(*cleanup_arr, 10);
@@ -347,31 +412,49 @@ void __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
     DCCleanupEntry* item = malloc(sizeof(DCCleanupEntry));
     if (!item)
     {
-        dc_log("Memory allocation failed");
-        exit(1);
+        dc_dbg_log("Memory allocation failed");
+
+        dc_res_ret_e(2, "Memory allocation failed");
     }
 
     dc_dbg_log("cleanup push: %p", element);
 
     item->element = element;
-    item->cleanup_func = cleanup_func;
+    item->cleanup_fn = cleanup_fn;
 
-    dc_da_push(cleanup_arr, dc_dva(voidptr, item));
+    return dc_da_push(cleanup_arr, dc_dva(voidptr, item));
+}
+
+DCResultVoid dc_free(voidptr variable)
+{
+    dc_res_void();
+
+    if (!variable) dc_res_ret_e(1, "try to free NULL");
+
+    free(variable);
+
+    dc_res_ret();
 }
 
 // ***************************************************************************************
 // * RESULT
 // ***************************************************************************************
 
-void dc_result_free(DCResult* result, DCDynValFreeFunc custom_free)
+DCResultVoid dc_result_free(voidptr res_ptr)
 {
-    if (result->status == DC_RESULT_OK)
+    dc_res_void();
+
+    if (!res_ptr) dc_res_ret_e(1, "got NULL result");
+
+    DCResultVoid* result = (DCResultVoid*)res_ptr;
+
+
+    if (dc_res_is_err2(*result) && result->data.e.allocated)
     {
-        dc_dv_free(&result->data.value, custom_free);
-        return;
+        free(result->data.e.message);
     }
 
-    if (result->data.error.allocated) free(result->data.error.message);
+    result->data.e.message = "";
 
-    result->data.error.message = "";
+    dc_res_ret();
 }

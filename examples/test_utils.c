@@ -23,36 +23,56 @@ int main(int argc, string argv[])
     (void)argc;
 
     string s;
-    dc_sprintf(&s, "hello, %s.", "-Reader-");
+    DCResultUsize res = dc_sprintf(&s, "hello, %s.", "-Reader-");
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
+                 dc_res_err_msg2(res));
+
     printf("%s\n", s);
     free(s);
 
-    dc_sprintf(&s, "%c", '\0');
+    res = dc_sprintf(&s, "%c", '\0');
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
+                 dc_res_err_msg2(res));
+
     printf("blank string: [%s]\n", s);
     free(s);
 
     int i = 0;
-    dc_sprintf(&s, "%i", i++);
+    res = dc_sprintf(&s, "%i", i++);
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
+                 dc_res_err_msg2(res));
+
     printf("Zero: %s\n", s);
     free(s);
 
     string my_str = NULL;
 
-    dc_sappend(&my_str, "Hello");
-    dc_sappend(&my_str, ", World!");
+    res = dc_sappend(&my_str, "Hello");
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
+                 dc_res_err_msg2(res));
+
+    res = dc_sappend(&my_str, ", World!");
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
+                 dc_res_err_msg2(res));
+
     printf("%s\n", my_str);
     free(my_str);
 
     printf("exec path: %s\n", argv[0]);
 
-    s = dc_replace_file_in_path(argv[0], "my_config.ini");
+    DCResultString s_res = dc_replace_file_in_path(argv[0], "my_config.ini");
+    dc_action_on(dc_res_is_err2(s_res), return dc_res_err_code2(s_res), "%s",
+                 dc_res_err_msg2(s_res));
+
+    s = dc_res_val2(s_res);
+
     printf("config path close to exec: " DC_FG_LGREEN "%s" DC_COLOR_RESET "\n",
            s);
     free(s);
 
     puts("This " dc_colorize_fg(LRED, "color") " is red!");
 
-    const char* homeDir = dc_get_home_dir_path();
+    const string homeDir = dc_get_home_dir_path();
     if (homeDir != NULL)
     {
         printf("Home directory: %s\n", homeDir);
@@ -62,7 +82,7 @@ int main(int argc, string argv[])
         printf("Failed to get home directory.\n");
     }
 
-    const char* username = dc_get_username();
+    const string username = dc_get_username();
     if (username != NULL)
     {
         printf("Username: %s\n", username);

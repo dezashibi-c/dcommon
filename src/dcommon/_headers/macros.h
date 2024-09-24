@@ -69,6 +69,8 @@
 #define DC_STOPPER_size -1
 #define DC_STOPPER_usize SIZE_MAX
 
+#define dc_stopper(TYPE) (DC_STOPPER_##TYPE)
+
 // Terminator checks for each type
 #define DC_IS_ARR_TERMINATOR_i8(EL) (EL == DC_STOPPER_i8)
 #define DC_IS_ARR_TERMINATOR_i16(EL) (EL == DC_STOPPER_i16)
@@ -92,6 +94,8 @@
 
 #define DC_IS_ARR_TERMINATOR_size(EL) (EL == DC_STOPPER_size)
 #define DC_IS_ARR_TERMINATOR_usize(EL) (EL == DC_STOPPER_usize)
+
+#define dc_is_arr_terminator(TYPE, VALUE) (DC_IS_ARR_TERMINATOR_##TYPE(VALUE))
 
 // ***************************************************************************************
 // * UTILITY MACROS
@@ -220,6 +224,167 @@
 
 
 // ***************************************************************************************
+// * RESULT MACROS
+// ***************************************************************************************
+
+#define dc_res()                                                               \
+    DCResult __dc_res;                                                         \
+    __dc_res.status = DC_RESULT_OK
+
+#define dc_res2(DC_RESULT_TYPE)                                                \
+    DC_RESULT_TYPE __dc_res;                                                   \
+    __dc_res.status = DC_RESULT_OK
+
+#define dc_res_bool() dc_res2(DCResultBool)
+#define dc_res_void() dc_res2(DCResultVoid)
+#define dc_res_sv() dc_res2(DCResultSv)
+#define dc_res_da() dc_res2(DCResultDa)
+#define dc_res_ht() dc_res2(DCResultHt)
+#define dc_res_dv() dc_res2(DCResultDv)
+
+#define dc_res_i8() dc_res2(DCResultI8)
+#define dc_res_i16() dc_res2(DCResultI16)
+#define dc_res_i32() dc_res2(DCResultI32)
+#define dc_res_i64() dc_res2(DCResultI64)
+#define dc_res_u8() dc_res2(DCResultU8)
+#define dc_res_u16() dc_res2(DCResultU16)
+#define dc_res_u32() dc_res2(DCResultU32)
+#define dc_res_u64() dc_res2(DCResultU64)
+#define dc_res_f32() dc_res2(DCResultF32)
+#define dc_res_f64() dc_res2(DCResultF64)
+#define dc_res_uptr() dc_res2(DCResultUptr)
+#define dc_res_size() dc_res2(DCResultSize)
+#define dc_res_usize() dc_res2(DCResultUsize)
+#define dc_res_string() dc_res2(DCResultString)
+#define dc_res_voidptr() dc_res2(DCResultVoidptr)
+
+#define dc_res_e(NUM, MSG)                                                     \
+    do                                                                         \
+    {                                                                          \
+        __dc_res.status = DC_RESULT_ERR;                                       \
+        __dc_res.data.e = (DCError){NUM, MSG, 0};                              \
+    } while (0)
+
+#define dc_res_ea(NUM, ...)                                                    \
+    do                                                                         \
+    {                                                                          \
+        string __err;                                                          \
+        dc_sprintf(&__err, __VA_ARGS__);                                       \
+        __dc_res.status = DC_RESULT_ERR;                                       \
+        __dc_res.data.e = (DCError){NUM, __err, 1};                            \
+    } while (0)
+
+#define dc_res_ok(VALUE)                                                       \
+    do                                                                         \
+    {                                                                          \
+        __dc_res.status = DC_RESULT_OK;                                        \
+        __dc_res.data.v = VALUE;                                               \
+    } while (0)
+
+#define dc_res_ok_dv(TYPE, VALUE) dc_res_ok(dc_dv(TYPE, VALUE))
+
+#define dc_res_ok_dva(TYPE, VALUE) dc_res_ok(dc_dva(TYPE, VALUE))
+
+#define dc_res_ret() return __dc_res
+
+#define dc_res_ret_e(NUM, MSG)                                                 \
+    do                                                                         \
+    {                                                                          \
+        dc_res_e(NUM, MSG);                                                    \
+        dc_res_ret();                                                          \
+    } while (0)
+
+#define dc_res_ret_ea(NUM, ...)                                                \
+    do                                                                         \
+    {                                                                          \
+        dc_res_ea(NUM, __VA_ARGS__);                                           \
+        dc_res_ret();                                                          \
+    } while (0)
+
+#define dc_res_ret_ok(VALUE)                                                   \
+    do                                                                         \
+    {                                                                          \
+        dc_res_ok(VALUE);                                                      \
+        dc_res_ret();                                                          \
+    } while (0)
+
+#define dc_res_ret_ok_dv(TYPE, VALUE)                                          \
+    do                                                                         \
+    {                                                                          \
+        dc_res_ok_dv(TYPE, VALUE);                                             \
+        dc_res_ret();                                                          \
+    } while (0)
+
+#define dc_res_ret_ok_dva(TYPE, VALUE)                                         \
+    do                                                                         \
+    {                                                                          \
+        dc_res_ok_dva(TYPE, VALUE);                                            \
+        dc_res_ret();                                                          \
+    } while (0)
+
+#define dc_ret_if_err()                                                        \
+    if (__dc_res.status == DC_RESULT_ERR) return __dc_res
+
+#define dc_try(CALL) __dc_res = CALL
+
+#define dc_try_fail(CALL)                                                      \
+    do                                                                         \
+    {                                                                          \
+        __dc_res = CALL;                                                       \
+        dc_ret_if_err();                                                       \
+    } while (0)
+
+#define dc_fail_if_res(RES)                                                    \
+    do                                                                         \
+    {                                                                          \
+        if ((RES).status == DC_RESULT_ERR)                                     \
+        {                                                                      \
+            dc_res_ea((RES).data.e.code, "%s", (RES).data.e.message);          \
+            dc_result_free(&RES);                                              \
+            dc_res_ret();                                                      \
+        }                                                                      \
+    } while (0)
+
+#define dc_try_fail_temp(RES_TYPE, CALL)                                       \
+    do                                                                         \
+    {                                                                          \
+        RES_TYPE __temp_res = CALL;                                            \
+        dc_fail_if_res(__temp_res);                                            \
+    } while (0)
+
+#define dc_try_def(CALL)                                                       \
+    dc_res();                                                                  \
+    dc_try_fail(CALL)
+
+#define dc_try_def2(DC_RESULT_TYPE, CALL)                                      \
+    dc_res2(DC_RESULT_TYPE);                                                   \
+    dc_try_fail(CALL)
+
+#define dc_res_as(TYPE) dc_dv_as(__dc_res.data.v, TYPE)
+
+#define dc_res_is_ok() (__dc_res.status == DC_RESULT_OK)
+#define dc_res_is_ok2(RES) ((RES).status == DC_RESULT_OK)
+
+#define dc_res_is_err() (__dc_res.status == DC_RESULT_ERR)
+#define dc_res_is_err2(RES) ((RES).status == DC_RESULT_ERR)
+
+#define dc_res_val() (__dc_res.data.v)
+#define dc_res_val2(RES) ((RES).data.v)
+
+#define dc_res_status() (__dc_res.status)
+#define dc_res_status2(RES) ((RES).status)
+
+#define dc_res_err() (__dc_res.data.e)
+#define dc_res_err2(RES) ((RES).data.e)
+
+#define dc_res_err_code() (__dc_res.data.e.code)
+#define dc_res_err_code2(RES) ((RES).data.e.code)
+
+#define dc_res_err_msg() (__dc_res.data.e.message)
+#define dc_res_err_msg2(RES) ((RES).data.e.message)
+
+
+// ***************************************************************************************
 // * LOG MACROS
 // ***************************************************************************************
 
@@ -255,18 +420,14 @@
 // * NON-POINTER ARRAY MACROS
 // ***************************************************************************************
 
-#define dc_arr_terminator(TYPE) (DC_STOPPER_##TYPE)
-
-#define dc_is_terminator(TYPE, VALUE) (DC_IS_ARR_TERMINATOR_##TYPE(VALUE))
 
 #define dc_arr_lit(TYPE, ...)                                                  \
     (TYPE[])                                                                   \
     {                                                                          \
-        __VA_ARGS__, dc_arr_terminator(TYPE)                                   \
+        __VA_ARGS__, dc_stopper(TYPE)                                          \
     }
 
-#define dc_array(NAME, TYPE, ...)                                              \
-    TYPE NAME[] = {__VA_ARGS__, dc_arr_terminator(TYPE)}
+#define dc_array(NAME, TYPE, ...) TYPE NAME[] = {__VA_ARGS__, dc_stopper(TYPE)}
 
 #define dc_count(ARR) (size)(sizeof(ARR) / sizeof(*(ARR)))
 
@@ -275,13 +436,13 @@
 #define dc_last(ARR) ARR[(dc_len(ARR) - 1)]
 
 #define dc_foreach(ARR, TYPE)                                                  \
-    for (TYPE* _it = ARR; !dc_is_terminator(TYPE, *_it); ++_it)
+    for (TYPE* _it = ARR; !dc_is_arr_terminator(TYPE, *_it); ++_it)
 
 #define dc_oneach(ARR, TYPE, FN) dc_foreach(ARR, TYPE) FN(_it)
 
 #define dc_foreach_lit(TYPE, ...)                                              \
     for (TYPE* _it = dc_arr_lit(TYPE, __VA_ARGS__);                            \
-         !dc_is_terminator(TYPE, *_it); ++_it)
+         !dc_is_arr_terminator(TYPE, *_it); ++_it)
 
 #define dc_oneach_lit(TYPE, FN, ...) dc_foreach_lit(TYPE, __VA_ARGS__) FN(_it)
 
@@ -345,7 +506,7 @@
 #define DC_DYNARR_CAP_MULTIPLIER 2
 #endif
 
-#define dc_dv_free_func_decl(NAME) void NAME(DCDynValue* _value)
+#define dc_dv_free_fn_decl(NAME) void NAME(DCDynValue* _value)
 
 #define dc_dvt(TYPE) DC_DYN_VAL_TYPE_##TYPE
 
@@ -384,7 +545,7 @@
 #define dc_dv_is_allocated(NAME) ((NAME).allocated)
 
 #define dc_da_get_as(DYNARR, INDEX, TYPE)                                      \
-    dc_dv_as(*dc_da_get(DYNARR, INDEX), TYPE)
+    dc_dv_as(*dc_res_val2(dc_da_get(DYNARR, INDEX)), TYPE)
 
 #define dc_da_is(DYNARR, INDEX, TYPE) dc_dv_is((DYNARR).elements[INDEX], TYPE)
 
@@ -402,12 +563,65 @@
                                  FREE_FUNC, __initial_values);                 \
     } while (0)
 
+#define dc_try_da_init_with_values(RES, DYNARRPTR, FREE_FUNC, ...)             \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        RES = __dc_da_init_with_values(DYNARRPTR, dc_count(__initial_values),  \
+                                       FREE_FUNC, __initial_values);           \
+    } while (0)
+
+#define dc_try_fail_da_init_with_values(DYNARRPTR, FREE_FUNC, ...)             \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        dc_try_fail(__dc_da_init_with_values(DYNARRPTR,                        \
+                                             dc_count(__initial_values),       \
+                                             FREE_FUNC, __initial_values));    \
+    } while (0)
+
+#define dc_try_fail_temp_da_init_with_values(DYNARRPTR, FREE_FUNC, ...)        \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        dc_try_fail_temp(                                                      \
+            DCResultVoid,                                                      \
+            __dc_da_init_with_values(DYNARRPTR, dc_count(__initial_values),    \
+                                     FREE_FUNC, __initial_values));            \
+    } while (0)
+
 #define dc_da_append_values(DYNARRPTR, ...)                                    \
     do                                                                         \
     {                                                                          \
         dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
         __dc_da_append_values(DYNARRPTR, dc_count(__initial_values),           \
                               __initial_values);                               \
+    } while (0)
+
+#define dc_try_da_append_values(RES, DYNARRPTR, ...)                           \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        RES = __dc_da_append_values(DYNARRPTR, dc_count(__initial_values),     \
+                                    __initial_values);                         \
+    } while (0)
+
+#define dc_try_fail_da_append_values(DYNARRPTR, ...)                           \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        dc_try_fail(__dc_da_append_values(                                     \
+            DYNARRPTR, dc_count(__initial_values), __initial_values));         \
+    } while (0)
+
+#define dc_try_fail_temp_da_append_values(DYNARRPTR, ...)                      \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        dc_try_fail_temp(DCResultVoid,                                         \
+                         __dc_da_append_values(DYNARRPTR,                      \
+                                               dc_count(__initial_values),     \
+                                               __initial_values));             \
     } while (0)
 
 #define dc_da_insert_values(DYNARRPTR, INDEX, ...)                             \
@@ -418,49 +632,113 @@
                               __initial_values);                               \
     } while (0)
 
-#define __dc_da_converters_decl(ORIGIN_TYPE)                                   \
-    usize dc_##ORIGIN_TYPE##_da_to_flat_arr(                                   \
-        DCDynArr* arr, ORIGIN_TYPE** out_arr, bool must_fail)
+#define dc_try_da_insert_values(RES, DYNARRPTR, INDEX, ...)                    \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        RES = __dc_da_insert_values(                                           \
+            DYNARRPTR, INDEX, dc_count(__initial_values), __initial_values);   \
+    } while (0)
 
-#define __dc_da_converters_impl(ORIGIN_TYPE)                                   \
+#define dc_try_fail_da_insert_values(DYNARRPTR, INDEX, ...)                    \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        dc_try_fail(__dc_da_insert_values(                                     \
+            DYNARRPTR, INDEX, dc_count(__initial_values), __initial_values));  \
+    } while (0)
+
+#define dc_try_fail_temp_da_insert_values(DYNARRPTR, INDEX, ...)               \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCDynValue, __VA_ARGS__);                  \
+        dc_try_fail_temp(DCResultVoid,                                         \
+                         __dc_da_insert_values(DYNARRPTR, INDEX,               \
+                                               dc_count(__initial_values),     \
+                                               __initial_values));             \
+    } while (0)
+
+#define __dc_da_converters_decl(TYPE)                                          \
+    DCResultUsize dc_##TYPE##_da_to_flat_arr(DCDynArr* arr, TYPE** out_arr,    \
+                                             bool must_fail)
+
+#define __dc_da_converters_impl(TYPE)                                          \
+    dc_res_usize();                                                            \
     if (!arr || arr->count == 0 || !out_arr)                                   \
     {                                                                          \
-        return 0;                                                              \
+        dc_res_ret_e(1,                                                        \
+                     "arr is empty or not provided/initialized or out_var is " \
+                     "not provided");                                          \
     }                                                                          \
-    *out_arr = (ORIGIN_TYPE*)malloc((arr->count + 1) * sizeof(ORIGIN_TYPE));   \
+    *out_arr = (TYPE*)malloc((arr->count + 1) * sizeof(TYPE));                 \
     if (!(*out_arr))                                                           \
     {                                                                          \
-        return 0;                                                              \
+        dc_res_ret_e(2, "memory allocation failed");                           \
     }                                                                          \
     usize dest_index = 0;                                                      \
     for (usize i = 0; i < arr->count; ++i)                                     \
     {                                                                          \
         DCDynValue* elem = &arr->elements[i];                                  \
-        if (elem->type != dc_dvt(ORIGIN_TYPE))                                 \
+        if (elem->type != dc_dvt(TYPE))                                        \
         {                                                                      \
             if (must_fail)                                                     \
             {                                                                  \
                 free(*out_arr);                                                \
                 *out_arr = NULL;                                               \
-                return 0;                                                      \
+                dc_res_ret_e(-1,                                               \
+                             "failed as it got type other than '" #TYPE "'");  \
             }                                                                  \
             continue;                                                          \
         }                                                                      \
-        (*out_arr)[dest_index] = dc_dv_as((*elem), ORIGIN_TYPE);               \
+        (*out_arr)[dest_index] = dc_dv_as((*elem), TYPE);                      \
         dest_index++;                                                          \
     }                                                                          \
-    (*out_arr)[dest_index] = dc_arr_terminator(ORIGIN_TYPE);                   \
-    return dest_index
+    (*out_arr)[dest_index] = dc_stopper(TYPE);                                 \
+    dc_res_ret_ok(dest_index)
+
+// todo:: inspect why dc_stopper returns stupid value
 
 // ***************************************************************************************
 // * HASH TABLE MACROS
 // ***************************************************************************************
 
-#define dc_ht_hash_func_decl(NAME) u32 NAME(voidptr _key)
-#define dc_ht_key_comp_func_decl(NAME) bool NAME(voidptr _key1, voidptr _key2)
+#define dc_ht_hash_fn_decl(NAME) DCResultU32 NAME(voidptr _key)
+#define dc_ht_key_comp_fn_decl(NAME)                                           \
+    DCResultBool NAME(voidptr _key1, voidptr _key2)
 
 #define dc_ht_get_hash(VAR_NAME, HT, KEY)                                      \
-    u32 VAR_NAME = (HT).hash_func((KEY)) % (HT).cap
+    u32 VAR_NAME;                                                              \
+    do                                                                         \
+    {                                                                          \
+        DCResultU32 __hash_res = (HT).hash_fn((KEY));                          \
+        VAR_NAME = (__hash_res.data.v) % (HT).cap;                             \
+    } while (0)
+
+#define dc_try_ht_get_hash(RES, VAR_NAME, HT, KEY)                             \
+    u32 VAR_NAME;                                                              \
+    do                                                                         \
+    {                                                                          \
+        RES = (HT).hash_fn((KEY));                                             \
+        VAR_NAME = ((RES).data.v) % (HT).cap;                                  \
+    } while (0)
+
+#define dc_try_fail_ht_get_hash(VAR_NAME, HT, KEY)                             \
+    u32 VAR_NAME;                                                              \
+    do                                                                         \
+    {                                                                          \
+        __dc_res = (HT).hash_fn((KEY));                                        \
+        dc_fail_if_res(__dc_res);                                              \
+        VAR_NAME = (__dc_res.data.v) % (HT).cap;                               \
+    } while (0)
+
+#define dc_try_fail_temp_ht_get_hash(VAR_NAME, HT, KEY)                        \
+    u32 VAR_NAME;                                                              \
+    do                                                                         \
+    {                                                                          \
+        DCResultU32 __hash_res = (HT).hash_fn((KEY));                          \
+        dc_fail_if_res(__hash_res);                                            \
+        VAR_NAME = (__hash_res.data.v) % (HT).cap;                             \
+    } while (0)
 
 #define dc_ht_get_container_row(VAR_NAME, HT, HASH)                            \
     DCDynArr* VAR_NAME = &((HT).container[HASH])
@@ -477,6 +755,30 @@
         dc_sarray(__initial_values, DCHashEntry, __VA_ARGS__);                 \
         __dc_ht_set_multiple(HT, dc_count(__initial_values),                   \
                              __initial_values);                                \
+    } while (0)
+
+#define dc_try_ht_set_multiple(RES, HT, ...)                                   \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCHashEntry, __VA_ARGS__);                 \
+        RES = __dc_ht_set_multiple(HT, dc_count(__initial_values),             \
+                                   __initial_values);                          \
+    } while (0)
+
+#define dc_try_fail_ht_set_multiple(HT, ...)                                   \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCHashEntry, __VA_ARGS__);                 \
+        dc_try_fail(__dc_ht_set_multiple(HT, dc_count(__initial_values),       \
+                                         __initial_values));                   \
+    } while (0)
+
+#define dc_try_fail_temp_ht_set_multiple(HT, ...)                              \
+    do                                                                         \
+    {                                                                          \
+        dc_sarray(__initial_values, DCHashEntry, __VA_ARGS__);                 \
+        dc_try_fail_temp(__dc_ht_set_multiple(HT, dc_count(__initial_values),  \
+                                              __initial_values));              \
     } while (0)
 
 // ***************************************************************************************
@@ -544,9 +846,9 @@
 // * CLEANUP MACROS
 // ***************************************************************************************
 
-#define dc_cleanups_func_decl(NAME) void NAME(voidptr _value)
+#define dc_cleanups_fn_decl(NAME) void NAME(voidptr _value)
 
-#define dc_cleanup_do(ENTRY) (ENTRY).cleanup_func(((ENTRY).element))
+#define dc_cleanup_do(ENTRY) (ENTRY).cleanup_fn(((ENTRY).element))
 
 #define __dc_cleanups_arr_init(CLEANUPS, CAPACITY)                             \
     if ((CLEANUPS).cap == 0) dc_da_init_custom(&(CLEANUPS), CAPACITY, 3, NULL)
@@ -565,13 +867,18 @@
 
 #define dc_cleanups_push(ELEMENT, CLEAN_FUNC)                                  \
     dc_dbg_log("global cleanup push: %p", (voidptr)ELEMENT);                   \
-    __dc_cleanups_custom_push(&dc_cleanups, ELEMENT, CLEAN_FUNC)
+    dc_cleanups_res =                                                          \
+        __dc_cleanups_custom_push(&dc_cleanups, ELEMENT, CLEAN_FUNC)
 
-#define dc_cleanups_push_ht(ELEMENT) dc_cleanups_push(ELEMENT, dc_ht_free__)
+#define dc_cleanups_push_ht(ELEMENT) dc_cleanups_push(ELEMENT, __dc_ht_free)
 
-#define dc_cleanups_push_da(ELEMENT) dc_cleanups_push(ELEMENT, dc_da_free__)
+#define dc_cleanups_push_da(ELEMENT) dc_cleanups_push(ELEMENT, __dc_da_free)
 
-#define dc_cleanups_push_dv(ELEMENT) dc_cleanups_push(ELEMENT, dc_dv_free__)
+#define dc_cleanups_push_dv(ELEMENT) dc_cleanups_push(ELEMENT, __dc_dv_free)
+
+#define dc_cleanups_push_res(ELEMENT) dc_cleanups_push(ELEMENT, dc_result_free)
+
+#define dc_cleanups_push_free(ELEMENT) dc_cleanups_push(ELEMENT, dc_free)
 
 #define dc_def_exit_label()                                                    \
     __dc_exit_label:                                                           \
@@ -581,71 +888,5 @@
 #define dc_return(RETVAL)                                                      \
     __dc_ret_val = RETVAL;                                                     \
     goto __dc_exit_label
-
-// ***************************************************************************************
-// * RESULT MACROS
-// ***************************************************************************************
-
-#define dc_res_def() DCResult result;
-
-#define dc_res_e_ex(RES, NUM, MSG)                                             \
-    do                                                                         \
-    {                                                                          \
-        (RES).status = DC_RESULT_ERR;                                          \
-        (RES).data.error = (DCError){NUM, MSG, 0};                             \
-    } while (0)
-
-#define dc_res_e(NUM, MSG) dc_res_e_ex(result, NUM, MSG)
-
-#define dc_res_ea_ex(RES, NUM, ...)                                            \
-    do                                                                         \
-    {                                                                          \
-        string __err;                                                          \
-        dc_sprintf(&__err, __VA_ARGS__);                                       \
-        (RES).status = DC_RESULT_ERR;                                          \
-        (RES).data.error = (DCError){NUM, __err, 1};                           \
-    } while (0)
-
-#define dc_res_ea(NUM, ...) dc_res_ea_ex(result, NUM, __VA_ARGS__)
-
-#define dc_res_ok_ex(RES, TYPE, VALUE)                                         \
-    do                                                                         \
-    {                                                                          \
-        (RES).status = DC_RESULT_OK;                                           \
-        result.data.value = dc_dv(TYPE, VALUE);                                \
-    } while (0)
-
-#define dc_res_ok(TYPE, VALUE) dc_res_ok_ex(result, TYPE, VALUE)
-
-#define dc_res_oka_ex(RES, TYPE, VALUE)                                        \
-    do                                                                         \
-    {                                                                          \
-        (RES).status = DC_RESULT_OK;                                           \
-        result.data.value = dc_dva(TYPE, VALUE);                               \
-    } while (0)
-
-#define dc_res_oka(RES, TYPE, VALUE) dc_res_oka_ex(result, TYPE, VALUE)
-
-#define dc_ret_if_err_ex(RES)                                                  \
-    if ((RES).status == DC_RESULT_ERR) return RES
-
-#define dc_ret_if_err() dc_ret_if_err_ex(result)
-
-#define dc_try_ex(RES, CALL)                                                   \
-    DCResult RES = CALL;                                                       \
-    dc_ret_if_err_ex(RES)
-
-#define dc_try(CALL) dc_try_ex(result, CALL)
-
-#define dc_try_call_ex(RES, CALL)                                              \
-    do                                                                         \
-    {                                                                          \
-        dc_try_ex(RES, CALL);                                                  \
-    } while (0)
-
-#define dc_try_call(CALL) dc_try_call_ex(result, CALL)
-
-#define dc_res_as_ex(RES, TYPE) dc_dv_as((RES).data.value, TYPE)
-#define dc_res_as(TYPE) dc_dv_as(result.data.value, TYPE)
 
 #endif // DC_MACROS_H

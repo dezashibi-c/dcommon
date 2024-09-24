@@ -41,10 +41,11 @@ void print_my_struct(MyStruct* m)
 int main(void)
 {
     const string i8Str = "127";
-    i8 int8Value;
-    if (dc_str_to_i8(i8Str, &int8Value))
+    DCResultI8 i8_cnv_res = dc_str_to_i8(i8Str);
+
+    if (dc_res_is_ok2(i8_cnv_res))
     {
-        printf("Converted i8: %" PRId8 "\n", int8Value);
+        printf("Converted i8: %" PRId8 "\n", dc_res_val2(i8_cnv_res));
     }
     else
     {
@@ -53,10 +54,11 @@ int main(void)
 
     // Repeat for other types as needed...
     const string u32Str = "4294967295";
-    u32 uint32Value;
-    if (dc_str_to_u32(u32Str, &uint32Value))
+    DCResultU32 u32_cnv_res = dc_str_to_u32(u32Str);
+
+    if (dc_res_is_ok2(u32_cnv_res))
     {
-        printf("Converted u32: %" PRIu32 "\n", uint32Value);
+        printf("Converted u32: %" PRIu32 "\n", dc_res_val2(u32_cnv_res));
     }
     else
     {
@@ -64,10 +66,11 @@ int main(void)
     }
 
     const string f64Str = "3.14";
-    f64 float64Value;
-    if (dc_str_to_f64(f64Str, &float64Value))
+    DCResultF64 f64_cnv_res = dc_str_to_f64(f64Str);
+
+    if (dc_res_is_ok2(f64_cnv_res))
     {
-        printf("Converted f64: %f\n", float64Value);
+        printf("Converted f64: %f\n", dc_res_val2(f64_cnv_res));
     }
     else
     {
@@ -81,7 +84,8 @@ int main(void)
     dc_array(f32_list, f32, 1.1f, 2.2f);
     dc_array(char_list, char, 'a', 'b', 'c');
 
-    printf("u8_list's count=%zu, u8_list's length=%zu, last element=%d\n",
+    printf("u8_list's count='%" PRIuMAX "', u8_list's length='%" PRIuMAX
+           "', last element=%d\n",
            dc_count(u8_list), dc_len(u8_list), dc_last(u8_list));
 
     dc_action_on(dc_len(u8_list) != 3, return 1, "length calculation error");

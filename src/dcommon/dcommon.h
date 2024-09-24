@@ -29,43 +29,54 @@
 // * FUNCTION DECLARATIONS
 // ***************************************************************************************
 
-bool dc_str_to_i8(const char* str, i8* out);
-bool dc_str_to_i16(const char* str, i16* out);
-bool dc_str_to_i32(const char* str, i32* out);
-bool dc_str_to_i64(const char* str, i64* out);
-bool dc_str_to_u8(const char* str, u8* out);
-bool dc_str_to_u16(const char* str, u16* out);
-bool dc_str_to_u32(const char* str, u32* out);
-bool dc_str_to_u64(const char* str, u64* out);
-bool dc_str_to_f32(const char* str, f32* out);
-bool dc_str_to_f64(const char* str, f64* out);
+DCResultI8 dc_str_to_i8(const string str);
+DCResultI16 dc_str_to_i16(const string str);
+DCResultI32 dc_str_to_i32(const string str);
+DCResultI64 dc_str_to_i64(const string str);
 
-bool dc_dv_as_bool(DCDynValue* dv);
-void dc_da_init(DCDynArr* darr, DCDynValFreeFunc element_free_func);
-DCDynArr* dc_da_create(DCDynValFreeFunc element_free_func);
-void __dc_da_init_with_values(DCDynArr* darr, usize count,
-                              DCDynValFreeFunc element_free_func,
-                              DCDynValue values[]);
-void dc_da_grow(DCDynArr* darr);
-void dc_da_grow_by(DCDynArr* darr, usize amount);
-void dc_da_grow_to(DCDynArr* darr, usize amount);
-void dc_da_trunc(DCDynArr* darr);
-void dc_da_pop(DCDynArr* darr, usize count, DCDynValue** out_popped,
-               bool truncate);
-void dc_da_push(DCDynArr* darr, DCDynValue value);
-void __dc_da_append_values(DCDynArr* darr, usize count, DCDynValue values[]);
-void dc_da_append(DCDynArr* darr, DCDynArr* from);
-DCDynValue* dc_da_get(DCDynArr* darr, usize index);
-DCDynValue* dc_da_find(DCDynArr* darr, DCDynValue* el);
-void dc_dv_free(DCDynValue* element, void (*custom_free)(DCDynValue*));
-void dc_dv_free__(voidptr item);
-void dc_da_free(DCDynArr* darr);
-void dc_da_free__(voidptr darr);
-bool dc_da_delete(DCDynArr* darr, usize index);
-void dc_da_insert(DCDynArr* darr, usize index, DCDynValue value);
-void __dc_da_insert_values(DCDynArr* darr, usize start_index, usize count,
-                           DCDynValue values[]);
-void dc_da_insert_from(DCDynArr* darr, usize start_index, DCDynArr* from);
+DCResultU8 dc_str_to_u8(const string str);
+DCResultU16 dc_str_to_u16(const string str);
+DCResultU32 dc_str_to_u32(const string str);
+DCResultU64 dc_str_to_u64(const string str);
+
+DCResultF32 dc_str_to_f32(const string str);
+DCResultF64 dc_str_to_f64(const string str);
+
+DCResultBool dc_dv_as_bool(DCDynValue* dv);
+
+DCResultVoid dc_da_init(DCDynArr* darr, DCDynValFreeFn element_free_fn);
+DCResultVoid dc_da_init_custom(DCDynArr* darr, usize capacity,
+                               usize capacity_grow_multiplier,
+                               DCDynValFreeFn element_free_fn);
+DCResultDa dc_da_new(DCDynValFreeFn element_free_fn);
+DCResultDa dc_da_new_custom(usize capacity, usize capacity_grow_multiplier,
+                            DCDynValFreeFn element_free_fn);
+DCResultVoid __dc_da_init_with_values(DCDynArr* darr, usize count,
+                                      DCDynValFreeFn element_free_fn,
+                                      DCDynValue values[]);
+DCResultVoid dc_da_grow(DCDynArr* darr);
+DCResultVoid dc_da_grow_by(DCDynArr* darr, usize amount);
+DCResultVoid dc_da_grow_to(DCDynArr* darr, usize amount);
+DCResultVoid dc_da_trunc(DCDynArr* darr);
+DCResultVoid dc_da_pop(DCDynArr* darr, usize count, DCDynValue** out_popped,
+                       bool truncate);
+DCResultVoid dc_da_push(DCDynArr* darr, DCDynValue value);
+DCResultVoid __dc_da_append_values(DCDynArr* darr, usize count,
+                                   DCDynValue values[]);
+DCResultVoid dc_da_append(DCDynArr* darr, DCDynArr* from);
+DCResultDv dc_da_get(DCDynArr* darr, usize index);
+DCResultBool dc_dv_eq(DCDynValue* dv1, DCDynValue* dv2);
+DCResultDv dc_da_find(DCDynArr* darr, DCDynValue* el);
+DCResultVoid dc_dv_free(DCDynValue* element, DCDynValFreeFn custom_free);
+DCResultVoid __dc_dv_free(voidptr dv);
+DCResultVoid dc_da_free(DCDynArr* darr);
+DCResultVoid __dc_da_free(voidptr darr);
+DCResultBool dc_da_delete(DCDynArr* darr, usize index);
+DCResultVoid dc_da_insert(DCDynArr* darr, usize index, DCDynValue value);
+DCResultVoid __dc_da_insert_values(DCDynArr* darr, usize start_index,
+                                   usize count, DCDynValue values[]);
+DCResultVoid dc_da_insert_from(DCDynArr* darr, usize start_index,
+                               DCDynArr* from);
 
 __dc_da_converters_decl(i8);
 __dc_da_converters_decl(i16);
@@ -87,43 +98,46 @@ __dc_da_converters_decl(usize);
 __dc_da_converters_decl(string);
 __dc_da_converters_decl(voidptr);
 
-void dc_ht_init(DCHashTable* ht, usize capacity, DCHashFunc hash_func,
-                DCKeyCompFunc key_cmp_func, DCDynValFreeFunc element_free_func);
-DCHashTable* dc_ht_create(usize capacity, DCHashFunc hash_func,
-                          DCKeyCompFunc key_cmp_func,
-                          DCDynValFreeFunc element_free_func);
-void dc_ht_free(DCHashTable* ht);
-void dc_ht_free__(voidptr ht);
-usize dc_ht_find_by_key(DCHashTable* ht, voidptr key, DCDynValue** out_result);
-void dc_ht_set(DCHashTable* ht, voidptr key, DCDynValue value);
-void __dc_ht_set_multiple(DCHashTable* ht, usize count, DCHashEntry entries[]);
-void dc_ht_merge(DCHashTable* ht, DCHashTable* from);
-bool dc_ht_delete(DCHashTable* ht, voidptr key);
-usize dc_ht_keys(DCHashTable* ht, voidptr** out_arr);
+DCResultVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn,
+                        DCKeyCompFn key_cmp_fn, DCDynValFreeFn element_free_fn);
+DCResultHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn,
+                     DCDynValFreeFn element_free_fn);
+DCResultVoid dc_ht_free(DCHashTable* ht);
+DCResultVoid __dc_ht_free(voidptr ht);
+DCResultUsize dc_ht_find_by_key(DCHashTable* ht, voidptr key,
+                                DCDynValue** out_result);
+DCResultVoid dc_ht_set(DCHashTable* ht, voidptr key, DCDynValue value);
+DCResultVoid __dc_ht_set_multiple(DCHashTable* ht, usize count,
+                                  DCHashEntry entries[]);
+DCResultVoid dc_ht_merge(DCHashTable* ht, DCHashTable* from);
+DCResultBool dc_ht_delete(DCHashTable* ht, voidptr key);
+DCResultUsize dc_ht_keys(DCHashTable* ht, voidptr** out_arr);
 
-DCStringView dc_sv_create(string base, usize start, usize length);
-string dc_sv_as_cstr(DCStringView* sv);
-void dc_sv_free(DCStringView* sv);
+DCResultSv dc_sv_create(string base, usize start, usize length);
+DCResultString dc_sv_as_cstr(DCStringView* sv);
+DCResultVoid dc_sv_free(DCStringView* sv);
 
-int dc_sprintf(string* str, string fmt, ...)
+DCResultUsize dc_sprintf(string* str, string fmt, ...)
     __dc_attribute((format(printf, 2, 3)));
-int dc_sappend(string* str, const string fmt, ...)
+DCResultUsize dc_sappend(string* str, const string fmt, ...)
     __dc_attribute((format(printf, 2, 3)));
-string dc_strdup(const string in);
-void dc_normalize_path_to_posix(string path);
-string dc_replace_file_in_path(const string path, const string new_file);
+DCResultString dc_strdup(const string in);
+DCResultVoid dc_normalize_path_to_posix(string path);
+DCResultString dc_replace_file_in_path(const string path,
+                                       const string file_name);
 string dc_get_home_dir_path();
 string dc_get_username();
 string dc_get_os();
 string dc_get_arch();
 
 void __dc_handle_signal(int sig);
-void __dc_perform_cleanup(DCCleanups* cleanups_arr);
-void dc_perform_cleanup(void);
-void __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
-                               DCCleanupFunc cleanup_func);
+DCResultVoid __dc_perform_cleanup(DCCleanups* cleanups_arr);
+DCResultVoid dc_perform_cleanup(void);
+DCResultVoid __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
+                                       DCCleanupFn cleanup_fn);
+DCResultVoid dc_free(voidptr variable);
 
-void dc_result_free(DCResult* result, DCDynValFreeFunc custom_free);
+DCResultVoid dc_result_free(voidptr res_ptr);
 
 // ***************************************************************************************
 // * IMPLEMENTATIONS
@@ -134,6 +148,7 @@ void dc_result_free(DCResult* result, DCDynValFreeFunc custom_free);
 FILE* dc_error_logs = NULL;
 DCHaltMode dc_error_mode = DC_HALT_MODE_CONTINUE;
 DCCleanups dc_cleanups = {0};
+DCResultVoid dc_cleanups_res;
 
 #include "_dynarr.c"
 #include "_dynht.c"
@@ -146,6 +161,7 @@ DCCleanups dc_cleanups = {0};
 extern FILE* dc_error_logs;
 extern DCHaltMode dc_error_mode;
 extern DCCleanups dc_cleanups;
+extern DCResultVoid dc_cleanups_res;
 
 #endif
 
