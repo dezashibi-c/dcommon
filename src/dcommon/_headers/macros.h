@@ -1018,7 +1018,7 @@
 /**
  * Macro to define custom free function for dynamic values
  */
-#define DC_DV_FREE_FN_DECL(NAME) void NAME(DCDynVal* _value)
+#define DC_DV_FREE_FN_DECL(NAME) DCResultVoid NAME(DCDynVal* _value)
 
 /**
  * Expands to proper enum value for given type that is used in dynamic values
