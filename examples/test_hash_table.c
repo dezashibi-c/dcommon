@@ -112,7 +112,11 @@ DCResultVoid testing_hash_table_merge(DCHashTable* source)
 
 int main()
 {
+    // Initializing error logs to default file name _error_logs.log
+    // Also errors won't be appended and the log file will be reset
+    // at each run
     dc_error_logs_init(NULL, false);
+
     // Initialize the global pool with 2 batches and each batches 10 spot for
     // holding allocated memory addresses
     dc_cleanup_pool_init2(2, 10);
