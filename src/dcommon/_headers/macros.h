@@ -462,6 +462,34 @@
     } while (0)
 
 /**
+ * Copies error data from RES2 to RES1
+ *
+ * NOTE: Treat to this like a move semantic, so if you free the original or the
+ * copy that would be fine
+ *
+ * NOTE: Does Nothing on successful results
+ */
+#define dc_res_err_cpy2(RES1, RES2)                                            \
+    do                                                                         \
+    {                                                                          \
+        if ((RES2).status == DC_RES_ERR)                                       \
+        {                                                                      \
+            (RES1).status = DC_RES_ERR;                                        \
+            (RES1).data.e = (RES2).data.e;                                     \
+        }                                                                      \
+    } while (0)
+
+/**
+ * Copies error data from RES to the main result variable (__dc_res)
+ *
+ * NOTE: Treat to this like a move semantic, so if you free the original or
+ * the copy that would be fine
+ *
+ * NOTE: Does Nothing on successful results
+ */
+#define dc_res_err_cpy(RES) dc_res_err_cpy2(__dc_res, RES)
+
+/**
  * Sets the main result variable (__dc_res) status to DC_RES_OK and also
  * initiates the value with the given VALUE
  */
@@ -591,8 +619,7 @@
     {                                                                          \
         if ((RES).status == DC_RES_ERR)                                        \
         {                                                                      \
-            dc_res_ea((RES).data.e.code, "%s", (RES).data.e.message);          \
-            dc_result_free(&RES);                                              \
+            dc_res_err_cpy(RES);                                               \
             dc_res_ret();                                                      \
         }                                                                      \
     } while (0)

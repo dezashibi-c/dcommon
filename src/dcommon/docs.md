@@ -572,6 +572,27 @@ dc_res_e(NUM, MSG)
 dc_res_ea(NUM, ...)                                                   
 
 /**
+ * Copies error data from RES2 to RES1
+ * 
+ * NOTE: Treat to this like a move semantic, so if you free the original or
+ * the copy that would be fine
+ *
+ * NOTE: Does Nothing on successful results
+ */
+dc_res_err_cpy2(RES1, RES2)                                           
+
+/**
+ * Copies error data from RES to the main result variable (__dc_res)
+ * 
+ * NOTE: Treat to this like a move semantic, so if you free the original or
+ * the copy that would be fine
+ *
+ * NOTE: Does Nothing on successful results
+ */
+dc_res_err_cpy(RES)
+
+
+/**
  * Sets the main result variable (__dc_res) status to DC_RES_OK and also
  * initiates the value with the given VALUE
  */
@@ -1940,7 +1961,7 @@ dc_system(OUT_VAL, ...)
 /**
  * General macro that returns current __FILE__ filename only
  */
-#define __FILENAME__
+__FILENAME__
 
 /**
  * Logs to `stderr` or global `dc_error_logs` if not `NULL` with `["LOG"]`

@@ -71,6 +71,11 @@ int main()
     DCResultI8 result2 = calculate_i8(10, 0);
     handle_result(result2);
 
+    DCResultI8 res2_cpy;
+
+    dc_res_err_cpy2(res2_cpy, result2);
+    handle_result(res2_cpy);
+
     // Why freeing, messages of errors might be allocated
     // values also might be allocated, you can handle them all at once
     dc_try(dc_result_free(&result1));
