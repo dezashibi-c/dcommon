@@ -17,7 +17,7 @@
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
-void print_dv(DCDynValue* dval)
+void print_dv(DCDynVal* dval)
 {
     if (dc_dv_is(*dval, u8))
     {
@@ -43,9 +43,14 @@ void print_da(DCDynArr* darr)
     }
 }
 
+#define LOG_DYNAMIC_ARRAY_INFO(DARR)                                           \
+    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX    \
+           "'\n",                                                              \
+           DARR.cap, DARR.count);
+
 DCResultVoid test1()
 {
-    dc_res_void();
+    DC_RES_void();
 
     DCDynArr darr;
 
@@ -54,57 +59,49 @@ DCResultVoid test1()
         &darr, NULL,
 
         dc_dv(u8, 42), dc_dv(i32, -12345),
-        dc_dv(string, "Hello") // here it is a literal string so it doesn't need
-                               // to be mark as allocated
+
+        // here it is a literal string so it doesn't need
+        // to be mark as allocated (that's why dc_dv us used)
+        dc_dv(string, "Hello")
 
     );
 
     printf("========\nOriginal Array\n========\n");
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
 
-    // Print remaining elements
     printf("========\nElement 2 is removed\n========\n");
-    // Delete the second element (index 1)
-    dc_try_fail_temp(DCResultBool, dc_da_delete(&darr, 1));
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
+    // Try to delete the second element (index 1) or fail
+    dc_try_fail(dc_da_delete(&darr, 1));
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
-    // inserting
     printf("========\nInserting 2 elements\n========\n");
+    // Try to insert or fail
     dc_try_fail(dc_da_insert(&darr, 1, dc_dv(u8, 100)));
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
+    LOG_DYNAMIC_ARRAY_INFO(darr);
 
+    // Try to insert or fail
     dc_try_fail(dc_da_insert(&darr, 2, dc_dv(string, "New Item")));
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
-    // Print elements
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
 
     printf("========\nAppending 5 more elements\n========\n");
+    // Try to append values or fail
     dc_try_fail_da_append_values(&darr,
                                  dc_dv(string, "Using append_values started"),
                                  dc_dv(u8, 11), dc_dv(u8, 12), dc_dv(u8, 13),
                                  dc_dv(string, "Using append_values finished"));
 
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
-    // Print elements
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
+    // Introducing the second dynamic array
     DCDynArr darr2;
 
-    // Add elements
+    // Add elements the newly created array
     dc_try_fail_da_init_with_values(&darr2, NULL,
 
                                     dc_dv(string, "Using append started"),
@@ -113,28 +110,27 @@ DCResultVoid test1()
 
     );
 
-    printf("========\nAppending 5 more elements from array\n========\n");
+    printf("========\nAppending 5 more elements from "
+           "array\n========\n");
+    // Try to append the second array to the first array or fail
     dc_try_fail(dc_da_append(&darr, &darr2));
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
-    // Print elements
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
-    printf("========\nInserting 5 more elements in the middle\n========\n");
+    printf("========\nInserting 5 more elements in the "
+           "middle\n========\n");
+    // Try to insert 5 elements to the first array or fail
     dc_try_fail_temp_da_insert_values(
         &darr, 9, dc_dv(string, "Using insert_values started"), dc_dv(u8, 11),
         dc_dv(u8, 12), dc_dv(u8, 13),
         dc_dv(string, "Using insert_values finished"));
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
-    // Print elements
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
+    // Introducing the third dynamic array
     DCDynArr darr3;
 
-    // Add elements
+    // Add elements to the newly created array
     dc_try_fail_da_init_with_values(&darr3, NULL,
 
                                     dc_dv(string, "Using insert_from started"),
@@ -142,38 +138,33 @@ DCResultVoid test1()
                                     dc_dv(string, "Using insert_from finished")
 
     );
-    printf("========\nInserting 5 more elements from another array in the "
+    printf("========\nInserting 5 more elements from another array "
+           "in the "
            "middle\n========\n");
+    // Try inserting the third array at the index 14th of the first array or
+    // fail
     dc_try_fail(dc_da_insert_from(&darr, 14, &darr3));
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
-    // Print elements
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
     printf("========\nGrowing to current cap + 20\n========\n");
+    // Try growing the first array's capacity by 20 or fail
     dc_try_fail(dc_da_grow_by(&darr, 20));
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
-    // Print elements
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
     printf("========\nTruncate\n========\n");
+    // Try truncating unused capacity of the first array or fail
     dc_try_fail(dc_da_trunc(&darr));
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
-    // Print elements
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
     printf("========\nPopping last 5 items\n========\n");
-    DCDynValue* popped;
+    // Declaring a memory for holding popped items from the first array
+    DCDynVal* popped;
+    // Trying to pop out last 5 elements of the first array or fail
     dc_try_fail(dc_da_pop(&darr, 5, &popped, false));
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX
-           "'\n",
-           darr.cap, darr.count);
-    // Print elements
+    LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
     printf("========\nPopped Items\n========\n");
@@ -185,18 +176,20 @@ DCResultVoid test1()
     dc_try_fail(dc_da_free(&darr3));
     free(popped);
 
+    // Returning the void result which is OK by default so if we're here we
+    // haven't had any errors, yay!
     dc_res_ret();
 }
 
 DCResultVoid test2()
 {
-    dc_res_void();
+    DC_RES_void();
 
     DCDynArr darr;
     dc_try_fail(dc_da_init(&darr, NULL));
 
     // Adding different types of values
-    DCDynValue val;
+    DCDynVal val;
 
     // Adding a u8 value
     dc_dv_set(val, u8, 42);
@@ -207,43 +200,51 @@ DCResultVoid test2()
     dc_try_fail(dc_da_push(&darr, val));
 
     // Adding a string
-    // in this line something risky is happening as we assumed dc_strdup is
-    // successful
+    // in this line something risky is happening as we assumed
+    // dc_strdup is successful
     dc_dv_seta(val, string, dc_res_val2(dc_strdup("Hello, Dynamic Array!")));
     dc_try_fail(dc_da_push(&darr, val));
 
     // Finding an element (search for u8 value 42)
-    DCDynValue search_val;
+    DCDynVal search_val;
     dc_dv_set(search_val, u8, 42);
 
-    DCResultDv found = dc_da_find(&darr, &search_val);
-    dc_fail_if_res(found);
+    DCResultUsize res = dc_da_findp(&darr, &search_val);
 
-    if (dc_res_val2(found))
+    if (dc_res_is_ok2(res))
     {
-        printf("Found u8: %d\n", dc_dv_as((*dc_res_val2(found)), u8));
+        u8 found = dc_da_get_as(darr, dc_res_val2(res), u8);
+        printf("Found u8: %d\n", found);
     }
-    else
+    else if (dc_res_err_code2(res) == 6)
     {
         dc_log("Element not found.\n");
     }
+    else
+    {
+        dc_ret_if_res_is_err(res);
+    }
 
-    // dc_strdup allocates memory so we use the allocated version of dc_dv_set
-    // (with an 'a' at the end) and in this line something risky is happening
-    // too as we assumed dc_strdup is successful
+    // dc_strdup allocates memory so we use the allocated version of
+    // dc_dv_set (with an 'a' at the end) and in this line something
+    // risky is happening too as we assumed dc_strdup is successful
     dc_dv_seta(search_val, string,
                dc_res_val2(dc_strdup("Hello, Dynamic Array!")));
 
-    found = dc_da_find(&darr, &search_val);
-    dc_fail_if_res(found);
+    res = dc_da_findp(&darr, &search_val);
 
-    if (dc_res_val2(found))
+    if (dc_res_is_ok2(res))
     {
-        printf("Found u8: %d\n", dc_dv_as((*dc_res_val2(found)), u8));
+        string found = dc_da_get_as(darr, dc_res_val2(res), string);
+        printf("Found string: %s\n", found);
+    }
+    else if (dc_res_err_code2(res) == 6)
+    {
+        dc_log("Element not found.\n");
     }
     else
     {
-        dc_log("Element not found.\n");
+        dc_ret_if_res_is_err(res);
     }
 
     dc_try_fail(dc_da_free(&darr));
@@ -253,7 +254,7 @@ DCResultVoid test2()
 
 DCResultVoid test3()
 {
-    dc_res_void();
+    DC_RES_void();
 
     DCDynArr darr;
 
@@ -265,11 +266,11 @@ DCResultVoid test3()
 
     string result_str = NULL;
     /**
-     * Convert the `darr` to char flat array and don't fail (bypass the unwanted
-     * value)
+     * Convert the `darr` to char flat array and don't fail (bypass
+     * the unwanted value)
      */
     DCResultUsize len_res = dc_char_da_to_flat_arr(&darr, &result_str, false);
-    dc_fail_if_res(len_res);
+    dc_ret_if_res_is_err(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
@@ -287,7 +288,7 @@ DCResultVoid test3()
 
 DCResultVoid test4()
 {
-    dc_res_void();
+    DC_RES_void();
 
     DCDynArr darr;
 
@@ -300,7 +301,7 @@ DCResultVoid test4()
 
     u8* result = NULL;
     DCResultUsize len_res = dc_u8_da_to_flat_arr(&darr, &result, true);
-    dc_fail_if_res(len_res);
+    dc_ret_if_res_is_err(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
@@ -322,7 +323,7 @@ DCResultVoid test4()
 
 DCResultVoid test5()
 {
-    dc_res_void();
+    DC_RES_void();
 
     DCDynArr darr;
 
@@ -336,7 +337,7 @@ DCResultVoid test5()
 
     usize* result = NULL;
     DCResultUsize len_res = dc_usize_da_to_flat_arr(&darr, &result, true);
-    dc_fail_if_res(len_res);
+    dc_ret_if_res_is_err(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
@@ -358,7 +359,7 @@ DCResultVoid test5()
 
 DCResultVoid test6()
 {
-    dc_res_void();
+    DC_RES_void();
 
     DCDynArr darr;
 
@@ -372,7 +373,7 @@ DCResultVoid test6()
 
     size* result = NULL;
     DCResultUsize len_res = dc_size_da_to_flat_arr(&darr, &result, true);
-    dc_fail_if_res(len_res);
+    dc_ret_if_res_is_err(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
@@ -414,7 +415,7 @@ MyStruct* new_ms(int a, float b)
 
 DCResultVoid test7()
 {
-    dc_res_void();
+    DC_RES_void();
 
     DCDynArr darr;
 
@@ -431,12 +432,12 @@ DCResultVoid test7()
 
     dc_da_for(darr)
     {
-        print_struct((MyStruct*)dc_da_get_as(&darr, _idx, voidptr));
+        print_struct((MyStruct*)dc_da_get_as(darr, _idx, voidptr));
     }
 
     voidptr* result = NULL;
     DCResultUsize len_res = dc_voidptr_da_to_flat_arr(&darr, &result, true);
-    dc_fail_if_res(len_res);
+    dc_ret_if_res_is_err(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
@@ -456,11 +457,26 @@ DCResultVoid test7()
     return dc_da_free(&darr);
 }
 
-
-// Example usage of the dynamic array
 int main()
 {
-    dc_res_void();
+    /**
+     * Explanation of what's going on here
+     *
+     * First, main cannot return a result type so we need to at the end of the
+     * day return just zero or any other number
+     *
+     * We could put DCResultVoid some_res = test1();
+     * And then check with the second version of all the dc_res_... functions
+     * As an example
+     * dc_action_on(dc_res_is_err2(some_res), return dc_res_err_code2(some_res),
+     *              "%s", dc_res_err_msg2(some_res));
+     *
+     * Or What I did here I declared default result variable (__dc_res) so that
+     * I can use version 1 (technically unversioned! versions!) which are
+     * shorter and somehow nicer
+     */
+
+    DC_RES_void();
 
     dc_try(test1());
     dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s",

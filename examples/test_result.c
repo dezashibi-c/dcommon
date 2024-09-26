@@ -19,21 +19,28 @@
 
 DCResultI8 divide_i8(i8 a, i8 b)
 {
-    // DCResult result;
-    dc_res_i8(); // or this
+    // Initializes a result for i8 type value and sets its status to OK by
+    // default (creates __dc_res variable)
+    DC_RES_i8();
 
+    // Test for possible error (division by zero)
     if (b == 0)
     {
+        // This version doesn't have
+        // allocated string
         // dc_res_ret_e(1, "Division by zero");
+
+        // This version does have allocated string
         dc_res_ret_ea(1, "Division by zero, got='%d/%d'", a, b);
     }
 
+    // Sets ok status, sets value to the a/b and return the __dc_res
     dc_res_ret_ok(a / b);
 }
 
 DCResultI8 calculate_i8(i8 x, i8 y)
 {
-    dc_res_i8();
+    DC_RES_i8();
 
     // Trying the result
     dc_try_fail(divide_i8(x, y));
@@ -44,7 +51,7 @@ DCResultI8 calculate_i8(i8 x, i8 y)
 
 void handle_result(DCResultI8 result)
 {
-    if (result.status == DC_RESULT_OK)
+    if (dc_res_is_ok2(result))
     {
         dc_log("Success: %d", dc_res_val2(result));
         return;
@@ -56,7 +63,7 @@ void handle_result(DCResultI8 result)
 
 int main()
 {
-    dc_res_void();
+    DC_RES_void();
 
     DCResultI8 result1 = calculate_i8(10, 2);
     handle_result(result1);

@@ -27,7 +27,7 @@
 
 DCResultSv dc_sv_create(string base, usize start, usize length)
 {
-    dc_res_sv();
+    DC_RES_sv();
 
     if (!base)
     {
@@ -46,7 +46,7 @@ DCResultSv dc_sv_create(string base, usize start, usize length)
 
 DCResultString dc_sv_as_cstr(DCStringView* sv)
 {
-    dc_res_string();
+    DC_RES_string();
 
     if (!sv)
     {
@@ -74,7 +74,7 @@ DCResultString dc_sv_as_cstr(DCStringView* sv)
 
 DCResultVoid dc_sv_free(DCStringView* sv)
 {
-    dc_res_void();
+    DC_RES_void();
 
     if (!sv || sv->cstr == NULL) dc_res_ret();
 

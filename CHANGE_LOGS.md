@@ -1,8 +1,13 @@
-## v0.9.52-stable
+## v1.0.0-beta
 
-Release Date: 2024-09-24
+Release Date: 2024-09-26
 
-- retest everything
+- adding documentations
+- Simplify exit label process
+- Simplify cleanup processes
+- Add time stamp for logging
+- Testing logs to file
+- re-test everything
 - all memory management parts work as expected
 - add result type
 - rewrite everything to support result type

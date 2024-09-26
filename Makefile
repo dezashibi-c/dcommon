@@ -23,9 +23,11 @@ CFLAGS = -g -O0 -Wall -Wextra -pedantic
 ifeq ($(OS),Windows_NT)
 	TARGET_EXT = .exe
 	CFLAGS +=
+	VALGRIND =
 else
 	TARGET_EXT = .out
 	CFLAGS += -lpthread
+	VALGRIND = valgrind
 endif
 
 SRCDIR = examples
@@ -48,12 +50,16 @@ test: $(TARGETS)
 	done
 
 memtest: $(TARGETS)
+ifeq ($(VALGRIND),)
+	@echo "Valgrind is not available on Windows, try using WSL or a VM or an actual Linux machine"
+else 
 	@for target in $(TARGETS); do \
 		echo "========================================="; \
 		echo " valgrind $$target"; \
 		echo "========================================="; \
-		valgrind ./$$target || exit 1; \
+		$(VALGRIND) ./$$target || exit 1; \
 	done
+endif
 
 $(SRCDIR)/%$(TARGET_EXT): $(SRCDIR)/%.c
 	$(BUILDCMD) $< -o $@

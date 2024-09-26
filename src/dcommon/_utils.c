@@ -40,7 +40,7 @@
 
 DCResultUsize dc_sprintf(string* str, string fmt, ...)
 {
-    dc_res_usize();
+    DC_RES_usize();
 
     if (!str)
     {
@@ -58,6 +58,7 @@ DCResultUsize dc_sprintf(string* str, string fmt, ...)
     {
         dc_dbg_log(
             "An encoding error occurred. Setting the input pointer to NULL.");
+
         *str = NULL;
         va_end(argp);
 
@@ -84,7 +85,7 @@ DCResultUsize dc_sprintf(string* str, string fmt, ...)
 
 DCResultUsize dc_sappend(string* str, const string fmt, ...)
 {
-    dc_res_usize();
+    DC_RES_usize();
 
     if (!str)
     {
@@ -103,6 +104,7 @@ DCResultUsize dc_sappend(string* str, const string fmt, ...)
     {
         dc_dbg_log(
             "An encoding error occurred. Setting the input pointer to NULL.");
+
         *str = NULL;
         va_end(argp);
 
@@ -137,7 +139,7 @@ DCResultUsize dc_sappend(string* str, const string fmt, ...)
 
 DCResultString dc_strdup(const string in)
 {
-    dc_res_string();
+    DC_RES_string();
 
     if (!in)
     {
@@ -155,7 +157,7 @@ DCResultString dc_strdup(const string in)
 
 DCResultVoid dc_normalize_path_to_posix(string path)
 {
-    dc_res_void();
+    DC_RES_void();
 
     if (!path)
     {
@@ -179,7 +181,7 @@ DCResultVoid dc_normalize_path_to_posix(string path)
 
 DCResultString dc_replace_file_in_path(string path, const string file_name)
 {
-    dc_res_string();
+    DC_RES_string();
 
     if (!path || !file_name)
     {
@@ -335,86 +337,197 @@ void __dc_handle_signal(int sig)
     };
 
     if (sig != SIGSEGV)
-    {
-        DCResultVoid res = dc_perform_cleanup();
-        dc_action_on(dc_res_is_err2(res), exit(dc_res_err_code2(res)), "%s",
-                     dc_res_err_msg2(res));
-    }
+        dc_perform_cleanup_pool(DC_CLEANUP_POOL);
+    else
+        dc_error_logs_close();
 
     exit(sig);
 }
 
-DCResultVoid __dc_perform_cleanup(DCCleanups* cleanups_arr)
+void dc_cleanup_pool_init2(usize count, usize batch_capacity)
 {
-    dc_res_void();
+    if (dc_cleanup_pool.count > 0)
+    {
+        dc_dbg_log("cannot initialize already initialized cleanup pool, got= "
+                   "%" PRIuMAX,
+                   dc_cleanup_pool.count);
 
-    dc_dbg_log_if(cleanups_arr->cap == 0 || cleanups_arr->count == 0,
-                  "cleanups_arr is not initialized or has no "
+        return;
+    }
+
+    if (count == 0)
+    {
+        dc_dbg_log("cannot initialize cleanup pool to zero count of batches");
+
+        exit(1);
+    }
+
+    if (batch_capacity == 0)
+    {
+        dc_dbg_log("initializing batch capacity to zero is not a good idea, "
+                   "fall-back to default=%d",
+                   DC_DA_INITIAL_CAP);
+
+        batch_capacity = DC_DA_INITIAL_CAP;
+    }
+
+    dc_cleanup_pool.count = count;
+
+    dc_cleanup_pool.pool =
+        (DCCleanupBatch*)calloc(count, sizeof(DCCleanupBatch));
+    if (!dc_cleanup_pool.pool)
+    {
+        dc_dbg_log("Memory allocation failed");
+
+        exit(2);
+    }
+
+    DCResultVoid res;
+
+    for (usize i = 0; i < count; ++i)
+    {
+        res = dc_da_init2(&dc_cleanup_pool.pool[i], batch_capacity, 3, NULL);
+
+        dc_dbg_action_on(dc_res_is_err2(res), exit(dc_res_err_code2(res)), "%s",
+                         dc_res_err_msg2(res));
+    }
+
+    __DC_CLEANUP_REGISTER_SIGNALS;
+
+    dc_result_free(&res);
+}
+
+DCResultVoid dc_perform_cleanup_batch(DCCleanupBatch* batch)
+{
+    DC_RES_void();
+
+    dc_dbg_log_if(batch->cap == 0 || batch->count == 0,
+                  "batch is not initialized or has no "
                   "elements registered, exiting now...");
 
-    if (cleanups_arr->cap == 0 || cleanups_arr->count == 0) dc_res_ret();
+    if (batch->cap == 0 || batch->count == 0) dc_res_ret();
 
-    dc_dbg_log("cleaning up '%" PRIuMAX "' elements", cleanups_arr->count);
+    dc_dbg_log("cleaning up '%" PRIuMAX "' elements", batch->count);
 
     // run cleanup of each item
-    dc_da_for(*cleanups_arr)
+    dc_da_for(*batch)
     {
-        DCCleanupEntry* entry = dc_da_get_as(cleanups_arr, _idx, voidptr);
+        DCCleanupJob* entry = dc_da_get_as(*batch, _idx, voidptr);
 
         dc_dbg_log("cleaning index: '%" PRIuMAX "', cleanup perform: %p", _idx,
                    (*entry).element);
 
-        dc_try_fail(dc_cleanup_do(*entry));
+        dc_try_fail(dc_cleanup_job_run(*entry));
     }
 
     // clean up the dc_cleanup itself
-    dc_dbg_log("freeing cleanups dynamic array, current capacity: '%" PRIuMAX
+    dc_dbg_log("freeing cleanup batch, current capacity: '%" PRIuMAX
                "', current "
                "count: '%" PRIuMAX "'",
-               cleanups_arr->cap, cleanups_arr->count);
+               batch->cap, batch->count);
 
-    dc_try_fail(dc_da_free(cleanups_arr));
+    dc_try_fail(dc_da_free(batch));
 
-    dc_dbg_log(
-        "cleanups dynamic array has been freed, current capacity: '%" PRIuMAX
-        "', current "
-        "count: '%" PRIuMAX "'",
-        cleanups_arr->cap, cleanups_arr->count);
-
-    dc_result_free(&dc_cleanups_res);
-
-    dc_dbg_log("cleanups result has been freed");
+    dc_dbg_log("cleanup batch has been freed, current capacity: '%" PRIuMAX
+               "', current "
+               "count: '%" PRIuMAX "'",
+               batch->cap, batch->count);
 
     dc_res_ret();
 }
 
-DCResultVoid dc_perform_cleanup()
+void dc_perform_cleanup_pool(i32 selection)
 {
-    dc_dbg_log("performing global cleanups");
+    DC_RES_void();
 
-    return __dc_perform_cleanup(&dc_cleanups);
+    switch (selection)
+    {
+        case DC_NO_CLEANUP:
+            break;
+
+        case DC_CLEANUP_POOL:
+        {
+            if (dc_cleanup_pool.count == 0) return;
+
+            dc_dbg_log("performing pool cleanup");
+
+            dc_da_for(dc_cleanup_pool)
+            {
+                dc_dbg_log("cleaning up the batch index [%" PRIuMAX "]", _idx);
+                dc_try(dc_perform_cleanup_batch(&dc_cleanup_pool.pool[_idx]));
+
+                if (dc_res_is_err())
+                {
+                    dc_dbg_log(
+                        "An error occurred while cleanup batch index [%" PRIuMAX
+                        "]: (code %d) %s",
+                        _idx, dc_res_err_code(), dc_res_err_msg());
+
+                    exit(dc_res_err_code());
+                }
+            }
+
+            if (dc_cleanup_pool.pool)
+            {
+                free(dc_cleanup_pool.pool);
+
+                dc_dbg_log("cleanup pool has been freed");
+            }
+
+            dc_error_logs_close();
+
+            break;
+        }
+
+        default:
+        {
+            if ((usize)selection >= dc_cleanup_pool.count)
+            {
+                dc_dbg_log(
+                    "Cleanup batch index out of bound: requested=%" PRId32
+                    " got=%" PRIuMAX " elements",
+                    selection, dc_cleanup_pool.count);
+
+                exit(5);
+            }
+
+            dc_dbg_log("cleaning up the batch index [%" PRId32 "]", selection);
+            dc_try(dc_perform_cleanup_batch(&dc_cleanup_pool.pool[selection]));
+
+            if (dc_res_is_err())
+            {
+                dc_dbg_log("An error occurred while cleanup batch index [%d]: "
+                           "(code %d) %s",
+                           selection, dc_res_err_code(), dc_res_err_msg());
+
+                exit(dc_res_err_code());
+            }
+
+            break;
+        }
+    }
 }
 
-DCResultVoid __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
-                                       DCCleanupFn cleanup_fn)
+void dc_cleanup_push2(DCCleanupBatch* batch, voidptr element,
+                      DCCleanupFn cleanup_fn)
 {
-    dc_res_void();
+    DC_RES_void();
 
     if (!element || !cleanup_fn)
     {
         dc_dbg_log("got null element or cleanup_fn");
 
-        dc_res_ret_e(1, "got null element or cleanup_fn");
+        exit(1);
     }
 
-    __dc_cleanups_arr_init(*cleanup_arr, 10);
+    DC_CLEANUP_BATCH_INIT(*batch, 10);
 
-    DCCleanupEntry* item = malloc(sizeof(DCCleanupEntry));
+    DCCleanupJob* item = malloc(sizeof(DCCleanupJob));
     if (!item)
     {
         dc_dbg_log("Memory allocation failed");
 
-        dc_res_ret_e(2, "Memory allocation failed");
+        exit(2);
     }
 
     dc_dbg_log("cleanup push: %p", element);
@@ -422,16 +535,36 @@ DCResultVoid __dc_cleanups_custom_push(DCCleanups* cleanup_arr, voidptr element,
     item->element = element;
     item->cleanup_fn = cleanup_fn;
 
-    return dc_da_push(cleanup_arr, dc_dva(voidptr, item));
+    dc_try(dc_da_push(batch, dc_dva(voidptr, item)));
+
+    if (dc_res_is_err())
+    {
+        dc_dbg_log("An error occurred while pushing cleanup job entry to the "
+                   "cleanup batch index: (code %d) %s",
+                   dc_res_err_code(), dc_res_err_msg());
+
+        exit(dc_res_err_code());
+    }
 }
 
 DCResultVoid dc_free(voidptr variable)
 {
-    dc_res_void();
+    DC_RES_void();
 
     if (!variable) dc_res_ret_e(1, "try to free NULL");
 
     free(variable);
+
+    dc_res_ret();
+}
+
+DCResultVoid dc_free_file(voidptr variable)
+{
+    DC_RES_void();
+
+    if (!variable) dc_res_ret_e(1, "try to free NULL");
+
+    fclose((fileptr)variable);
 
     dc_res_ret();
 }
@@ -442,7 +575,7 @@ DCResultVoid dc_free(voidptr variable)
 
 DCResultVoid dc_result_free(voidptr res_ptr)
 {
-    dc_res_void();
+    DC_RES_void();
 
     if (!res_ptr) dc_res_ret_e(1, "got NULL result");
 
@@ -450,11 +583,100 @@ DCResultVoid dc_result_free(voidptr res_ptr)
 
 
     if (dc_res_is_err2(*result) && result->data.e.allocated)
-    {
         free(result->data.e.message);
-    }
 
     result->data.e.message = "";
+    result->status = DC_RES_OK;
 
     dc_res_ret();
+}
+
+// ***************************************************************************************
+// * Files
+// ***************************************************************************************
+
+DCResultFileptr dc_file_open(const string file, const string mode)
+{
+    DC_RES_fileptr();
+
+    fileptr fp = fopen(file, mode);
+
+    if (fp == NULL)
+    {
+        dc_dbg_log("Cannot open file '%s': (code %d) %s", file, errno,
+                   strerror(errno));
+
+        dc_res_ret_ea(errno, "%s", strerror(errno));
+    }
+
+    dc_res_ret_ok(fp);
+}
+
+// ***************************************************************************************
+// * ERROR LOGS
+// ***************************************************************************************
+
+void dc_fprintf_datetime(fileptr stream, const string format)
+{
+    time_t raw_time;
+    struct tm* time_info;
+    char buffer[30];
+
+    time(&raw_time);
+
+    time_info = localtime(&raw_time);
+
+    strftime(buffer, sizeof(buffer), format, time_info);
+
+    fprintf(stream ? stream : stdout, "%s", buffer);
+}
+
+void dc_now(fileptr stream)
+{
+    dc_fprintf_datetime(stream, "%Y-%m-%d %H:%M:%S");
+}
+
+void dc_time(fileptr stream)
+{
+    dc_fprintf_datetime(stream, "%H:%M:%S");
+}
+
+void dc_date(fileptr stream)
+{
+    dc_fprintf_datetime(stream, "%Y-%m-%d");
+}
+
+void dc_error_logs_init(string filename, bool append)
+{
+    DC_RES_fileptr();
+
+    string _filename;
+
+    dc_sprintf(&_filename, "%s",
+               (filename == NULL ? "_error_logs.log" : filename));
+
+    const string mode = append ? "a" : "w";
+
+    dc_try(dc_file_open(_filename, mode));
+    free(_filename);
+
+    if (dc_res_is_err())
+    {
+        dc_dbg_log("cannot initialize 'dc_error_logs': %s", dc_res_err_msg());
+
+        exit(dc_res_err_code());
+    }
+
+    dc_error_logs = dc_res_val();
+}
+
+void dc_error_logs_close()
+{
+    if (dc_error_logs)
+    {
+        dc_dbg_log("Closing dc_error_logs");
+        fclose(dc_error_logs);
+        dc_error_logs = NULL;
+        dc_dbg_log("dc_error_logs is closed");
+    }
 }

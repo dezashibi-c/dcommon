@@ -40,6 +40,9 @@ void print_my_struct(MyStruct* m)
 
 int main(void)
 {
+    // ***************************************************************************************
+    // *  STRING CONVERSIONS
+    // ***************************************************************************************
     const string i8Str = "127";
     DCResultI8 i8_cnv_res = dc_str_to_i8(i8Str);
 
@@ -52,7 +55,6 @@ int main(void)
         printf("Failed to convert to i8.\n");
     }
 
-    // Repeat for other types as needed...
     const string u32Str = "4294967295";
     DCResultU32 u32_cnv_res = dc_str_to_u32(u32Str);
 
@@ -77,19 +79,28 @@ int main(void)
         printf("Failed to convert to f64.\n");
     }
 
-    dc_array(bool_list, u8, 10, 0, false, true);
-    dc_array(u8_list, u8, 10, 20, 30);
-    dc_array(i16_list, i16, -10, 2, -30);
-    dc_array(i32_list, i32, -1, -2, 3);
-    dc_array(f32_list, f32, 1.1f, 2.2f);
-    dc_array(char_list, char, 'a', 'b', 'c');
+    // ***************************************************************************************
+    // *  LITERAL ARRAYS
+    // ***************************************************************************************
+    DC_ARRAY(bool_list, u8, 10, 0, false, true);
+    DC_ARRAY(u8_list, u8, 10, 20, 30);
+    DC_ARRAY(i16_list, i16, -10, 2, -30);
+    DC_ARRAY(i32_list, i32, -1, -2, 3);
+    DC_ARRAY(f32_list, f32, 1.1f, 2.2f);
+    DC_ARRAY(char_list, char, 'a', 'b', 'c');
 
     printf("u8_list's count='%" PRIuMAX "', u8_list's length='%" PRIuMAX
            "', last element=%d\n",
            dc_count(u8_list), dc_len(u8_list), dc_last(u8_list));
 
+    // Example usage of dc_action_on
+    // As you can see this can be quite helpful, we've got our condition, action
+    // and error log in a very readable and short way
     dc_action_on(dc_len(u8_list) != 3, return 1, "length calculation error");
 
+    // Example usage of for each macros
+    // 👉 Note: `_it` is in fact pointer to each element which makes sense why
+    // copy?
     dc_foreach(bool_list, u8)
     {
         printf("bool item: %s\n", dc_tostr_bool(dc_u8_as_bool(*_it)));
@@ -120,13 +131,15 @@ int main(void)
         printf("char item: %c\n", *_it);
     }
 
+    // 👉 Again, `_it` is pointer, so the `print` function as you can check
+    // above must receive a pointer to the desired type
     puts("\n==========================");
     dc_oneach(u8_list, u8, print);
     puts("==========================\n");
 
     dc_foreach_lit(u8, 40, 50, 60)
     {
-        printf("Literal u8 item: %d\n", *_it);
+        printf("Literal u8 item: %d\n", *_it); // <- Check here
     }
 
     puts("\n==========================");
@@ -146,7 +159,7 @@ int main(void)
     puts("==========================\n");
 
     puts("\n==========================");
-    dc_parray(my_struct_list, MyStruct, &m1, &m2, &m3);
+    DC_PARRAY(my_struct_list, MyStruct, &m1, &m2, &m3);
 
     dc_pforeach(my_struct_list, MyStruct)
     {
@@ -171,7 +184,7 @@ int main(void)
     string s1 = "Hello";
     string s2 = "There";
     string s3 = "Hey";
-    dc_array(string_list, string, s1, s2, s3);
+    DC_ARRAY(string_list, string, s1, s2, s3);
 
     dc_foreach(string_list, string)
     {

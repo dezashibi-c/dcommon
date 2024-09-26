@@ -25,11 +25,12 @@
 #include "_headers/general.h"
 #include "_headers/macros.h"
 
-DCResultBool dc_dv_as_bool(DCDynValue* dv)
+DCResultBool dc_dv_as_bool(DCDynVal* dv)
 {
-    dc_res_bool();
+    DC_RES_bool();
 
-    if (!dv) dc_res_ret_e(1, "got NULL DCDynValue");
+    // NULL DCDynVal is going to turn into false value
+    if (!dv) dc_res_ret_ok(false);
 
 #define type_to_bool(TYPE)                                                     \
     case dc_dvt(TYPE):                                                         \
@@ -51,6 +52,7 @@ DCResultBool dc_dv_as_bool(DCDynValue* dv)
         type_to_bool(char);
         type_to_bool(string);
         type_to_bool(voidptr);
+        type_to_bool(fileptr);
         type_to_bool(size);
         type_to_bool(usize);
 
@@ -58,24 +60,29 @@ DCResultBool dc_dv_as_bool(DCDynValue* dv)
             break;
     };
 
-    dc_res_ret_e(3, "unkown dynamic value type");
+    dc_dbg_log("Exiting Function on an unknown type");
+    dc_res_ret_e(3, "unknown dynamic value type");
 #undef type_to_bool
 }
 
-// Function to initialize the dynamic array
 DCResultVoid dc_da_init(DCDynArr* darr, DCDynValFreeFn element_free_fn)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
 
-    darr->cap = DC_DYNARR_INITIAL_CAP;
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
+
+    darr->cap = DC_DA_INITIAL_CAP;
     darr->count = 0;
-    darr->multiplier = DC_DYNARR_CAP_MULTIPLIER;
+    darr->multiplier = DC_DA_CAP_MULTIPLIER;
 
     darr->element_free_fn = element_free_fn;
 
-    darr->elements = malloc(DC_DYNARR_INITIAL_CAP * sizeof(DCDynValue));
+    darr->elements = malloc(DC_DA_INITIAL_CAP * sizeof(DCDynVal));
     if (darr->elements == NULL)
     {
         dc_dbg_log("Memory allocation failed");
@@ -86,13 +93,18 @@ DCResultVoid dc_da_init(DCDynArr* darr, DCDynValFreeFn element_free_fn)
     dc_res_ret();
 }
 
-DCResultVoid dc_da_init_custom(DCDynArr* darr, usize capacity,
-                               usize capacity_grow_multiplier,
-                               DCDynValFreeFn element_free_fn)
+DCResultVoid dc_da_init2(DCDynArr* darr, usize capacity,
+                         usize capacity_grow_multiplier,
+                         DCDynValFreeFn element_free_fn)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     darr->cap = capacity;
     darr->count = 0;
@@ -100,7 +112,7 @@ DCResultVoid dc_da_init_custom(DCDynArr* darr, usize capacity,
 
     darr->element_free_fn = element_free_fn;
 
-    darr->elements = malloc(capacity * sizeof(DCDynValue));
+    darr->elements = malloc(capacity * sizeof(DCDynVal));
 
     if (darr->elements == NULL)
     {
@@ -115,7 +127,7 @@ DCResultVoid dc_da_init_custom(DCDynArr* darr, usize capacity,
 
 DCResultDa dc_da_new(DCDynValFreeFn element_free_fn)
 {
-    dc_res_da();
+    DC_RES_da();
 
     DCDynArr* darr = malloc(sizeof(DCDynArr));
     if (darr == NULL)
@@ -130,10 +142,10 @@ DCResultDa dc_da_new(DCDynValFreeFn element_free_fn)
     dc_res_ret_ok(darr);
 }
 
-DCResultDa dc_da_new_custom(usize capacity, usize capacity_grow_multiplier,
-                            DCDynValFreeFn element_free_fn)
+DCResultDa dc_da_new2(usize capacity, usize capacity_grow_multiplier,
+                      DCDynValFreeFn element_free_fn)
 {
-    dc_res_da();
+    DC_RES_da();
 
     DCDynArr* darr = malloc(sizeof(DCDynArr));
     if (darr == NULL)
@@ -143,30 +155,34 @@ DCResultDa dc_da_new_custom(usize capacity, usize capacity_grow_multiplier,
         dc_res_ret_e(2, "Memory allocation failed");
     }
 
-    dc_try_fail_temp(DCResultVoid,
-                     dc_da_init_custom(darr, capacity, capacity_grow_multiplier,
-                                       element_free_fn));
+    dc_try_fail_temp(
+        DCResultVoid,
+        dc_da_init2(darr, capacity, capacity_grow_multiplier, element_free_fn));
 
     dc_res_ret_ok(darr);
 }
 
-// Function to initialize the dynamic array with initial values
 DCResultVoid __dc_da_init_with_values(DCDynArr* darr, usize count,
                                       DCDynValFreeFn element_free_fn,
-                                      DCDynValue values[])
+                                      DCDynVal values[])
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     darr->cap = count;
     darr->count = 0;
-    darr->multiplier = DC_DYNARR_CAP_MULTIPLIER;
+    darr->multiplier = DC_DA_CAP_MULTIPLIER;
 
     darr->element_free_fn = element_free_fn;
 
-    darr->elements = malloc((count == 0 ? DC_DYNARR_INITIAL_CAP : count) *
-                            sizeof(DCDynValue));
+    darr->elements =
+        malloc((count == 0 ? DC_DA_INITIAL_CAP : count) * sizeof(DCDynVal));
     if (darr->elements == NULL)
     {
         dc_dbg_log("Memory allocation failed");
@@ -184,21 +200,26 @@ DCResultVoid __dc_da_init_with_values(DCDynArr* darr, usize count,
 
 DCResultVoid dc_da_grow(DCDynArr* darr)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
 
-    if (darr->cap > (SIZE_MAX / darr->multiplier) / sizeof(DCDynValue))
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
+
+    if (darr->cap > (SIZE_MAX / darr->multiplier) / sizeof(DCDynVal))
     {
         dc_dbg_log("Array size too large, cannot allocate more memory");
 
         dc_res_ret_e(2, "Array size too large, cannot allocate more memory");
     }
 
-    // Resize the array if needed (double the capacity by default)
-    DCDynValue* resized = realloc(darr->elements, darr->cap * darr->multiplier *
-                                                      sizeof(DCDynValue));
-
+    // Resize the array if needed (double the capacity by default or custom
+    // multiplier of provided beforehand)
+    DCDynVal* resized = realloc(darr->elements, darr->cap * darr->multiplier *
+                                                    sizeof(DCDynVal));
     if (resized == NULL)
     {
         dc_dbg_log("Memory re-allocation failed");
@@ -214,12 +235,17 @@ DCResultVoid dc_da_grow(DCDynArr* darr)
 
 DCResultVoid dc_da_grow_by(DCDynArr* darr, usize amount)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
 
-    DCDynValue* resized =
-        realloc(darr->elements, (darr->cap + amount) * sizeof(DCDynValue));
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
+
+    DCDynVal* resized =
+        realloc(darr->elements, (darr->cap + amount) * sizeof(DCDynVal));
 
     if (resized == NULL)
     {
@@ -236,11 +262,16 @@ DCResultVoid dc_da_grow_by(DCDynArr* darr, usize amount)
 
 DCResultVoid dc_da_grow_to(DCDynArr* darr, usize amount)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
 
-    DCDynValue* resized = realloc(darr->elements, amount * sizeof(DCDynValue));
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
+
+    DCDynVal* resized = realloc(darr->elements, amount * sizeof(DCDynVal));
 
     if (resized == NULL)
     {
@@ -257,14 +288,19 @@ DCResultVoid dc_da_grow_to(DCDynArr* darr, usize amount)
 
 DCResultVoid dc_da_trunc(DCDynArr* darr)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     if (darr->count < darr->cap)
     {
-        DCDynValue* resized =
-            realloc(darr->elements, darr->count * sizeof(DCDynValue));
+        DCDynVal* resized =
+            realloc(darr->elements, darr->count * sizeof(DCDynVal));
 
         if (resized == NULL)
         {
@@ -280,12 +316,17 @@ DCResultVoid dc_da_trunc(DCDynArr* darr)
     dc_res_ret();
 }
 
-DCResultVoid dc_da_pop(DCDynArr* darr, usize count, DCDynValue** out_popped,
+DCResultVoid dc_da_pop(DCDynArr* darr, usize count, DCDynVal** out_popped,
                        bool truncate)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     if (count > darr->count)
     {
@@ -297,7 +338,7 @@ DCResultVoid dc_da_pop(DCDynArr* darr, usize count, DCDynValue** out_popped,
 
     if (out_popped != NULL)
     {
-        *out_popped = (DCDynValue*)malloc(count * sizeof(DCDynValue));
+        *out_popped = (DCDynVal*)malloc(count * sizeof(DCDynVal));
 
         if (!out_popped)
         {
@@ -324,12 +365,16 @@ DCResultVoid dc_da_pop(DCDynArr* darr, usize count, DCDynValue** out_popped,
     dc_res_ret();
 }
 
-// Function to add an element to the dynamic array
-DCResultVoid dc_da_push(DCDynArr* darr, DCDynValue value)
+DCResultVoid dc_da_push(DCDynArr* darr, DCDynVal value)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     if (darr->count >= darr->cap) dc_try_fail(dc_da_grow(darr));
 
@@ -341,11 +386,16 @@ DCResultVoid dc_da_push(DCDynArr* darr, DCDynValue value)
 }
 
 DCResultVoid __dc_da_append_values(DCDynArr* darr, usize count,
-                                   DCDynValue values[])
+                                   DCDynVal values[])
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     if ((count + darr->count) > darr->cap)
         dc_try_fail(dc_da_grow_to(darr, count + darr->count));
@@ -360,9 +410,14 @@ DCResultVoid __dc_da_append_values(DCDynArr* darr, usize count,
 
 DCResultVoid dc_da_append(DCDynArr* darr, DCDynArr* from)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr || !from) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr || !from)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     dc_try_fail(__dc_da_append_values(darr, from->count, from->elements));
 
@@ -371,9 +426,14 @@ DCResultVoid dc_da_append(DCDynArr* darr, DCDynArr* from)
 
 DCResultDv dc_da_get(DCDynArr* darr, usize index)
 {
-    dc_res_dv();
+    DC_RES_dv();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     if (index >= darr->count)
     {
@@ -387,11 +447,16 @@ DCResultDv dc_da_get(DCDynArr* darr, usize index)
     dc_res_ret_ok(&darr->elements[index]);
 }
 
-DCResultBool dc_dv_eq(DCDynValue* dv1, DCDynValue* dv2)
+DCResultBool dc_dv_eq(DCDynVal* dv1, DCDynVal* dv2)
 {
-    dc_res2(DCResultBool);
+    DC_RES_bool();
 
-    if (!dv1 || !dv2) dc_res_ret_e(1, "cannot compare DCDynValue with NULL");
+    if (!dv1 || !dv2)
+    {
+        dc_dbg_log("cannot compare DCDynVal with NULL");
+
+        dc_res_ret_e(1, "cannot compare DCDynVal with NULL");
+    }
 
     if (dv1->type != dv2->type) dc_res_ret_ok(false);
 
@@ -428,6 +493,7 @@ DCResultBool dc_dv_eq(DCDynValue* dv1, DCDynValue* dv2)
 
             // clang-format off
         check_eq(voidptr);
+        check_eq(fileptr);
         check_eq(size);
         check_eq(usize);
             // clang-format on
@@ -441,21 +507,26 @@ DCResultBool dc_dv_eq(DCDynValue* dv1, DCDynValue* dv2)
 #undef check_eq
 }
 
-// Function to find an element in the dynamic array
-DCResultDv dc_da_find(DCDynArr* darr, DCDynValue* el)
+DCResultUsize dc_da_findp(DCDynArr* darr, DCDynVal* el)
 {
-    dc_res_dv();
+    DC_RES_usize();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
 
-#define find_if(TYPE)                                                          \
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
+
+#define find_if(TYPE, INDEX)                                                   \
     case dc_dvt(TYPE):                                                         \
         if (element->value.TYPE##_val == el->value.TYPE##_val)                 \
-            dc_res_ret_ok(element);                                            \
+            dc_res_ret_ok(INDEX);                                              \
         break
+
     for (usize i = 0; i < darr->count; i++)
     {
-        DCDynValue* element = &darr->elements[i];
+        DCDynVal* element = &darr->elements[i];
         if (element->type != el->type)
         {
             continue; // Skip if the type doesn't match
@@ -464,48 +535,57 @@ DCResultDv dc_da_find(DCDynArr* darr, DCDynValue* el)
         // check the actual value based on the type
         switch (el->type)
         {
-            find_if(i8);
-            find_if(i16);
-            find_if(i32);
-            find_if(i64);
+            find_if(i8, i);
+            find_if(i16, i);
+            find_if(i32, i);
+            find_if(i64, i);
 
-            find_if(u8);
-            find_if(u16);
-            find_if(u32);
-            find_if(u64);
+            find_if(u8, i);
+            find_if(u16, i);
+            find_if(u32, i);
+            find_if(u64, i);
 
-            find_if(f32);
-            find_if(f64);
+            find_if(f32, i);
+            find_if(f64, i);
 
-            find_if(uptr);
-            find_if(char);
+            find_if(uptr, i);
+            find_if(char, i);
 
             case dc_dvt(string):
             {
                 if (strcmp(element->value.string_val, el->value.string_val) ==
                     0)
-                    dc_res_ret_ok(element);
+                    dc_res_ret_ok(i);
                 break;
             }
 
                 // clang-format off
-            find_if(voidptr);
-            find_if(size);
-            find_if(usize);
+            find_if(voidptr, i);
+            find_if(fileptr, i);
+            find_if(size, i);
+            find_if(usize, i);
                 // clang-format on
 
             default:
                 break;
         }
     }
+
 #undef find_if
 
-    dc_res_ret_ok(NULL); // Not Found
+    dc_dbg_log("Not Found");
+
+    dc_res_ret_e(6, "Not Found");
 }
 
-DCResultVoid dc_dv_free(DCDynValue* element, DCDynValFreeFn custom_free)
+DCResultUsize dc_da_find(DCDynArr* darr, DCDynVal el)
 {
-    dc_res_void();
+    return dc_da_findp(darr, &el);
+}
+
+DCResultVoid dc_dv_free(DCDynVal* element, DCDynValFreeFn custom_free_fn)
+{
+    DC_RES_void();
 
     if (!element) dc_res_ret();
 
@@ -513,28 +593,46 @@ DCResultVoid dc_dv_free(DCDynValue* element, DCDynValFreeFn custom_free)
     {
         case DC_DYN_VAL_TYPE_string:
         {
-            if (custom_free)
-                dc_try_fail_temp(DCResultVoid, custom_free(element));
+            if (custom_free_fn)
+                dc_try_fail_temp(DCResultVoid, custom_free_fn(element));
 
             if (dc_dv_is_allocated(*element) &&
                 dc_dv_as(*element, string) != NULL)
                 free(dc_dv_as(*element, string));
+
+            dc_dv_set(*element, string, "");
+            break;
+        }
+
+        case DC_DYN_VAL_TYPE_fileptr:
+        {
+            if (custom_free_fn)
+                dc_try_fail_temp(DCResultVoid, custom_free_fn(element));
+
+            if (dc_dv_is_allocated(*element) &&
+                dc_dv_as(*element, fileptr) != NULL)
+                fclose(dc_dv_as(*element, fileptr));
+
+            dc_dv_set(*element, fileptr, NULL);
             break;
         }
 
         case DC_DYN_VAL_TYPE_voidptr:
         {
-            if (custom_free)
-                dc_try_fail_temp(DCResultVoid, custom_free(element));
+            if (custom_free_fn)
+                dc_try_fail_temp(DCResultVoid, custom_free_fn(element));
 
             if (dc_dv_is_allocated(*element) &&
                 dc_dv_as(*element, voidptr) != NULL)
                 free(dc_dv_as(*element, voidptr));
+
+            dc_dv_set(*element, voidptr, NULL);
             break;
         }
 
         // Do nothing for literal types (integer, float, etc.)
         default:
+            dc_dbg_log("Doesn't free anything - not allocated type");
             break;
     }
 
@@ -543,17 +641,21 @@ DCResultVoid dc_dv_free(DCDynValue* element, DCDynValFreeFn custom_free)
 
 DCResultVoid __dc_dv_free(voidptr dv)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!dv) dc_res_ret_e(1, "got NULL voidptr");
+    if (!dv)
+    {
+        dc_dbg_log("got NULL voidptr");
 
-    return dc_dv_free((DCDynValue*)dv, NULL);
+        dc_res_ret_e(1, "got NULL voidptr");
+    }
+
+    return dc_dv_free((DCDynVal*)dv, NULL);
 }
 
-// Function to free the dynamic array
 DCResultVoid dc_da_free(DCDynArr* darr)
 {
-    dc_res_void();
+    DC_RES_void();
 
     if (!darr) dc_res_ret();
 
@@ -574,18 +676,28 @@ DCResultVoid dc_da_free(DCDynArr* darr)
 
 DCResultVoid __dc_da_free(voidptr darr)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL voidptr");
+    if (!darr)
+    {
+        dc_dbg_log("t NULL voidptr");
+
+        dc_res_ret_e(1, "got NULL voidptr");
+    }
 
     return dc_da_free((DCDynArr*)darr);
 }
 
-DCResultBool dc_da_delete(DCDynArr* darr, usize index)
+DCResultVoid dc_da_delete(DCDynArr* darr, usize index)
 {
-    dc_res_bool();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     if (index >= darr->count)
     {
@@ -602,18 +714,48 @@ DCResultBool dc_da_delete(DCDynArr* darr, usize index)
 
     // Shift the elements after the deleted one to fill the gap
     memmove(&darr->elements[index], &darr->elements[index + 1],
-            (darr->count - index - 1) * sizeof(DCDynValue));
+            (darr->count - index - 1) * sizeof(DCDynVal));
 
     darr->count--;
 
-    dc_res_ret_ok(true);
+    dc_res_ret();
 }
 
-DCResultVoid dc_da_insert(DCDynArr* darr, usize index, DCDynValue value)
+DCResultVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr || !el)
+    {
+        dc_dbg_log("got NULL DCDynArr or element");
+
+        dc_res_ret_e(1, "got NULL DCDynArr or element");
+    }
+
+    DCResultUsize found_res = dc_da_findp(darr, el);
+    dc_ret_if_res_is_err(found_res);
+
+    usize index = dc_res_val2(found_res);
+
+    return dc_da_delete(darr, index);
+}
+
+
+DCResultVoid dc_da_delete_el(DCDynArr* darr, DCDynVal el)
+{
+    return dc_da_delete_elp(darr, &el);
+}
+
+DCResultVoid dc_da_insert(DCDynArr* darr, usize index, DCDynVal value)
+{
+    DC_RES_void();
+
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     if (index > darr->count)
     {
@@ -632,7 +774,7 @@ DCResultVoid dc_da_insert(DCDynArr* darr, usize index, DCDynValue value)
     {
         // Shift elements starting from index to index + 1
         memmove(&darr->elements[index + 1], &darr->elements[index],
-                (darr->count - index) * sizeof(DCDynValue));
+                (darr->count - index) * sizeof(DCDynVal));
     }
 
     // Add the new value at the desired index
@@ -643,11 +785,16 @@ DCResultVoid dc_da_insert(DCDynArr* darr, usize index, DCDynValue value)
 }
 
 DCResultVoid __dc_da_insert_values(DCDynArr* darr, usize start_index,
-                                   usize count, DCDynValue values[])
+                                   usize count, DCDynVal values[])
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     if (start_index > darr->count)
     {
@@ -668,7 +815,7 @@ DCResultVoid __dc_da_insert_values(DCDynArr* darr, usize start_index,
         // Shift elements starting from index to index + 1
         memmove(&darr->elements[start_index + count],
                 &darr->elements[start_index],
-                (darr->count - start_index) * sizeof(DCDynValue));
+                (darr->count - start_index) * sizeof(DCDynVal));
     }
 
     for (usize i = 0; i < count; ++i)
@@ -684,9 +831,14 @@ DCResultVoid __dc_da_insert_values(DCDynArr* darr, usize start_index,
 DCResultVoid dc_da_insert_from(DCDynArr* darr, usize start_index,
                                DCDynArr* from)
 {
-    dc_res_void();
+    DC_RES_void();
 
-    if (!darr || !from) dc_res_ret_e(1, "got NULL DCDynArr");
+    if (!darr || !from)
+    {
+        dc_dbg_log("got NULL DCDynArr");
+
+        dc_res_ret_e(1, "got NULL DCDynArr");
+    }
 
     dc_try_fail(
         __dc_da_insert_values(darr, start_index, from->count, from->elements));
@@ -694,67 +846,102 @@ DCResultVoid dc_da_insert_from(DCDynArr* darr, usize start_index,
     dc_res_ret();
 }
 
-__dc_da_converters_decl(i8)
+DCResultUsize dc_i8_da_to_flat_arr(DCDynArr* arr, i8** out_arr, _Bool must_fail)
 {
-    __dc_da_converters_impl(i8);
+    __DC_DA_CONVERT_IMPL(i8);
 }
-__dc_da_converters_decl(i16)
+
+DCResultUsize dc_i16_da_to_flat_arr(DCDynArr* arr, i16** out_arr,
+                                    _Bool must_fail)
 {
-    __dc_da_converters_impl(i16);
+    __DC_DA_CONVERT_IMPL(i16);
 }
-__dc_da_converters_decl(i32)
+
+DCResultUsize dc_i32_da_to_flat_arr(DCDynArr* arr, i32** out_arr,
+                                    _Bool must_fail)
 {
-    __dc_da_converters_impl(i32);
+    __DC_DA_CONVERT_IMPL(i32);
 }
-__dc_da_converters_decl(i64)
+
+DCResultUsize dc_i64_da_to_flat_arr(DCDynArr* arr, i64** out_arr,
+                                    _Bool must_fail)
 {
-    __dc_da_converters_impl(i64);
+    __DC_DA_CONVERT_IMPL(i64);
 }
-__dc_da_converters_decl(u8)
+
+DCResultUsize dc_u8_da_to_flat_arr(DCDynArr* arr, u8** out_arr, _Bool must_fail)
 {
-    __dc_da_converters_impl(u8);
+    __DC_DA_CONVERT_IMPL(u8);
 }
-__dc_da_converters_decl(u16)
+
+DCResultUsize dc_u16_da_to_flat_arr(DCDynArr* arr, u16** out_arr,
+                                    _Bool must_fail)
 {
-    __dc_da_converters_impl(u16);
+    __DC_DA_CONVERT_IMPL(u16);
 }
-__dc_da_converters_decl(u32)
+
+DCResultUsize dc_u32_da_to_flat_arr(DCDynArr* arr, u32** out_arr,
+                                    _Bool must_fail)
 {
-    __dc_da_converters_impl(u32);
+    __DC_DA_CONVERT_IMPL(u32);
 }
-__dc_da_converters_decl(u64)
+
+DCResultUsize dc_u64_da_to_flat_arr(DCDynArr* arr, u64** out_arr,
+                                    _Bool must_fail)
 {
-    __dc_da_converters_impl(u64);
+    __DC_DA_CONVERT_IMPL(u64);
 }
-__dc_da_converters_decl(f32)
+
+DCResultUsize dc_f32_da_to_flat_arr(DCDynArr* arr, f32** out_arr,
+                                    _Bool must_fail)
 {
-    __dc_da_converters_impl(f32);
+    __DC_DA_CONVERT_IMPL(f32);
 }
-__dc_da_converters_decl(f64)
+
+DCResultUsize dc_f64_da_to_flat_arr(DCDynArr* arr, f64** out_arr,
+                                    _Bool must_fail)
 {
-    __dc_da_converters_impl(f64);
+    __DC_DA_CONVERT_IMPL(f64);
 }
-__dc_da_converters_decl(uptr)
+
+DCResultUsize dc_uptr_da_to_flat_arr(DCDynArr* arr, uptr** out_arr,
+                                     _Bool must_fail)
 {
-    __dc_da_converters_impl(uptr);
+    __DC_DA_CONVERT_IMPL(uptr);
 }
-__dc_da_converters_decl(char)
+
+DCResultUsize dc_char_da_to_flat_arr(DCDynArr* arr, char** out_arr,
+                                     _Bool must_fail)
 {
-    __dc_da_converters_impl(char);
+    __DC_DA_CONVERT_IMPL(char);
 }
-__dc_da_converters_decl(size)
+
+DCResultUsize dc_size_da_to_flat_arr(DCDynArr* arr, size** out_arr,
+                                     _Bool must_fail)
 {
-    __dc_da_converters_impl(size);
+    __DC_DA_CONVERT_IMPL(size);
 }
-__dc_da_converters_decl(usize)
+
+DCResultUsize dc_usize_da_to_flat_arr(DCDynArr* arr, usize** out_arr,
+                                      _Bool must_fail)
 {
-    __dc_da_converters_impl(usize);
+    __DC_DA_CONVERT_IMPL(usize);
 }
-__dc_da_converters_decl(string)
+
+DCResultUsize dc_string_da_to_flat_arr(DCDynArr* arr, string** out_arr,
+                                       _Bool must_fail)
 {
-    __dc_da_converters_impl(string);
+    __DC_DA_CONVERT_IMPL(string);
 }
-__dc_da_converters_decl(voidptr)
+
+DCResultUsize dc_voidptr_da_to_flat_arr(DCDynArr* arr, voidptr** out_arr,
+                                        _Bool must_fail)
 {
-    __dc_da_converters_impl(voidptr);
+    __DC_DA_CONVERT_IMPL(voidptr);
+}
+
+DCResultUsize dc_fileptr_da_to_flat_arr(DCDynArr* arr, fileptr** out_arr,
+                                        _Bool must_fail)
+{
+    __DC_DA_CONVERT_IMPL(fileptr);
 }
