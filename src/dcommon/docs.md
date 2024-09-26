@@ -1938,6 +1938,11 @@ dc_system(OUT_VAL, ...)
 
 ```c
 /**
+ * General macro that returns current __FILE__ filename only
+ */
+#define __FILENAME__
+
+/**
  * Logs to `stderr` or global `dc_error_logs` if not `NULL` with `["LOG"]`
  * prefix
  */

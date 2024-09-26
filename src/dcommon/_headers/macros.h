@@ -24,6 +24,70 @@
 #endif
 
 // ***************************************************************************************
+// * DETECT OPERATING SYSTEM MACROS
+// *    This sections define proper operating system and operating system_arch
+// *    macros
+// ***************************************************************************************
+
+// clang-format off
+#if defined(_WIN32) || defined(_WIN64)
+    #define DC_WINDOWS
+    #if defined(_M_X64)
+        #define DC_WINDOWS_X64
+    #elif defined(_M_IX86)
+        #define DC_WINDOWS_X86
+    #elif defined(_M_ARM64)
+        #define DC_WINDOWS_ARM64
+    #elif defined(_M_ARM)
+        #define DC_WINDOWS_ARM
+    #endif
+#elif defined(__APPLE__) && defined(__MACH__)
+    #include <TargetConditionals.h>
+    #if TARGET_OS_MAC == 1
+        #define DC_MACOS
+        #if defined(__x86_64__) || defined(__aarch64__)
+            #define DC_MACOS_X64
+        #else
+            #define DC_MACOS_X86
+        #endif
+    #endif
+#elif defined(__linux__)
+    #define DC_LINUX
+    #if defined(__x86_64__)
+        #define DC_LINUX_X64
+    #elif defined(__aarch64__)
+        #define DC_LINUX_ARM64
+    #elif defined(__arm__)
+        #define DC_LINUX_ARM
+    #else
+        #define DC_LINUX_X86
+    #endif
+#elif defined(__ANDROID__)
+    #define DC_ANDROID
+    #if defined(__x86_64__)
+        #define DC_ANDROID_X64
+    #elif defined(__aarch64__)
+        #define DC_ANDROID_ARM64
+    #elif defined(__arm__)
+        #define DC_ANDROID_ARM
+    #else
+        #define DC_ANDROID_X86
+    #endif
+#elif defined(__unix__)
+    #define DC_UNIX
+    #if defined(__x86_64__)
+        #define DC_UNIX_X64
+    #elif defined(__aarch64__)
+        #define DC_UNIX_ARM64
+    #elif defined(__arm__)
+        #define DC_UNIX_ARM
+    #else
+        #define DC_UNIX_X86
+    #endif
+#endif
+// clang-format on
+
+// ***************************************************************************************
 // * PRIMITIVE TYPES TO BOOLEAN CONVERTER MACROS
 // ***************************************************************************************
 
@@ -129,6 +193,22 @@
 #define __dc_attribute(A)
 #endif
 
+#if defined(DC_WINDOWS)
+#define DC_BASE_PATH '\\'
+#else
+#define DC_BASE_PATH '/'
+#endif
+
+
+#define __BASE_FILE                                                            \
+    (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+
+/**
+ * General macro that returns current __FILE__ filename only
+ */
+#define __FILENAME__                                                           \
+    (strrchr(__BASE_FILE, '/') ? strrchr(__BASE_FILE, '/') + 1 : __BASE_FILE)
+
 /**
  * Creates temporary string of given format and data and runs it under the
  * system and keeps the returned value in the OUT_VAL
@@ -156,70 +236,6 @@
 #define dc_tostr_bool(B) ((B) ? "true" : "false")
 
 // ***************************************************************************************
-// * DETECT OPERATING SYSTEM MACROS
-// *    This sections define proper operating system and operating system_arch
-// *    macros
-// ***************************************************************************************
-
-// clang-format off
-#if defined(_WIN32) || defined(_WIN64)
-    #define DC_WINDOWS
-    #if defined(_M_X64)
-        #define DC_WINDOWS_X64
-    #elif defined(_M_IX86)
-        #define DC_WINDOWS_X86
-    #elif defined(_M_ARM64)
-        #define DC_WINDOWS_ARM64
-    #elif defined(_M_ARM)
-        #define DC_WINDOWS_ARM
-    #endif
-#elif defined(__APPLE__) && defined(__MACH__)
-    #include <TargetConditionals.h>
-    #if TARGET_OS_MAC == 1
-        #define DC_MACOS
-        #if defined(__x86_64__) || defined(__aarch64__)
-            #define DC_MACOS_X64
-        #else
-            #define DC_MACOS_X86
-        #endif
-    #endif
-#elif defined(__linux__)
-    #define DC_LINUX
-    #if defined(__x86_64__)
-        #define DC_LINUX_X64
-    #elif defined(__aarch64__)
-        #define DC_LINUX_ARM64
-    #elif defined(__arm__)
-        #define DC_LINUX_ARM
-    #else
-        #define DC_LINUX_X86
-    #endif
-#elif defined(__ANDROID__)
-    #define DC_ANDROID
-    #if defined(__x86_64__)
-        #define DC_ANDROID_X64
-    #elif defined(__aarch64__)
-        #define DC_ANDROID_ARM64
-    #elif defined(__arm__)
-        #define DC_ANDROID_ARM
-    #else
-        #define DC_ANDROID_X86
-    #endif
-#elif defined(__unix__)
-    #define DC_UNIX
-    #if defined(__x86_64__)
-        #define DC_UNIX_X64
-    #elif defined(__aarch64__)
-        #define DC_UNIX_ARM64
-    #elif defined(__arm__)
-        #define DC_UNIX_ARM
-    #else
-        #define DC_UNIX_X86
-    #endif
-#endif
-// clang-format on
-
-// ***************************************************************************************
 // * INTERNAL LOG MACROS MACROS
 // ***************************************************************************************
 
@@ -229,7 +245,7 @@
         fileptr __dc_stream = (dc_error_logs ? dc_error_logs : stderr);        \
         fprintf(__dc_stream, "[%s] (", CAT);                                   \
         dc_now(__dc_stream);                                                   \
-        fprintf(__dc_stream, ") \"%s:%d\" ", __FILE__, __LINE__);              \
+        fprintf(__dc_stream, ") \"%s:%d\" ", __FILENAME__, __LINE__);          \
         fprintf(__dc_stream, __VA_ARGS__);                                     \
         fprintf(__dc_stream, "\n");                                            \
     } while (0)
