@@ -150,7 +150,7 @@ DCResultUsize dc_ht_find_by_key(DCHashTable* ht, voidptr key,
         voidptr element_key = ((DCHashEntry*)element->value.voidptr_val)->key;
 
         DCResultBool cmp_res = ht->key_cmp_fn(element_key, key);
-        dc_ret_if_res_is_err(cmp_res);
+        dc_res_fail_if_err2(cmp_res);
 
         if (dc_res_val2(cmp_res))
         {
@@ -201,7 +201,7 @@ DCResultVoid dc_ht_set(DCHashTable* ht, voidptr key, DCDynVal value)
 
     DCDynVal* existed = NULL;
     DCResultUsize find_res = dc_ht_find_by_key(ht, key, &existed);
-    dc_ret_if_res_is_err(find_res);
+    dc_res_fail_if_err2(find_res);
 
     usize existed_index = dc_res_val2(find_res);
 
@@ -279,7 +279,7 @@ DCResultBool dc_ht_delete(DCHashTable* ht, voidptr key)
 
     DCDynVal* existed = NULL;
     DCResultUsize possible_bucket = dc_ht_find_by_key(ht, key, &existed);
-    dc_ret_if_res_is_err(possible_bucket);
+    dc_res_fail_if_err2(possible_bucket);
 
     usize existed_index = dc_res_val2(possible_bucket);
 

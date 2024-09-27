@@ -733,7 +733,7 @@ DCResultVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el)
     }
 
     DCResultUsize found_res = dc_da_findp(darr, el);
-    dc_ret_if_res_is_err(found_res);
+    dc_res_fail_if_err2(found_res);
 
     usize index = dc_res_val2(found_res);
 

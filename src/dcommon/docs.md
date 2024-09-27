@@ -664,7 +664,13 @@ dc_res_ret_ok_dva(TYPE, VALUE)
  * Renders an if statements that checks if main result variable (__dc_res)
  * status is error and if so returns it
  */
-dc_ret_if_err()                                                       
+dc_res_fail_if_err()                                                       
+
+/**
+ * Checks if the main result variable (__dc_result) is error does
+ * PRE_RETURN_ACTIONS and then return __dc_res
+ */
+dc_res_ret_if_err(PRE_RETURN_ACTIONS)
 
 /**
  * Assigns the main result variable (__dc_res) to the provided function call
@@ -681,7 +687,13 @@ dc_try_fail(CALL)
  * Checks provided result variable and if its status is error populates the main
  * result variable (__dc_res) error and returns it
  */
-dc_ret_if_res_is_err(RES)                                             
+dc_res_fail_if_err2(RES)                                             
+
+/**
+ * Checks if the given result variable is error copies the error data and does
+ * PRE_RETURN_ACTIONS and then return __dc_res
+ */
+dc_res_ret_if_err2(RES, PRE_RETURN_ACTIONS)
 
 /**
  * In case you want to call a function that returns a result type and you don't
@@ -703,7 +715,7 @@ dc_try_fail_temp(RES_TYPE, CALL)
  * @brief First initialize the main result variable with DCResult then try
  * calling the CALL and fail if it has error
  */
-dc_try_def(CALL)                                                      
+DC_TRY_DEF(CALL)                                                      
 
 /**
  * There are places that at the beginning of a function we might need to define
@@ -714,7 +726,7 @@ dc_try_def(CALL)
  * @brief First initialize the main result variable with given result type then
  * try calling the CALL and fail if it has error
  */
-dc_try_def2(DC_RESULT_TYPE, CALL)                                     
+DC_TRY_DEF2(DC_RESULT_TYPE, CALL)                                     
 
 /**
  * Can be used to get specific type from main result variable (__dc_res) under

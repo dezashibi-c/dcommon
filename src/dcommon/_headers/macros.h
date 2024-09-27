@@ -591,8 +591,25 @@
  * Renders an if statements that checks if main result variable (__dc_res)
  * status is error and if so returns it
  */
-#define dc_ret_if_err()                                                        \
+#define dc_res_fail_if_err()                                                   \
     if (__dc_res.status == DC_RES_ERR) return __dc_res
+
+/**
+ * Checks if the main result variable (__dc_result) is error does
+ * PRE_RETURN_ACTIONS and then return __dc_res
+ */
+#define dc_res_ret_if_err(PRE_RETURN_ACTIONS)                                  \
+    do                                                                         \
+    {                                                                          \
+        if (dc_res_is_err())                                                   \
+        {                                                                      \
+            do                                                                 \
+            {                                                                  \
+                PRE_RETURN_ACTIONS;                                            \
+            } while (0);                                                       \
+            return __dc_res();                                                 \
+        }                                                                      \
+    } while (0)
 
 /**
  * Assigns the main result variable (__dc_res) to the provided function call
@@ -607,20 +624,38 @@
     do                                                                         \
     {                                                                          \
         __dc_res = CALL;                                                       \
-        dc_ret_if_err();                                                       \
+        dc_res_fail_if_err();                                                  \
     } while (0)
 
 /**
  * Checks provided result variable and if its status is error populates the main
  * result variable (__dc_res) error and returns it
  */
-#define dc_ret_if_res_is_err(RES)                                              \
+#define dc_res_fail_if_err2(RES)                                               \
     do                                                                         \
     {                                                                          \
         if ((RES).status == DC_RES_ERR)                                        \
         {                                                                      \
             dc_res_err_cpy(RES);                                               \
             dc_res_ret();                                                      \
+        }                                                                      \
+    } while (0)
+
+/**
+ * Checks if the given result variable is error copies the error data and does
+ * PRE_RETURN_ACTIONS and then return __dc_res
+ */
+#define dc_res_ret_if_err2(RES, PRE_RETURN_ACTIONS)                            \
+    do                                                                         \
+    {                                                                          \
+        if (dc_res_is_err2(RES))                                               \
+        {                                                                      \
+            dc_res_err_cpy(RES);                                               \
+            do                                                                 \
+            {                                                                  \
+                PRE_RETURN_ACTIONS;                                            \
+            } while (0);                                                       \
+            return __dc_res();                                                 \
         }                                                                      \
     } while (0)
 
@@ -637,7 +672,7 @@
     do                                                                         \
     {                                                                          \
         RES_TYPE __temp_res = CALL;                                            \
-        dc_ret_if_res_is_err(__temp_res);                                      \
+        dc_res_fail_if_err2(__temp_res);                                       \
     } while (0)
 
 /**
@@ -649,7 +684,7 @@
  * @brief First initialize the main result variable with DCResult then try
  * calling the CALL and fail if it has error
  */
-#define dc_try_def(CALL)                                                       \
+#define DC_TRY_DEF(CALL)                                                       \
     DC_RES();                                                                  \
     dc_try_fail(CALL)
 
@@ -662,7 +697,7 @@
  * @brief First initialize the main result variable with given result type then
  * try calling the CALL and fail if it has error
  */
-#define dc_try_def2(DC_RESULT_TYPE, CALL)                                      \
+#define DC_TRY_DEF2(DC_RESULT_TYPE, CALL)                                      \
     DC_RES2(DC_RESULT_TYPE);                                                   \
     dc_try_fail(CALL)
 
@@ -1486,7 +1521,7 @@
     do                                                                         \
     {                                                                          \
         __dc_res = (HT).hash_fn((KEY));                                        \
-        dc_ret_if_res_is_err(__dc_res);                                        \
+        dc_res_fail_if_err2(__dc_res);                                         \
         VAR_NAME = (__dc_res.data.v) % (HT).cap;                               \
     } while (0)
 
@@ -1502,7 +1537,7 @@
     do                                                                         \
     {                                                                          \
         DCResultU32 __hash_res = (HT).hash_fn((KEY));                          \
-        dc_ret_if_res_is_err(__hash_res);                                      \
+        dc_res_fail_if_err2(__hash_res);                                       \
         VAR_NAME = (__hash_res.data.v) % (HT).cap;                             \
     } while (0)
 

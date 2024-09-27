@@ -222,7 +222,7 @@ DCResultVoid test2()
     }
     else
     {
-        dc_ret_if_res_is_err(res);
+        dc_res_fail_if_err2(res);
     }
 
     // dc_strdup allocates memory so we use the allocated version of
@@ -244,7 +244,7 @@ DCResultVoid test2()
     }
     else
     {
-        dc_ret_if_res_is_err(res);
+        dc_res_fail_if_err2(res);
     }
 
     dc_try_fail(dc_da_free(&darr));
@@ -270,7 +270,7 @@ DCResultVoid test3()
      * the unwanted value)
      */
     DCResultUsize len_res = dc_char_da_to_flat_arr(&darr, &result_str, false);
-    dc_ret_if_res_is_err(len_res);
+    dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
@@ -301,7 +301,7 @@ DCResultVoid test4()
 
     u8* result = NULL;
     DCResultUsize len_res = dc_u8_da_to_flat_arr(&darr, &result, true);
-    dc_ret_if_res_is_err(len_res);
+    dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
@@ -337,7 +337,7 @@ DCResultVoid test5()
 
     usize* result = NULL;
     DCResultUsize len_res = dc_usize_da_to_flat_arr(&darr, &result, true);
-    dc_ret_if_res_is_err(len_res);
+    dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
@@ -373,7 +373,7 @@ DCResultVoid test6()
 
     size* result = NULL;
     DCResultUsize len_res = dc_size_da_to_flat_arr(&darr, &result, true);
-    dc_ret_if_res_is_err(len_res);
+    dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
@@ -437,7 +437,7 @@ DCResultVoid test7()
 
     voidptr* result = NULL;
     DCResultUsize len_res = dc_voidptr_da_to_flat_arr(&darr, &result, true);
-    dc_ret_if_res_is_err(len_res);
+    dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
     {
