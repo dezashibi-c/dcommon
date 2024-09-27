@@ -650,11 +650,11 @@
     {                                                                          \
         if (dc_res_is_err2(RES))                                               \
         {                                                                      \
-            dc_res_err_cpy(RES);                                               \
             do                                                                 \
             {                                                                  \
                 PRE_RETURN_ACTIONS;                                            \
             } while (0);                                                       \
+            dc_res_err_cpy(RES);                                               \
             return __dc_res;                                                   \
         }                                                                      \
     } while (0)
@@ -1962,11 +1962,11 @@
     {                                                                          \
         if (dc_res_is_err2(RES))                                               \
         {                                                                      \
-            dc_res_err_cpy(RES);                                               \
             do                                                                 \
             {                                                                  \
                 PRE_RETURN_ACTIONS;                                            \
             } while (0);                                                       \
+            dc_res_err_cpy(RES);                                               \
             dc_return();                                                       \
         }                                                                      \
     } while (0)
