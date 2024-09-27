@@ -607,7 +607,7 @@
             {                                                                  \
                 PRE_RETURN_ACTIONS;                                            \
             } while (0);                                                       \
-            return __dc_res();                                                 \
+            return __dc_res;                                                   \
         }                                                                      \
     } while (0)
 
@@ -655,7 +655,7 @@
             {                                                                  \
                 PRE_RETURN_ACTIONS;                                            \
             } while (0);                                                       \
-            return __dc_res();                                                 \
+            return __dc_res;                                                   \
         }                                                                      \
     } while (0)
 
