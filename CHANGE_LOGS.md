@@ -1,3 +1,12 @@
+## v1.1.0-stable
+
+Release Date: 2024-09-27
+
+- Fix macro errors
+- Add more logging macros
+
+=======
+
 ## v1.0.0-beta
 
 Release Date: 2024-09-26
