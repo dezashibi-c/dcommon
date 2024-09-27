@@ -761,6 +761,42 @@
  */
 #define dc_res_err_msg2(RES) ((RES).data.e.message)
 
+/**
+ * Debug logs the given result's error result with provided string literal
+ * message prepended
+ *
+ * NOTE: The result must be error
+ */
+#define dc_res_err_dbg_log2(RES, PRE_MSG)                                      \
+    dc_dbg_log(PRE_MSG ": (code %d) %s", dc_res_err_code2(RES),                \
+               dc_res_err_msg2(RES))
+
+/**
+ * Debug logs main result variable (__dc_res) with provided string literal
+ * message prepended
+ *
+ * NOTE: The result must be error
+ */
+#define dc_res_err_dbg_log(PRE_MSG) dc_res_err_dbg_log2(__dc_res, PRE_MSG)
+
+/**
+ * Logs the given result's error result with provided string literal
+ * message prepended
+ *
+ * NOTE: The result must be error
+ */
+#define dc_res_err_log2(RES, PRE_MSG)                                          \
+    dc_log(PRE_MSG ": (code %d) %s", dc_res_err_code2(RES),                    \
+           dc_res_err_msg2(RES))
+
+/**
+ * Logs main result variable (__dc_res) with provided string literal
+ * message prepended
+ *
+ * NOTE: The result must be error
+ */
+#define dc_res_err_log(PRE_MSG) dc_res_err_log2(__dc_res, PRE_MSG)
+
 
 // ***************************************************************************************
 // * LOG MACROS

@@ -812,6 +812,38 @@ dc_res_err_msg()
 dc_res_err_msg2(RES)
 
 /**
+ * Debug logs the given result's error result with provided string literal
+ * message prepended
+ *
+ * NOTE: The result must be error
+ */
+dc_res_err_dbg_log2(RES, PRE_MSG)                                      
+
+/**
+ * Debug logs main result variable (__dc_res) with provided string literal
+ * message prepended
+ *
+ * NOTE: The result must be error
+ */
+dc_res_err_dbg_log(PRE_MSG) 
+
+/**
+ * Logs the given result's error result with provided string literal
+ * message prepended
+ *
+ * NOTE: The result must be error
+ */
+dc_res_err_log2(RES, PRE_MSG)                                          
+
+/**
+ * Logs main result variable (__dc_res) with provided string literal
+ * message prepended
+ *
+ * NOTE: The result must be error
+ */
+dc_res_err_log(PRE_MSG) 
+
+/**
  * Frees the error message of result variables if they have any allocated error
  * message string
  *
