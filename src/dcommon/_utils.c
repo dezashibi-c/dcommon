@@ -337,7 +337,7 @@ void __dc_handle_signal(int sig)
     };
 
     if (sig != SIGSEGV)
-        dc_perform_cleanup_pool(DC_CLEANUP_POOL);
+        dc_cleanup_pool_run(DC_CLEANUP_POOL);
     else
         dc_error_logs_close();
 
@@ -397,7 +397,7 @@ void dc_cleanup_pool_init2(usize count, usize batch_capacity)
     dc_result_free(&res);
 }
 
-DCResultVoid dc_perform_cleanup_batch(DCCleanupBatch* batch)
+DCResultVoid dc_cleanup_batch_run(DCCleanupBatch* batch)
 {
     DC_RES_void();
 
@@ -436,7 +436,7 @@ DCResultVoid dc_perform_cleanup_batch(DCCleanupBatch* batch)
     dc_res_ret();
 }
 
-void dc_perform_cleanup_pool(i32 selection)
+void dc_cleanup_pool_run(i32 selection)
 {
     DC_RES_void();
 
@@ -454,7 +454,7 @@ void dc_perform_cleanup_pool(i32 selection)
             dc_da_for(dc_cleanup_pool)
             {
                 dc_dbg_log("cleaning up the batch index [%" PRIuMAX "]", _idx);
-                dc_try(dc_perform_cleanup_batch(&dc_cleanup_pool.pool[_idx]));
+                dc_try(dc_cleanup_batch_run(&dc_cleanup_pool.pool[_idx]));
 
                 if (dc_res_is_err())
                 {
@@ -492,7 +492,7 @@ void dc_perform_cleanup_pool(i32 selection)
             }
 
             dc_dbg_log("cleaning up the batch index [%" PRId32 "]", selection);
-            dc_try(dc_perform_cleanup_batch(&dc_cleanup_pool.pool[selection]));
+            dc_try(dc_cleanup_batch_run(&dc_cleanup_pool.pool[selection]));
 
             if (dc_res_is_err())
             {

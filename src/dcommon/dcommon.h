@@ -851,13 +851,13 @@ void dc_cleanup_pool_init2(usize count, usize batch_capacity);
  * Performs the cleanup process for any given cleanup batch
  *
  * NOTE: This function is meant to be used internally by the
- * `dc_perform_cleanup_pool`, but you can indeed define your own
+ * `dc_cleanup_pool_run`, but you can indeed define your own
  * `DCCleanupBatch` variable and use `dc_cleanup_push2` pushing to it and
  * cleaning it up using this function and that's totally ok if you need to.
  *
  * @return nothing or error
  */
-DCResultVoid dc_perform_cleanup_batch(DCCleanupBatch* batch);
+DCResultVoid dc_cleanup_batch_run(DCCleanupBatch* batch);
 
 /**
  * Performs the whole pool or selected cleanup or nothing
@@ -867,7 +867,7 @@ DCResultVoid dc_perform_cleanup_batch(DCCleanupBatch* batch);
  *
  * @return nothing or exits with error code
  */
-void dc_perform_cleanup_pool(i32 selection);
+void dc_cleanup_pool_run(i32 selection);
 
 /**
  * Pushes an allocated address and corresponding cleanup function to be

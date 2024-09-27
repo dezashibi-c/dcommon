@@ -1656,17 +1656,17 @@
 // ***************************************************************************************
 
 /**
- * Constant for DC_EXIT_SECTION and dc_perform_cleanup_pool
+ * Constant for DC_EXIT_SECTION and dc_cleanup_pool_run
  *
- * It means the exit section will trigger dc_perform_cleanup_pool in cleaning up
+ * It means the exit section will trigger dc_cleanup_pool_run in cleaning up
  * the whole pool mode
  */
 #define DC_CLEANUP_POOL -1
 
 /**
- * Constant for DC_EXIT_SECTION and dc_perform_cleanup_pool
+ * Constant for DC_EXIT_SECTION and dc_cleanup_pool_run
  *
- * It means the exit section will trigger dc_perform_cleanup_pool to holdup and
+ * It means the exit section will trigger dc_cleanup_pool_run to holdup and
  * does nothing
  */
 #define DC_NO_CLEANUP -2
@@ -1724,6 +1724,26 @@
         dc_cleanup_push2(&dc_cleanup_pool.pool[BATCH_INDEX], ELEMENT,          \
                          CLEAN_FUNC);                                          \
     } while (0)
+
+/**
+ * Flushes (frees) selected batch index
+ *
+ * NOTE: No bound check for BATCH_INDEX warning
+ *
+ * @return nothing or error
+ */
+#define dc_cleanup_batch_flush(BATCH_INDEX)                                    \
+    dc_da_free(&dc_cleanup_pool.pool[BATCH_INDEX])
+
+/**
+ * Pops last n elements from the selected batch index
+ *
+ * NOTE: No bound check for BATCH_INDEX warning
+ *
+ * @return nothing or error
+ */
+#define dc_cleanup_batch_pop(BATCH_INDEX, COUNT)                               \
+    dc_da_pop(&dc_cleanup_pool.pool[BATCH_INDEX], COUNT, NULL, false)
 
 /**
  * Pushes an allocated memory address (ELEMENT) and its corresponding cleanup
@@ -1838,7 +1858,7 @@
  */
 #define DC_EXIT_SECTION(SELECTION)                                             \
     __dc_exit_label:                                                           \
-    dc_perform_cleanup_pool(SELECTION);                                        \
+    dc_cleanup_pool_run(SELECTION);                                            \
     return __dc_res;
 
 /**
@@ -1858,6 +1878,45 @@
     {                                                                          \
         __dc_res = RETVAL;                                                     \
         dc_return();                                                           \
+    } while (0)
+
+/**
+ * If provided RES is an error result it catches the error by copying it to
+ * __dc_res does PRE_RETURN_ACTIONS and the jumps to __dc_exit_label
+ *
+ * NOTE: DC_EXIT_SECTION must also be used at the end of current scope
+ */
+#define dc_return_if_err(RES, PRE_RETURN_ACTIONS)                              \
+    do                                                                         \
+    {                                                                          \
+        if (dc_res_is_err2(RES))                                               \
+        {                                                                      \
+            dc_res_err_cpy(RES);                                               \
+            do                                                                 \
+            {                                                                  \
+                PRE_RETURN_ACTIONS;                                            \
+            } while (0);                                                       \
+            dc_return();                                                       \
+        }                                                                      \
+    } while (0)
+
+/**
+ * If provided RES is an error result it does the PRE_RETURN_ACTIONS then sets
+ * the __dc_res to RET_VAL and the jumps to __dc_exit_label
+ *
+ * NOTE: DC_EXIT_SECTION must also be used at the end of current scope
+ */
+#define dc_return_if_err2(RES, RET_VAL, PRE_RETURN_ACTIONS)                    \
+    do                                                                         \
+    {                                                                          \
+        if (dc_res_is_err2(RES))                                               \
+        {                                                                      \
+            do                                                                 \
+            {                                                                  \
+                PRE_RETURN_ACTIONS;                                            \
+            } while (0);                                                       \
+            dc_return_with_val(RET_VAL);                                       \
+        }                                                                      \
     } while (0)
 
 #endif // DC_MACROS_H
