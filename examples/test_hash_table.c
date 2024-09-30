@@ -69,8 +69,7 @@ DCResultVoid testing_hash_table_merge(DCHashTable* source)
     }
 
     DCHashTable table2;
-    DCResultVoid void_res =
-        dc_ht_init(&table2, 10, string_hash, string_key_cmp, NULL);
+    DCResultVoid void_res = dc_ht_init(&table2, 10, string_hash, string_key_cmp, NULL);
 
     // Pushing the result to the batch index TEMP_MEMORY_BATCH=1
     // We want to use it before taking any action on result as if it contains
@@ -80,8 +79,7 @@ DCResultVoid testing_hash_table_merge(DCHashTable* source)
     // Using combinations of dc_action_on and result macros (version 2s) can
     // make lots of code quite shorter but easy to follow, read and understand
     // and even debug
-    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(void_res), "%s",
-                 dc_res_err_msg2(void_res));
+    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(void_res), "%s", dc_res_err_msg2(void_res));
 
     // We've passed the result test so we're sure table2 is initiated
     // Time to push it for cleanup in TEMP_MEMORY_BATCH
@@ -93,17 +91,15 @@ DCResultVoid testing_hash_table_merge(DCHashTable* source)
     // we can
     dc_try_ht_set_multiple(void_res, &table2,
 
-                           {"maria", dc_dv(u8, 20)}, {"jesse", dc_dv(u8, 6)},
-                           {"sophia", dc_dv(u8, 12)}, {"erisa", dc_dv(u8, 20)});
+                           {"maria", dc_dv(u8, 20)}, {"jesse", dc_dv(u8, 6)}, {"sophia", dc_dv(u8, 12)},
+                           {"erisa", dc_dv(u8, 20)});
 
     // Checking the result and take proper action
-    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(void_res), "%s",
-                 dc_res_err_msg2(void_res));
+    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(void_res), "%s", dc_res_err_msg2(void_res));
 
     // Now trying to merge the table2 into given hash table
     void_res = dc_ht_merge(source, &table2);
-    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(void_res), "%s",
-                 dc_res_err_msg2(void_res));
+    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(void_res), "%s", dc_res_err_msg2(void_res));
 
     // Initiating exit section that cleans up the memory batch index
     // TEMP_MEMORY_BATCH=1 only and returns current value of the __dc_res
@@ -128,9 +124,7 @@ int main()
     // Trying to initiate and then checking for the result and jumping to exit
     // with error value if that's the case
     DCResultHt table_res = dc_ht_new(10, string_hash, string_key_cmp, NULL);
-    dc_action_on(dc_res_is_err2(table_res),
-                 dc_return_with_val(dc_res_err_code2(table_res)), "%s",
-                 dc_res_err_msg2(table_res));
+    dc_action_on(dc_res_is_err2(table_res), dc_return_with_val(dc_res_err_code2(table_res)), "%s", dc_res_err_msg2(table_res));
 
     // We could use dc_cleanup_push_res to push automatically to the default
     // batch which is index 0
@@ -168,15 +162,12 @@ int main()
     DCDynVal* found = NULL;
     DCResultUsize usize_res = dc_ht_find_by_key(table, key1, &found);
 
-    dc_action_on(dc_res_is_err2(usize_res),
-                 dc_return_with_val(dc_res_err_code2(usize_res)), "%s",
-                 dc_res_err_msg2(usize_res));
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     dc_cleanup_push_res(&usize_res);
 
 
-    dc_action_on(table->key_count != 3, dc_return_with_val(1),
-                 "key_count must be 3");
+    dc_action_on(table->key_count != 3, dc_return_with_val(1), "key_count must be 3");
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
 
@@ -192,9 +183,7 @@ int main()
     found = NULL;
     usize_res = dc_ht_find_by_key(table, key2, &found);
 
-    dc_action_on(dc_res_is_err2(usize_res),
-                 dc_return_with_val(dc_res_err_code2(usize_res)), "%s",
-                 dc_res_err_msg2(usize_res));
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
 
@@ -208,22 +197,17 @@ int main()
     }
 
     DCResultBool del_res = dc_ht_delete(table, key2);
-    dc_action_on(dc_res_is_err2(del_res),
-                 dc_return_with_val(dc_res_err_code2(del_res)), "%s",
-                 dc_res_err_msg2(del_res));
+    dc_action_on(dc_res_is_err2(del_res), dc_return_with_val(dc_res_err_code2(del_res)), "%s", dc_res_err_msg2(del_res));
 
     dc_cleanup_push_res(&del_res);
 
 
-    dc_action_on(table->key_count != 2, dc_return_with_val(1),
-                 "key_count must be 2");
+    dc_action_on(table->key_count != 2, dc_return_with_val(1), "key_count must be 2");
 
     found = NULL;
     usize_res = dc_ht_find_by_key(table, key2, &found);
 
-    dc_action_on(dc_res_is_err2(usize_res),
-                 dc_return_with_val(dc_res_err_code2(usize_res)), "%s",
-                 dc_res_err_msg2(usize_res));
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
 
@@ -237,23 +221,16 @@ int main()
     }
 
     DCResultVoid void_res = dc_ht_set(table, key1, dc_dv(u8, 36));
-    dc_action_on(dc_res_is_err2(void_res),
-                 dc_return_with_val(dc_res_err_code2(void_res)), "%s",
-                 dc_res_err_msg2(void_res));
+    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));
 
     void_res = dc_ht_set(table, key2, dc_dv(u8, 100));
-    dc_action_on(dc_res_is_err2(void_res),
-                 dc_return_with_val(dc_res_err_code2(void_res)), "%s",
-                 dc_res_err_msg2(void_res));
+    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));
 
-    dc_action_on(table->key_count != 3, dc_return_with_val(1),
-                 "key_count must be 3");
+    dc_action_on(table->key_count != 3, dc_return_with_val(1), "key_count must be 3");
 
     found = NULL;
     usize_res = dc_ht_find_by_key(table, key1, &found);
-    dc_action_on(dc_res_is_err2(usize_res),
-                 dc_return_with_val(dc_res_err_code2(usize_res)), "%s",
-                 dc_res_err_msg2(usize_res));
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
 
@@ -268,9 +245,7 @@ int main()
 
     found = NULL;
     usize_res = dc_ht_find_by_key(table, key2, &found);
-    dc_action_on(dc_res_is_err2(usize_res),
-                 dc_return_with_val(dc_res_err_code2(usize_res)), "%s",
-                 dc_res_err_msg2(usize_res));
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
 
@@ -285,21 +260,15 @@ int main()
 
     dc_try_ht_set_multiple(void_res, table,
 
-                           dc_ht_entry("robert", dc_dv(u8, 20)),
-                           dc_ht_entry("albert", dc_dv(u8, 6)),
-                           dc_ht_entry("boris", dc_dv(u8, 12)),
-                           dc_ht_entry("navid", dc_dv(u8, 29))
+                           dc_ht_entry("robert", dc_dv(u8, 20)), dc_ht_entry("albert", dc_dv(u8, 6)),
+                           dc_ht_entry("boris", dc_dv(u8, 12)), dc_ht_entry("navid", dc_dv(u8, 29))
 
     );
-    dc_action_on(dc_res_is_err2(void_res),
-                 dc_return_with_val(dc_res_err_code2(void_res)), "%s",
-                 dc_res_err_msg2(void_res));
+    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));
 
     found = NULL;
     usize_res = dc_ht_find_by_key(table, key1, &found);
-    dc_action_on(dc_res_is_err2(usize_res),
-                 dc_return_with_val(dc_res_err_code2(usize_res)), "%s",
-                 dc_res_err_msg2(usize_res));
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
 
@@ -314,9 +283,7 @@ int main()
 
     found = NULL;
     usize_res = dc_ht_find_by_key(table, "boris", &found);
-    dc_action_on(dc_res_is_err2(usize_res),
-                 dc_return_with_val(dc_res_err_code2(usize_res)), "%s",
-                 dc_res_err_msg2(usize_res));
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
 
@@ -334,9 +301,7 @@ int main()
     // **************************************************************
     dc_log("Calling another function that uses another cleanup batch");
     void_res = testing_hash_table_merge(table);
-    dc_action_on(dc_res_is_err2(void_res),
-                 dc_return_with_val(dc_res_err_code2(void_res)), "%s",
-                 dc_res_err_msg2(void_res));
+    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));
 
     dc_log("Returned another function that uses another cleanup batch");
     // **************************************************************
@@ -345,9 +310,7 @@ int main()
 
     found = NULL;
     usize_res = dc_ht_find_by_key(table, "erisa", &found);
-    dc_action_on(dc_res_is_err2(usize_res),
-                 dc_return_with_val(dc_res_err_code2(usize_res)), "%s",
-                 dc_res_err_msg2(usize_res));
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
 
@@ -363,17 +326,14 @@ int main()
     // get all keys
     voidptr* all_keys = NULL;
     usize_res = dc_ht_keys(table, &all_keys);
-    dc_action_on(dc_res_is_err2(usize_res),
-                 dc_return_with_val(dc_res_err_code2(usize_res)), "%s",
-                 dc_res_err_msg2(usize_res));
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     dc_dbg_log("all keys address: %p", (voidptr)all_keys);
     // Registering the all_keys to the batch index 0 with the general free
     // function
     dc_cleanup_push_free(all_keys);
 
-    printf("=========\n got '%" PRIuMAX "' keys\n=========\n",
-           dc_res_val2(usize_res));
+    printf("=========\n got '%" PRIuMAX "' keys\n=========\n", dc_res_val2(usize_res));
     dc_foreach(all_keys, voidptr)
     {
         printf("- %s\n", (string)(*_it));

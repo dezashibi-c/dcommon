@@ -24,23 +24,20 @@ int main(int argc, string argv[])
 
     string s;
     DCResultUsize res = dc_sprintf(&s, "hello, %s.", "-Reader-");
-    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
-                 dc_res_err_msg2(res));
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s", dc_res_err_msg2(res));
 
     printf("%s\n", s);
     free(s);
 
     res = dc_sprintf(&s, "%c", '\0');
-    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
-                 dc_res_err_msg2(res));
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s", dc_res_err_msg2(res));
 
     printf("blank string: [%s]\n", s);
     free(s);
 
     int i = 0;
     res = dc_sprintf(&s, "%i", i++);
-    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
-                 dc_res_err_msg2(res));
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s", dc_res_err_msg2(res));
 
     printf("Zero: %s\n", s);
     free(s);
@@ -48,12 +45,10 @@ int main(int argc, string argv[])
     string my_str = NULL;
 
     res = dc_sappend(&my_str, "Hello");
-    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
-                 dc_res_err_msg2(res));
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s", dc_res_err_msg2(res));
 
     res = dc_sappend(&my_str, ", World!");
-    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s",
-                 dc_res_err_msg2(res));
+    dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s", dc_res_err_msg2(res));
 
     printf("%s\n", my_str);
     free(my_str);
@@ -61,13 +56,11 @@ int main(int argc, string argv[])
     printf("exec path: %s\n", argv[0]);
 
     DCResultString s_res = dc_replace_file_in_path(argv[0], "my_config.ini");
-    dc_action_on(dc_res_is_err2(s_res), return dc_res_err_code2(s_res), "%s",
-                 dc_res_err_msg2(s_res));
+    dc_action_on(dc_res_is_err2(s_res), return dc_res_err_code2(s_res), "%s", dc_res_err_msg2(s_res));
 
     s = dc_res_val2(s_res);
 
-    printf("config path close to exec: " DC_FG_LGREEN "%s" DC_COLOR_RESET "\n",
-           s);
+    printf("config path close to exec: " DC_FG_LGREEN "%s" DC_COLOR_RESET "\n", s);
     free(s);
 
     puts("This " dc_colorize_fg(LRED, "color") " is red!");

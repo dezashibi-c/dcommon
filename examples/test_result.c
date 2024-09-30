@@ -57,8 +57,7 @@ void handle_result(DCResultI8 result)
         return;
     }
 
-    dc_log("Error: %s (code %d)", dc_res_err_msg2(result),
-           dc_res_err_code2(result));
+    dc_log("Error: %s (code %d)", dc_res_err_msg2(result), dc_res_err_code2(result));
 }
 
 int main()
@@ -79,12 +78,10 @@ int main()
     // Why freeing, messages of errors might be allocated
     // values also might be allocated, you can handle them all at once
     dc_try(dc_result_free(&result1));
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s",
-                 dc_res_err_msg());
+    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
 
     dc_try(dc_result_free(&result2));
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s",
-                 dc_res_err_msg());
+    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
 
     return 0;
 }

@@ -46,28 +46,23 @@ int main()
 
     if (dc_sv_str_eq(view2, "Hello")) printf("Yes they are the same!\n");
 
-    if (dc_sv_str_eq(view, world))
-        printf("Yes for heaven's sake, they are the same!\n");
+    if (dc_sv_str_eq(view, world)) printf("Yes for heaven's sake, they are the same!\n");
 
-    if (dc_sv_str_eq(view2, hello))
-        printf("Yes for heaven's sake, they are the same!\n");
+    if (dc_sv_str_eq(view2, hello)) printf("Yes for heaven's sake, they are the same!\n");
 
     if (dc_sv_sv_eq(view, view2)) printf("Do you really expect that!?");
 
     string some_text = NULL;
-    dc_sprintf(&some_text, DCPRIsv " %s %s", dc_sv_fmt(view), "- whatever -",
-               hello);
+    dc_sprintf(&some_text, DCPRIsv " %s %s", dc_sv_fmt(view), "- whatever -", hello);
     dc_log("%s", some_text);
     free(some_text);
 
     // don't forget to free it!
     dc_try(dc_sv_free(&view));
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s",
-                 dc_res_err_msg());
+    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
     // free(world); // or this (just one of them)
 
     dc_try(dc_sv_free(&view2));
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s",
-                 dc_res_err_msg());
+    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
     // free(hello); // or this (just one of them)
 }

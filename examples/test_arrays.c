@@ -89,9 +89,8 @@ int main(void)
     DC_ARRAY(f32_list, f32, 1.1f, 2.2f);
     DC_ARRAY(char_list, char, 'a', 'b', 'c');
 
-    printf("u8_list's count='%" PRIuMAX "', u8_list's length='%" PRIuMAX
-           "', last element=%d\n",
-           dc_count(u8_list), dc_len(u8_list), dc_last(u8_list));
+    printf("u8_list's count='%" PRIuMAX "', u8_list's length='%" PRIuMAX "', last element=%d\n", dc_count(u8_list),
+           dc_len(u8_list), dc_last(u8_list));
 
     // Example usage of dc_action_on
     // As you can see this can be quite helpful, we've got our condition, action
@@ -168,13 +167,11 @@ int main(void)
     puts("==========================\n");
 
     puts("\n==========================");
-    dc_soneach_lit(MyStruct, _it->a != 0, print_my_struct, {.a = 4, .b = 12},
-                   {.a = 5, .b = 13}, {.a = 6, .b = 14}, {.a = 0});
+    dc_soneach_lit(MyStruct, _it->a != 0, print_my_struct, {.a = 4, .b = 12}, {.a = 5, .b = 13}, {.a = 6, .b = 14}, {.a = 0});
     puts("==========================\n");
 
     puts("\n==========================");
-    dc_sforeach_lit(MyStruct, _it->a != 0, {.a = 4, .b = 12}, {.a = 5, .b = 13},
-                    {.a = 6, .b = 14}, {.a = 0})
+    dc_sforeach_lit(MyStruct, _it->a != 0, {.a = 4, .b = 12}, {.a = 5, .b = 13}, {.a = 6, .b = 14}, {.a = 0})
     {
         print_my_struct(_it);
     }
