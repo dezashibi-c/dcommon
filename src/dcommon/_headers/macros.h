@@ -608,6 +608,12 @@
     dc_res_ret_if_err2(RES, FAILURE_ACTIONS)
 
 /**
+ * Expands to assigning main result variable (__dc_res) to the CALL
+ * and returning error with failure actions in case of errors
+ */
+#define dc_res_try_or_fail_with_default(CALL, FAILURE_ACTIONS) dc_res_try_or_fail_with2(__dc_res, CALL, FAILURE_ACTIONS)
+
+/**
  * Checks if the main result variable (__dc_result) is error does
  * PRE_RETURN_ACTIONS and then return __dc_res
  */
