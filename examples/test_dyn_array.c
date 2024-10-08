@@ -19,18 +19,9 @@
 
 void print_dv(DCDynVal* dval)
 {
-    if (dc_dv_is(*dval, u8))
-    {
-        printf("u8: %u\n", dc_dv_as(*dval, u8));
-    }
-    else if (dc_dv_is(*dval, i32))
-    {
-        printf("i32: %d\n", dc_dv_as(*dval, i32));
-    }
-    else if (dc_dv_is(*dval, string))
-    {
-        printf("string: %s\n", dc_dv_as(*dval, string));
-    }
+    printf("%s: ", dc_tostr_dvt(dval));
+
+    dc_dv_println(dval);
 }
 
 void print_da(DCDynArr* darr)

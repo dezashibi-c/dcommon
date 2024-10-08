@@ -1674,7 +1674,7 @@
  * NOTE: This is not a string allocation process this is simply putting string
  * literals together
  */
-#define dc_colorize(BG_COLOR, FG_COLOR, TEXT) DC_BG_##BG_COLOR operator DC_FG_##FG_COLOR TEXT operator DC_COLOR_RESET
+#define dc_colorize(BG_COLOR, FG_COLOR, TEXT) DC_BG_##BG_COLOR DC_FG_##FG_COLOR TEXT DC_COLOR_RESET
 
 /**
  * Colorizes given literal string by adding foreground string at
