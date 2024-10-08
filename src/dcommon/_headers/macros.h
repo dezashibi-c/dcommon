@@ -1229,11 +1229,18 @@
 #define dc_da_check_boundary(DARR, INDEX) ((DARR).count <= (INDEX))
 
 /**
+ * Retrieves dynamic value element at certain index as is
+ *
+ * NOTE: There is no boundary check in this macro, you have to do it beforehand
+ */
+#define dc_da_get2(DARR, INDEX) ((DARR).elements[INDEX])
+
+/**
  * Retrieves dynamic value element at certain index and return the wanted type
  *
  * NOTE: There is no boundary check in this macro, you have to do it beforehand
  */
-#define dc_da_get_as(DARR, INDEX, TYPE) dc_dv_as((DARR).elements[INDEX], TYPE)
+#define dc_da_get_as(DARR, INDEX, TYPE) dc_dv_as(dc_da_get2(DARR, INDEX), TYPE)
 
 /**
  * Checks if element at certain index is of the given type

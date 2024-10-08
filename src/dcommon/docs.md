@@ -1524,6 +1524,13 @@ dc_dv_is_allocated(NAME)
 dc_da_check_boundary(DARR, INDEX)
 
 /**
+ * Retrieves dynamic value element at certain index as is
+ *
+ * NOTE: There is no boundary check in this macro, you have to do it beforehand
+ */
+#define dc_da_get2(DARR, INDEX)
+
+/**
  * Retrieves dynamic value element at certain index and return the wanted type
  *
  * NOTE: There is no boundary check in this macro, you have to do it beforehand
