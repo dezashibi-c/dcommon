@@ -1,3 +1,12 @@
+## v1.3.0-stable
+
+Release Date: 2024-10-13
+
+- add more macros
+- shorten names
+
+=======
+
 ## v1.1.0-stable
 
 Release Date: 2024-09-27
