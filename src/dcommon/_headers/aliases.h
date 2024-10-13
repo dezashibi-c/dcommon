@@ -60,7 +60,7 @@ typedef struct
 } DCError;
 
 /**
- * Macro to define new Result type
+ * `[MACRO]` defines new Result type
  *
  * NOTE: See (alias.h) for usage in definition of default result types
  */
