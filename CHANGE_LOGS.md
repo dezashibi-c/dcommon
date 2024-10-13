@@ -1,7 +1,8 @@
-## v1.3.0-stable
+## v1.3.1-stable
 
 Release Date: 2024-10-13
 
+- improve namings
 - format specifier for each primitive type
 - separate primitive types from the main header file (check [test_dv_da_extra_fields.c](/examples/test_dv_da_extra_fields.c))
 - add more macros

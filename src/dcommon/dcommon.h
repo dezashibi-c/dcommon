@@ -658,12 +658,13 @@ DCResUsize dc_fileptr_da_to_flat_arr(DCDynArr* arr, fileptr** out_arr, bool must
  * @param key_cmp_fn is the function that compares a provided key and keys in
  * the buckets
  *
- * @param element_free_fn as they values are dynamic values if they must be
+ * @param hash_entry_custom_free_fn as each hash entry is saved as a dynamic value if they must be
  * freed using special process this is the parameter to be provided
  *
  * @return nothing or error
  */
-DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCDynValFreeFn element_free_fn);
+DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn,
+                     DCDynValFreeFn hash_entry_custom_free_fn);
 
 /**
  * Creates, allocates, initializes and returns a pointer to hash table
@@ -672,7 +673,7 @@ DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCom
  *
  * NOTE: Allocates memory
  */
-DCResHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCDynValFreeFn element_free_fn);
+DCResHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCDynValFreeFn hash_entry_custom_free_fn);
 
 /**
  * Frees the given hash table and all the values

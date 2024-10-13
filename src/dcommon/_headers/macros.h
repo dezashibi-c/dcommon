@@ -1645,12 +1645,17 @@
 #define DC_HT_GET_AND_DEF_CONTAINER_ROW(VAR_NAME, HT, HASH) DCDynArr* VAR_NAME = &((HT).container[HASH])
 
 /**
- * `[MACRO]` Creates a literal hash table key/value pair (entry)
+ * `[MACRO]` Creates a literal hash table entry
+ *
+ * @param KEY_TYPE is the type of the key dynamic value
+ * @param KEY is the actual value for key
+ * @param VAL_TYPE is the type of the value dynamic value
+ * @param VAL is the actual value for the value
  */
-#define dc_ht_entry(KEY, VAL)                                                                                                  \
+#define dc_ht_entry(KEY_TYPE, KEY, VAL_TYPE, VAL)                                                                              \
     (DCHashEntry)                                                                                                              \
     {                                                                                                                          \
-        .key = (KEY), .value = (VAL)                                                                                           \
+        .key = dc_dv(KEY_TYPE, (KEY)), .value = dc_dv(VAL_TYPE, (VAL))                                                         \
     }
 
 /**

@@ -258,11 +258,10 @@ int main()
         printf("Key '%s' not found\n", dc_dv_as(key2, string));
     }
 
-    dc_try_ht_set_multiple(
-        void_res, table,
+    dc_try_ht_set_multiple(void_res, table,
 
-        dc_ht_entry(dc_dv(string, "robert"), dc_dv(u8, 20)), dc_ht_entry(dc_dv(string, "albert"), dc_dv(u8, 6)),
-        dc_ht_entry(dc_dv(string, "boris"), dc_dv(u8, 12)), dc_ht_entry(dc_dv(string, "navid"), dc_dv(u8, 29))
+                           dc_ht_entry(string, "robert", u8, 20), dc_ht_entry(string, "albert", u8, 6),
+                           dc_ht_entry(string, "boris", u8, 12), dc_ht_entry(string, "navid", u8, 29)
 
     );
     dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));

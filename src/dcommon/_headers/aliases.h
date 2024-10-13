@@ -275,7 +275,7 @@ typedef struct
 
     DCHashFn hash_fn;
     DCKeyCompFn key_cmp_fn;
-    DCDynValFreeFn element_free_fn;
+    DCDynValFreeFn hash_entry_custom_free_fn;
 } DCHashTable;
 
 // ***************************************************************************************

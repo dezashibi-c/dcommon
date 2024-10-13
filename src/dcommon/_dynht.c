@@ -22,7 +22,8 @@
 
 #include "dcommon.h"
 
-DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCDynValFreeFn element_free_fn)
+DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn,
+                     DCDynValFreeFn hash_entry_custom_free_fn)
 {
     DC_RES_void();
 
@@ -47,12 +48,12 @@ DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCom
 
     ht->hash_fn = hash_fn;
     ht->key_cmp_fn = key_cmp_fn;
-    ht->element_free_fn = element_free_fn;
+    ht->hash_entry_custom_free_fn = hash_entry_custom_free_fn;
 
     dc_res_ret();
 }
 
-DCResHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCDynValFreeFn element_free_fn)
+DCResHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCDynValFreeFn hash_entry_custom_free_fn)
 {
     DC_RES_ht();
 
@@ -65,7 +66,7 @@ DCResHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCDy
         dc_res_ret_e(2, "Memory allocation failed");
     }
 
-    dc_try_fail_temp(DCResVoid, dc_ht_init(ht, capacity, hash_fn, key_cmp_fn, element_free_fn));
+    dc_try_fail_temp(DCResVoid, dc_ht_init(ht, capacity, hash_fn, key_cmp_fn, hash_entry_custom_free_fn));
 
     dc_res_ret_ok(ht);
 }
@@ -96,7 +97,7 @@ DCResVoid dc_ht_free(DCHashTable* ht)
     ht->key_count = 0;
     ht->hash_fn = NULL;
     ht->key_cmp_fn = NULL;
-    ht->element_free_fn = NULL;
+    ht->hash_entry_custom_free_fn = NULL;
 
     dc_res_ret();
 }
@@ -186,7 +187,7 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value)
 
     if (current->cap == 0)
     {
-        dc_try_fail(dc_da_init(current, ht->element_free_fn));
+        dc_try_fail(dc_da_init(current, ht->hash_entry_custom_free_fn));
         dc_try_fail(dc_da_push(current, dc_dva(voidptr, new_entry)));
 
         ht->key_count++;
@@ -202,7 +203,7 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value)
 
     if (existed != NULL)
     {
-        dc_try_fail(dc_dv_free(&current->elements[existed_index], ht->element_free_fn));
+        dc_try_fail(dc_dv_free(&current->elements[existed_index], ht->hash_entry_custom_free_fn));
 
         current->elements[existed_index] = dc_dva(voidptr, new_entry);
 
