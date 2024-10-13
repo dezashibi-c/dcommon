@@ -17,13 +17,14 @@
 #ifndef DC_MAIN_HEADER_H
 #define DC_MAIN_HEADER_H
 
+
+#include "dcommon_primitives.h"
+
 #define __DC_BYPASS_PRIVATE_PROTECTION
 
-#include "_headers/general.h"
+#include "_headers/macros.h"
 
 #include "_headers/aliases.h"
-
-#include "_headers/macros.h"
 
 // ***************************************************************************************
 // * FUNCTION DECLARATIONS
@@ -268,29 +269,50 @@ DCResVoid dc_da_append(DCDynArr* darr, DCDynArr* from);
 DCResDv dc_da_get(DCDynArr* darr, usize index);
 
 /**
- * Checks whether two given dynamic values are equal or not
+ * Checks whether two given pointers to dynamic values are equal or not
  *
  * @return bool or error
  */
 DCResBool dc_dv_eq(DCDynVal* dv1, DCDynVal* dv2);
 
 /**
+ * Checks whether a pointer to a dynamic values is equal to
+ * the given dynamic value or not
+ *
+ * @return bool or error
+ */
+DCResBool dc_dv_eq2(DCDynVal* dv1, DCDynVal dv2);
+
+/**
+ * Checks whether two given dynamic values are equal or not
+ *
+ * @return bool or error
+ */
+DCResBool dc_dv_eq3(DCDynVal dv1, DCDynVal dv2);
+
+/**
  * Searches for given element (a pointer to a dynamic value) in an array
+ *
+ * @param dv_eq_fn is a function that compares custom extra types added to
+ *                 dynamic value
  *
  * @return index or error
  *
  * NOTE: error code 6 means not found, other error types might happen as well
  */
-DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el);
+DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn);
 
 /**
  * Searches for given element (a literal dynamic value) in an array
  *
+ * @param dv_eq_fn is a function that compares custom extra types added to
+ *                 dynamic value
+ *
  * @return index or error
  *
  * NOTE: error code 6 means not found, other error types might happen as well
  */
-DCResUsize dc_da_find(DCDynArr* darr, DCDynVal el);
+DCResUsize dc_da_find(DCDynArr* darr, DCDynVal el, DCDVEqFn dv_eq_fn);
 
 /**
  * Frees allocated string or voidptr, does nothing for the rest of dynamic value
@@ -353,22 +375,28 @@ DCResVoid dc_da_delete(DCDynArr* darr, usize index);
 /**
  * Tries to delete an element by pointer in the given darr
  *
+ * @param dv_eq_fn is a function that compares custom extra types added to
+ *                 dynamic value
+ *
  * NOTE: it first tries to find the item then it will delete it, so an error
  * with code 6 (not found) can happen.
  *
  * @return nothing or error (including code 6 -> not found)
  */
-DCResVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el);
+DCResVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn);
 
 /**
  * Tries to delete an element in the given darr
  *
+ * @param dv_eq_fn is a function that compares custom extra types added to
+ *                 dynamic value
+ *
  * NOTE: it first tries to find the item then it will delete it, so an error
  * with code 6 (not found) can happen.
  *
  * @return nothing or error (including code 6 -> not found)
  */
-DCResVoid dc_da_delete_el(DCDynArr* darr, DCDynVal el);
+DCResVoid dc_da_delete_el(DCDynArr* darr, DCDynVal el, DCDVEqFn dv_eq_fn);
 
 /**
  * Inserts given value at the given `start_index` (resize might happen)

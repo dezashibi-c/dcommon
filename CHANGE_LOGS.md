@@ -2,8 +2,12 @@
 
 Release Date: 2024-10-13
 
+- format specifier for each primitive type
+- separate primitive types from the main header file (check [test_dv_da_extra_fields.c](/examples/test_dv_da_extra_fields.c))
 - add more macros
 - shorten names
+- dynamic value is now supporting any number of extra fields in its union
+- new example is added (check [test_dv_da_extra_fields.c](/examples/test_dv_da_extra_fields.c))
 
 =======
 

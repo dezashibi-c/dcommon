@@ -22,38 +22,6 @@
 #error "You cannot use this header (aliases.h) directly, please consider including dcommon.h"
 #endif
 
-#include <limits.h>
-#include <math.h>
-#include <stddef.h>
-#include <stdint.h>
-
-// ***************************************************************************************
-// * PRIMITIVE TYPES DECLARATIONS
-// ***************************************************************************************
-
-typedef int8_t i8;
-typedef int16_t i16;
-typedef int32_t i32;
-typedef int64_t i64;
-
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
-
-typedef float f32;
-typedef double f64;
-
-typedef uintptr_t uptr;
-
-typedef ptrdiff_t size;
-typedef size_t usize;
-
-typedef char* string;
-
-typedef void* voidptr;
-typedef FILE* fileptr;
-
 // ***************************************************************************************
 // * RESULT TYPE DECLARATIONS
 // ***************************************************************************************
@@ -80,6 +48,8 @@ typedef enum
  * - '5' Internal errors
  * - '6' Not Found
  *
+ * NOTE: You can use macros `dc_err` and `dc_err_msg`
+ *
  * 2. If message is allocated the `allocated` field must be set to true.
  */
 typedef struct
@@ -88,7 +58,6 @@ typedef struct
     string message;
     bool allocated;
 } DCError;
-
 
 /**
  * Macro to define new Result type
@@ -149,26 +118,31 @@ DCResType(bool, DCResBool);
  */
 typedef enum
 {
-    DC_DYN_VAL_TYPE_i8,
-    DC_DYN_VAL_TYPE_i16,
-    DC_DYN_VAL_TYPE_i32,
-    DC_DYN_VAL_TYPE_i64,
+    dc_dvt(i8),
+    dc_dvt(i16),
+    dc_dvt(i32),
+    dc_dvt(i64),
 
-    DC_DYN_VAL_TYPE_u8,
-    DC_DYN_VAL_TYPE_u16,
-    DC_DYN_VAL_TYPE_u32,
-    DC_DYN_VAL_TYPE_u64,
+    dc_dvt(u8),
+    dc_dvt(u16),
+    dc_dvt(u32),
+    dc_dvt(u64),
 
-    DC_DYN_VAL_TYPE_f32,
-    DC_DYN_VAL_TYPE_f64,
+    dc_dvt(f32),
+    dc_dvt(f64),
 
-    DC_DYN_VAL_TYPE_uptr,
-    DC_DYN_VAL_TYPE_char,
-    DC_DYN_VAL_TYPE_size,
-    DC_DYN_VAL_TYPE_usize,
-    DC_DYN_VAL_TYPE_string,
-    DC_DYN_VAL_TYPE_voidptr,
-    DC_DYN_VAL_TYPE_fileptr,
+    dc_dvt(uptr),
+    dc_dvt(char),
+    dc_dvt(size),
+    dc_dvt(usize),
+    dc_dvt(string),
+    dc_dvt(voidptr),
+    dc_dvt(fileptr),
+
+#ifdef DC_DV_EXTRA_TYPES
+    DC_DV_EXTRA_TYPES
+#endif
+
 } DCDynValType;
 
 /**
@@ -181,27 +155,31 @@ typedef struct
     bool allocated;
     union
     {
-        i8 i8_val;
-        i16 i16_val;
-        i32 i32_val;
-        i64 i64_val;
+        dc_dvf_decl(i8);
+        dc_dvf_decl(i16);
+        dc_dvf_decl(i32);
+        dc_dvf_decl(i64);
 
-        u8 u8_val;
-        u16 u16_val;
-        u32 u32_val;
-        u64 u64_val;
+        dc_dvf_decl(u8);
+        dc_dvf_decl(u16);
+        dc_dvf_decl(u32);
+        dc_dvf_decl(u64);
 
-        f32 f32_val;
-        f64 f64_val;
+        dc_dvf_decl(f32);
+        dc_dvf_decl(f64);
 
-        uptr uptr_val;
-        char char_val;
-        string string_val;
-        voidptr voidptr_val;
-        fileptr fileptr_val;
+        dc_dvf_decl(uptr);
+        dc_dvf_decl(char);
+        dc_dvf_decl(string);
+        dc_dvf_decl(voidptr);
+        dc_dvf_decl(fileptr);
 
-        size size_val;
-        usize usize_val;
+        dc_dvf_decl(size);
+        dc_dvf_decl(usize);
+
+#ifdef DC_DV_EXTRA_FIELDS
+        DC_DV_EXTRA_FIELDS
+#endif
     } value;
 } DCDynVal;
 
@@ -217,6 +195,11 @@ typedef struct
  * process (see dc_dv_free)
  */
 typedef DCResVoid (*DCDynValFreeFn)(DCDynVal*);
+
+/**
+ * Function type for checking equality of two given pointer to dynamic values
+ */
+DCDynValOpFnType(DCResBool, DCDVEqFn);
 
 /**
  * Dynamic array with ability to keep any number of dynamic values

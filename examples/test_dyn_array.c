@@ -191,7 +191,7 @@ DCResVoid test2()
     DCDynVal search_val;
     dc_dv_set(search_val, u8, 42);
 
-    DCResUsize res = dc_da_findp(&darr, &search_val);
+    DCResUsize res = dc_da_findp(&darr, &search_val, NULL);
 
     if (dc_res_is_ok2(res))
     {
@@ -212,7 +212,7 @@ DCResVoid test2()
     // risky is happening too as we assumed dc_strdup is successful
     dc_dv_seta(search_val, string, dc_res_val2(dc_strdup("Hello, Dynamic Array!")));
 
-    res = dc_da_findp(&darr, &search_val);
+    res = dc_da_findp(&darr, &search_val, NULL);
 
     if (dc_res_is_ok2(res))
     {

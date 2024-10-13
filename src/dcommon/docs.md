@@ -53,17 +53,17 @@ dc_as_bool(TYPE, VAL)
 /**
  * Default value of boolean based on u8 dynamic value of 1
  */
-#define DC_DV_TRUE
+#define dc_dv_true()
 
 /**
  * Default value of boolean based on u8 dynamic value of 0
  */
-#define DC_DV_FALSE
+#define dc_dv_false()
 
 /**
  * Default value of boolean based on voidptr dynamic value of NULL
  */
-#define DC_DV_NULL
+#define dc_dv_nullptr()
 
 /**
  * Provides proper stopper for given type
@@ -1476,6 +1476,11 @@ DC_DV_FREE_FN_DECL(NAME)
  * Expands to proper enum value for given type that is used in dynamic values
  */
 dc_dvt(TYPE)
+
+/**
+ * Expands to proper field name of the dynamic value union field (value)
+ */
+#define dc_dvf(TYPE)
 
 /**
  * Defines a dynamic value literal which holds given type and value and is

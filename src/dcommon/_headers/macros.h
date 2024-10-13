@@ -87,6 +87,34 @@
 // clang-format on
 
 // ***************************************************************************************
+// * PRIMITIVE TYPES FORMAT SPECIFIER
+// ***************************************************************************************
+
+/**
+ * Expands to corresponding format specifier for given type
+ */
+#define dc_fmt(TYPE) dc_##TYPE##_fmt()
+
+#define dc_u8_fmt() "%" PRIu8
+#define dc_u16_fmt() "%" PRIu16
+#define dc_u32_fmt() "%" PRIu32
+#define dc_u64_fmt() "%" PRIu64
+#define dc_i8_fmt() "%" PRId8
+#define dc_i16_fmt() "%" PRId16
+#define dc_i32_fmt() "%" PRId32
+#define dc_i64_fmt() "%" PRId64
+#define dc_f32_fmt() "%f"
+#define dc_f64_fmt() "%lf"
+
+#define dc_uptr_fmt() "%" PRIuPTR
+#define dc_char_fmt() "%c"
+#define dc_string_fmt() "%s"
+#define dc_voidptr_fmt() "%p"
+#define dc_fileptr_fmt() "%p"
+#define dc_size_fmt() "%" PRIdPTR
+#define dc_usize_fmt() "%" PRIuMAX
+
+// ***************************************************************************************
 // * PRIMITIVE TYPES TO BOOLEAN CONVERTER MACROS
 // ***************************************************************************************
 
@@ -118,20 +146,31 @@
 #define dc_size_as_bool(VAL) ((VAL) != 0)
 #define dc_usize_as_bool(VAL) ((VAL) != 0)
 
+
+/**
+ * Creates an u8 based boolean dynamic value with 0 or 1
+ */
+#define dc_dv_bool(BOOL_VAL) dc_dv(u8, (bool)(BOOL_VAL))
+
 /**
  * Default value of boolean based on u8 dynamic value of 1
  */
-#define DC_DV_TRUE dc_dv(u8, true)
+#define dc_dv_true() dc_dv_bool(true)
 
 /**
  * Default value of boolean based on u8 dynamic value of 0
  */
-#define DC_DV_FALSE dc_dv(u8, false)
+#define dc_dv_false() dc_dv_bool(false)
 
 /**
- * Default value of boolean based on voidptr dynamic value of NULL
+ * Creates a NULL value of voidptr
  */
-#define DC_DV_NULL dc_dv(voidptr, NULL)
+#define dc_dv_nullptr() dc_dv(voidptr, NULL)
+
+/**
+ * Creates a NULL value of fileptr
+ */
+#define dc_dv_nofile() dc_dv(fileptr, NULL)
 
 // ***************************************************************************************
 // * STOPPER AND STOPPER CHECKERS
@@ -288,6 +327,36 @@
 // ***************************************************************************************
 // * RESULT MACROS
 // ***************************************************************************************
+
+/* Default error enums and string literals, any macro with DC_ERR at the beginning and
+    DC_ERR_.._MSG will be recognized */
+
+#define DC_ERR_NV 1
+#define DC_ERR_MEM 2
+#define DC_ERR_TYPE 3
+#define DC_ERR_INDEX 4
+#define DC_ERR_INTERNAL 5
+#define DC_ERR_NF 6
+
+#define DC_ERR_NV_MSG "Null value received"
+#define DC_ERR_MEM_MSG "Memory allocation/re-allocation failed"
+#define DC_ERR_TYPE_MSG "Unknown type received"
+#define DC_ERR_INDEX_MSG "Index out of bound"
+#define DC_ERR_NF_MSG "Not Found"
+
+/**
+ * Expands to proper enum for error code
+ *
+ * @param ERR is the error short names, pre-defined options are: `NV`, `MEM`, `TYPE`, `INDEX`, `INTERNAL`, `NF`.
+ */
+#define dc_err(ERR) DC_ERR_##ERR
+
+/**
+ * Expands to proper enum for error message literal string
+ *
+ * @param ERR is the error short names, pre-defined options are: `NV`, `MEM`, `TYPE`, `INDEX`, `INTERNAL`, `NF`.
+ */
+#define dc_err_msg(ERR) DC_ERR_##ERR##_MSG
 
 /**
  * Defines the main result variable (__dc_res) as DCRes and initiates it as
@@ -1151,9 +1220,30 @@
 #define DC_DV_FREE_FN_DECL(NAME) DCResVoid NAME(DCDynVal* _value)
 
 /**
+ * Macro to define custom operation function for two dynamic values
+ */
+#define DC_DV_OP_FN_DECL(RET_TYPE, NAME) RET_TYPE NAME(DCDynVal* _dv1, DCDynVal* _dv2)
+
+/**
+ * Macro to define a new function pointer that must receives two pointers to
+ * two dynamic values and return given type
+ */
+#define DCDynValOpFnType(RET_TYPE, TYPE_NAME) typedef RET_TYPE (*TYPE_NAME)(DCDynVal*, DCDynVal*)
+
+/**
  * Expands to proper enum value for given type that is used in dynamic values
  */
 #define dc_dvt(TYPE) DC_DYN_VAL_TYPE_##TYPE
+
+/**
+ * Expands to proper field name of the dynamic value union field (value)
+ */
+#define dc_dvf(TYPE) TYPE##_val
+
+/**
+ * Expands to proper field name declaration for the dynamic value union field (value)
+ */
+#define dc_dvf_decl(TYPE) TYPE TYPE##_val
 
 /**
  * Defines a dynamic value literal which holds given type and value and is
@@ -1164,7 +1254,7 @@
 #define dc_dv(TYPE, VALUE)                                                                                                     \
     (DCDynVal)                                                                                                                 \
     {                                                                                                                          \
-        .type = dc_dvt(TYPE), .value.TYPE##_val = VALUE, .allocated = false                                                    \
+        .type = dc_dvt(TYPE), .value.dc_dvf(TYPE) = VALUE, .allocated = false                                                  \
     }
 
 /**
@@ -1176,14 +1266,14 @@
 #define dc_dva(TYPE, VALUE)                                                                                                    \
     (DCDynVal)                                                                                                                 \
     {                                                                                                                          \
-        .type = dc_dvt(TYPE), .value.TYPE##_val = VALUE, .allocated = true                                                     \
+        .type = dc_dvt(TYPE), .value.dc_dvf(TYPE) = VALUE, .allocated = true                                                   \
     }
 
 /**
  * Defines new variable of NAME with given type, value and allocation status
  */
 #define DC_DV_DEF(NAME, TYPE, VALUE, ALLOC)                                                                                    \
-    DCDynVal NAME = {.type = dc_dvt(TYPE), .value.TYPE##_val = VALUE, .allocated = ALLOC}
+    DCDynVal NAME = {.type = dc_dvt(TYPE), .value.dc_dvf(TYPE) = VALUE, .allocated = ALLOC}
 
 /**
  * Expands to setting type and value of an existing dynamic value variable and
@@ -1196,7 +1286,7 @@
     {                                                                                                                          \
         (NAME).type = dc_dvt(TYPE);                                                                                            \
         (NAME).allocated = false;                                                                                              \
-        (NAME).value.TYPE##_val = VALUE;                                                                                       \
+        (NAME).value.dc_dvf(TYPE) = VALUE;                                                                                     \
     } while (0)
 
 /**
@@ -1230,7 +1320,7 @@
 /**
  * Retrieves the value of the given dynamic value for the given type
  */
-#define dc_dv_as(NAME, TYPE) ((NAME).value.TYPE##_val)
+#define dc_dv_as(NAME, TYPE) ((NAME).value.dc_dvf(TYPE))
 
 /**
  *  Checks if the dynamic value is marked as allocated
