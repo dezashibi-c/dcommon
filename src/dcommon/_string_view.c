@@ -24,7 +24,7 @@
 #include "_headers/general.h"
 #include "_headers/macros.h"
 
-DCResultSv dc_sv_create(string base, usize start, usize length)
+DCResSv dc_sv_create(string base, usize start, usize length)
 {
     DC_RES_sv();
 
@@ -43,7 +43,7 @@ DCResultSv dc_sv_create(string base, usize start, usize length)
     dc_res_ret_ok(view);
 }
 
-DCResultString dc_sv_as_cstr(DCStringView* sv)
+DCResString dc_sv_as_cstr(DCStringView* sv)
 {
     DC_RES_string();
 
@@ -71,7 +71,7 @@ DCResultString dc_sv_as_cstr(DCStringView* sv)
     dc_res_ret_ok(sv->cstr);
 }
 
-DCResultVoid dc_sv_free(DCStringView* sv)
+DCResVoid dc_sv_free(DCStringView* sv)
 {
     DC_RES_void();
 

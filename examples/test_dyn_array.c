@@ -29,7 +29,7 @@ void print_da(DCDynArr* darr)
     dc_da_for(*darr)
     {
         printf("['%" PRIuMAX "'] ", _idx);
-        DCResultDv res = dc_da_get(darr, _idx);
+        DCResDv res = dc_da_get(darr, _idx);
         if (dc_res_is_ok2(res)) print_dv(dc_res_val2(res));
     }
 }
@@ -37,7 +37,7 @@ void print_da(DCDynArr* darr)
 #define LOG_DYNAMIC_ARRAY_INFO(DARR)                                                                                           \
     printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX "'\n", DARR.cap, DARR.count);
 
-DCResultVoid test1()
+DCResVoid test1()
 {
     DC_RES_void();
 
@@ -163,7 +163,7 @@ DCResultVoid test1()
     dc_res_ret();
 }
 
-DCResultVoid test2()
+DCResVoid test2()
 {
     DC_RES_void();
 
@@ -191,7 +191,7 @@ DCResultVoid test2()
     DCDynVal search_val;
     dc_dv_set(search_val, u8, 42);
 
-    DCResultUsize res = dc_da_findp(&darr, &search_val);
+    DCResUsize res = dc_da_findp(&darr, &search_val);
 
     if (dc_res_is_ok2(res))
     {
@@ -233,7 +233,7 @@ DCResultVoid test2()
     return dc_dv_free(&search_val, NULL);
 }
 
-DCResultVoid test3()
+DCResVoid test3()
 {
     DC_RES_void();
 
@@ -249,7 +249,7 @@ DCResultVoid test3()
      * Convert the `darr` to char flat array and don't fail (bypass
      * the unwanted value)
      */
-    DCResultUsize len_res = dc_char_da_to_flat_arr(&darr, &result_str, false);
+    DCResUsize len_res = dc_char_da_to_flat_arr(&darr, &result_str, false);
     dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
@@ -266,7 +266,7 @@ DCResultVoid test3()
     return dc_da_free(&darr);
 }
 
-DCResultVoid test4()
+DCResVoid test4()
 {
     DC_RES_void();
 
@@ -279,7 +279,7 @@ DCResultVoid test4()
     );
 
     u8* result = NULL;
-    DCResultUsize len_res = dc_u8_da_to_flat_arr(&darr, &result, true);
+    DCResUsize len_res = dc_u8_da_to_flat_arr(&darr, &result, true);
     dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
@@ -298,7 +298,7 @@ DCResultVoid test4()
     return dc_da_free(&darr);
 }
 
-DCResultVoid test5()
+DCResVoid test5()
 {
     DC_RES_void();
 
@@ -311,7 +311,7 @@ DCResultVoid test5()
     );
 
     usize* result = NULL;
-    DCResultUsize len_res = dc_usize_da_to_flat_arr(&darr, &result, true);
+    DCResUsize len_res = dc_usize_da_to_flat_arr(&darr, &result, true);
     dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
@@ -330,7 +330,7 @@ DCResultVoid test5()
     return dc_da_free(&darr);
 }
 
-DCResultVoid test6()
+DCResVoid test6()
 {
     DC_RES_void();
 
@@ -343,7 +343,7 @@ DCResultVoid test6()
     );
 
     size* result = NULL;
-    DCResultUsize len_res = dc_size_da_to_flat_arr(&darr, &result, true);
+    DCResUsize len_res = dc_size_da_to_flat_arr(&darr, &result, true);
     dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
@@ -382,7 +382,7 @@ MyStruct* new_ms(int a, float b)
     return ms;
 }
 
-DCResultVoid test7()
+DCResVoid test7()
 {
     DC_RES_void();
 
@@ -404,7 +404,7 @@ DCResultVoid test7()
     }
 
     voidptr* result = NULL;
-    DCResultUsize len_res = dc_voidptr_da_to_flat_arr(&darr, &result, true);
+    DCResUsize len_res = dc_voidptr_da_to_flat_arr(&darr, &result, true);
     dc_res_fail_if_err2(len_res);
 
     if (dc_res_is_ok2(len_res))
@@ -431,7 +431,7 @@ int main()
      * First, main cannot return a result type so we need to at the end of the
      * day return just zero or any other number
      *
-     * We could put DCResultVoid some_res = test1();
+     * We could put DCResVoid some_res = test1();
      * And then check with the second version of all the dc_res_... functions
      * As an example
      * dc_action_on(dc_res_is_err2(some_res), return dc_res_err_code2(some_res),

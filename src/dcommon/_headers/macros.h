@@ -151,7 +151,7 @@
 #define DC_STOPPER_f32 NAN
 #define DC_STOPPER_f64 NAN
 
-#define DC_STOPPER_uptr (uptr) NULL
+#define DC_STOPPER_uptr ((uptr)NULL)
 #define DC_STOPPER_string NULL
 #define DC_STOPPER_voidptr NULL
 #define DC_STOPPER_fileptr NULL
@@ -290,11 +290,11 @@
 // ***************************************************************************************
 
 /**
- * Defines the main result variable (__dc_res) as DCResult and initiates it as
+ * Defines the main result variable (__dc_res) as DCRes and initiates it as
  * DC_RES_OK
  */
 #define DC_RES()                                                                                                               \
-    DCResult __dc_res;                                                                                                         \
+    DCRes __dc_res;                                                                                                            \
     __dc_res.status = DC_RES_OK
 
 /**
@@ -306,142 +306,142 @@
     __dc_res.status = DC_RES_OK
 
 /**
- * Defines the main result variable (__dc_res) as DCResultBool type and
+ * Defines the main result variable (__dc_res) as DCResBool type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_bool() DC_RES2(DCResultBool)
+#define DC_RES_bool() DC_RES2(DCResBool)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultVoid type and
+ * Defines the main result variable (__dc_res) as DCResVoid type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_void() DC_RES2(DCResultVoid)
+#define DC_RES_void() DC_RES2(DCResVoid)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultSv type and
+ * Defines the main result variable (__dc_res) as DCResSv type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_sv() DC_RES2(DCResultSv)
+#define DC_RES_sv() DC_RES2(DCResSv)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultDa type and
+ * Defines the main result variable (__dc_res) as DCResDa type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_da() DC_RES2(DCResultDa)
+#define DC_RES_da() DC_RES2(DCResDa)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultHt type and
+ * Defines the main result variable (__dc_res) as DCResHt type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_ht() DC_RES2(DCResultHt)
+#define DC_RES_ht() DC_RES2(DCResHt)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultDv type and
+ * Defines the main result variable (__dc_res) as DCResDv type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_dv() DC_RES2(DCResultDv)
+#define DC_RES_dv() DC_RES2(DCResDv)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultI8 type and
+ * Defines the main result variable (__dc_res) as DCResI8 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_i8() DC_RES2(DCResultI8)
+#define DC_RES_i8() DC_RES2(DCResI8)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultI16 type and
+ * Defines the main result variable (__dc_res) as DCResI16 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_i16() DC_RES2(DCResultI16)
+#define DC_RES_i16() DC_RES2(DCResI16)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultI32 type and
+ * Defines the main result variable (__dc_res) as DCResI32 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_i32() DC_RES2(DCResultI32)
+#define DC_RES_i32() DC_RES2(DCResI32)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultI64 type and
+ * Defines the main result variable (__dc_res) as DCResI64 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_i64() DC_RES2(DCResultI64)
+#define DC_RES_i64() DC_RES2(DCResI64)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultU8 type and
+ * Defines the main result variable (__dc_res) as DCResU8 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_u8() DC_RES2(DCResultU8)
+#define DC_RES_u8() DC_RES2(DCResU8)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultU16 type and
+ * Defines the main result variable (__dc_res) as DCResU16 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_u16() DC_RES2(DCResultU16)
+#define DC_RES_u16() DC_RES2(DCResU16)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultU32 type and
+ * Defines the main result variable (__dc_res) as DCResU32 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_u32() DC_RES2(DCResultU32)
+#define DC_RES_u32() DC_RES2(DCResU32)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultU64 type and
+ * Defines the main result variable (__dc_res) as DCResU64 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_u64() DC_RES2(DCResultU64)
+#define DC_RES_u64() DC_RES2(DCResU64)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultF32 type and
+ * Defines the main result variable (__dc_res) as DCResF32 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_f32() DC_RES2(DCResultF32)
+#define DC_RES_f32() DC_RES2(DCResF32)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultF64 type and
+ * Defines the main result variable (__dc_res) as DCResF64 type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_f64() DC_RES2(DCResultF64)
+#define DC_RES_f64() DC_RES2(DCResF64)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultUptr type and
+ * Defines the main result variable (__dc_res) as DCResUptr type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_uptr() DC_RES2(DCResultUptr)
+#define DC_RES_uptr() DC_RES2(DCResUptr)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultSize type and
+ * Defines the main result variable (__dc_res) as DCResSize type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_size() DC_RES2(DCResultSize)
+#define DC_RES_size() DC_RES2(DCResSize)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultUsize type and
+ * Defines the main result variable (__dc_res) as DCResUsize type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_usize() DC_RES2(DCResultUsize)
+#define DC_RES_usize() DC_RES2(DCResUsize)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultString type and
+ * Defines the main result variable (__dc_res) as DCResString type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_string() DC_RES2(DCResultString)
+#define DC_RES_string() DC_RES2(DCResString)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultVoidptr type and
+ * Defines the main result variable (__dc_res) as DCResVoidptr type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_voidptr() DC_RES2(DCResultVoidptr)
+#define DC_RES_voidptr() DC_RES2(DCResVoidptr)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultFileptr type and
+ * Defines the main result variable (__dc_res) as DCResFileptr type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_fileptr() DC_RES2(DCResultFileptr)
+#define DC_RES_fileptr() DC_RES2(DCResFileptr)
 
 /**
- * Defines the main result variable (__dc_res) as DCResultFileptr type and
+ * Defines the main result variable (__dc_res) as DCResFileptr type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_fileptr() DC_RES2(DCResultFileptr)
+#define DC_RES_fileptr() DC_RES2(DCResFileptr)
 
 /**
  * Sets the main result variable (__dc_res) status to DC_RES_ERR and
@@ -513,7 +513,7 @@
     } while (0)
 
 /**
- * In case the result is of type DCResult this is a shortcut to create a literal
+ * In case the result is of type DCRes this is a shortcut to create a literal
  * dynamic value and setting it to the success value on the fly
  *
  * NOTE: The value must not be allocated (see dc_res_ok_dva)
@@ -521,7 +521,7 @@
 #define dc_res_ok_dv(TYPE, VALUE) dc_res_ok(dc_dv(TYPE, (VALUE)))
 
 /**
- * In case the result is of type DCResult this is a shortcut to create a literal
+ * In case the result is of type DCRes this is a shortcut to create a literal
  * dynamic value and setting it to the success value on the fly
  *
  * NOTE: The value must be allocated (see dc_res_ok_dv)
@@ -573,7 +573,7 @@
  * Sets the main result variable (__dc_res) to success and returns it right
  * away.
  *
- * NOTE: The main result variable must be of type DCResult
+ * NOTE: The main result variable must be of type DCRes
  *
  * NOTE: The VALUE must not be allocated (see dc_res_ret_ok_dva)
  */
@@ -588,7 +588,7 @@
  * Sets the main result variable (__dc_res) to success and returns it right
  * away.
  *
- * NOTE: The main result variable must be of type DCResult
+ * NOTE: The main result variable must be of type DCRes
  *
  * NOTE: The VALUE must be allocated (see dc_res_ret_ok_dv)
  */
@@ -629,7 +629,7 @@
 #define dc_try_or_fail_with(CALL, FAILURE_ACTIONS) dc_try_or_fail_with2(__dc_res, CALL, FAILURE_ACTIONS)
 
 /**
- * Checks if the main result variable (__dc_result) is error does
+ * Checks if the main result variable (__dc_res) is error does
  * PRE_RETURN_ACTIONS and then return __dc_res
  */
 #define dc_res_ret_if_err(PRE_RETURN_ACTIONS)                                                                                  \
@@ -695,7 +695,7 @@
 
 /**
  * In case you want to call a function that returns a result type and you don't
- * care it's return type (might be DCResultVoid as an example) but you do care
+ * care it's return type (might be DCResVoid as an example) but you do care
  * if the result is error and you want to halt the process this macro is the
  * solution
  *
@@ -715,7 +715,7 @@
  * function and fail if it is error or hold the success data in the main result
  * variable (__dc_res) in that situation this is the macro we want to use
  *
- * @brief First initialize the main result variable with DCResult then try
+ * @brief First initialize the main result variable with DCRes then try
  * calling the CALL and fail if it has error
  */
 #define DC_TRY_DEF(CALL)                                                                                                       \
@@ -739,7 +739,7 @@
  * Can be used to get specific type from main result variable (__dc_res) under
  * two condition:
  *
- * - The main result variable (__dc_res) is of type DCResult
+ * - The main result variable (__dc_res) is of type DCRes
  * - The result status is ok
  */
 #define dc_res_as(TYPE) dc_dv_as(__dc_res.data.v, TYPE)
@@ -1148,7 +1148,7 @@
 /**
  * Macro to define custom free function for dynamic values
  */
-#define DC_DV_FREE_FN_DECL(NAME) DCResultVoid NAME(DCDynVal* _value)
+#define DC_DV_FREE_FN_DECL(NAME) DCResVoid NAME(DCDynVal* _value)
 
 /**
  * Expands to proper enum value for given type that is used in dynamic values
@@ -1328,7 +1328,7 @@
     do                                                                                                                         \
     {                                                                                                                          \
         DC_SARRAY(__initial_values, DCDynVal, __VA_ARGS__);                                                                    \
-        dc_try_fail_temp(DCResultVoid,                                                                                         \
+        dc_try_fail_temp(DCResVoid,                                                                                            \
                          __dc_da_init_with_values(DARRPTR, dc_count(__initial_values), FREE_FUNC, __initial_values));          \
     } while (0)
 
@@ -1382,7 +1382,7 @@
     do                                                                                                                         \
     {                                                                                                                          \
         DC_SARRAY(__initial_values, DCDynVal, __VA_ARGS__);                                                                    \
-        dc_try_fail_temp(DCResultVoid, __dc_da_append_values(DARRPTR, dc_count(__initial_values), __initial_values));          \
+        dc_try_fail_temp(DCResVoid, __dc_da_append_values(DARRPTR, dc_count(__initial_values), __initial_values));             \
     } while (0)
 
 /**
@@ -1436,7 +1436,7 @@
     do                                                                                                                         \
     {                                                                                                                          \
         DC_SARRAY(__initial_values, DCDynVal, __VA_ARGS__);                                                                    \
-        dc_try_fail_temp(DCResultVoid, __dc_da_insert_values(DARRPTR, INDEX, dc_count(__initial_values), __initial_values));   \
+        dc_try_fail_temp(DCResVoid, __dc_da_insert_values(DARRPTR, INDEX, dc_count(__initial_values), __initial_values));      \
     } while (0)
 
 /**
@@ -1485,17 +1485,17 @@
 /**
  * Expands to standard hash function declaration
  */
-#define DC_HT_HASH_FN_DECL(NAME) DCResultU32 NAME(voidptr _key)
+#define DC_HT_HASH_FN_DECL(NAME) DCResU32 NAME(voidptr _key)
 
 /**
  * Expands to standard hash key comparison function declaration
  */
-#define DC_HT_KEY_CMP_FN_DECL(NAME) DCResultBool NAME(voidptr _key1, voidptr _key2)
+#define DC_HT_KEY_CMP_FN_DECL(NAME) DCResBool NAME(voidptr _key1, voidptr _key2)
 
 /**
  * Gets the results of hash table's hash function for the given key
  *
- * And saves the results to the temporary variable of type DCResultU32 then
+ * And saves the results to the temporary variable of type DCResU32 then
  * extracts the u32 value of it without checking if the result was an OK or an
  * error
  *
@@ -1505,7 +1505,7 @@
     u32 VAR_NAME;                                                                                                              \
     do                                                                                                                         \
     {                                                                                                                          \
-        DCResultU32 __hash_res = (HT).hash_fn((KEY));                                                                          \
+        DCResU32 __hash_res = (HT).hash_fn((KEY));                                                                             \
         VAR_NAME = (__hash_res.data.v) % (HT).cap;                                                                             \
     } while (0)
 
@@ -1528,7 +1528,7 @@
 /**
  * Gets the results of hash table's hash function for the given key
  *
- * And saves the results to the temporary variable of type DCResultU32 then
+ * And saves the results to the temporary variable of type DCResU32 then
  * extracts the u32 value of it only checking if the result was an OK otherwise
  * it will return the error
  */
@@ -1536,7 +1536,7 @@
     u32 VAR_NAME;                                                                                                              \
     do                                                                                                                         \
     {                                                                                                                          \
-        DCResultU32 __hash_res = (HT).hash_fn((KEY));                                                                          \
+        DCResU32 __hash_res = (HT).hash_fn((KEY));                                                                             \
         dc_res_fail_if_err2(__hash_res);                                                                                       \
         VAR_NAME = (__hash_res.data.v) % (HT).cap;                                                                             \
     } while (0)
@@ -1573,7 +1573,7 @@
 /**
  * Tries to sets multiple key value pairs in a hash table without providing the
  * count and saves the result in the given RES (must be defined beforehand of
- * type DCResultVoid)
+ * type DCResVoid)
  *
  * NOTE: It does not check whether the result of the success is OK or error
  */
@@ -1598,7 +1598,7 @@
 
 /**
  * Tries to sets multiple key value pairs in a hash table without providing the
- * count and saves the result in a temporary variable of type DCResultVoid) and
+ * count and saves the result in a temporary variable of type DCResVoid) and
  * returns if the result is a failure
  */
 #define dc_try_fail_temp_ht_set_multiple(HT, ...)                                                                              \
@@ -1736,7 +1736,7 @@
 /**
  * Expands to standard function declarations for cleanup process
  */
-#define DC_CLEANUP_FN_DECL(NAME) DCResultVoid NAME(voidptr _value)
+#define DC_CLEANUP_FN_DECL(NAME) DCResVoid NAME(voidptr _value)
 
 /**
  * Runs the cleanup process of a cleanup job entry
@@ -1854,13 +1854,13 @@
  * Pushes given result variable address with default standard result variable
  * cleanup in the default batch (index 0)
  */
-#define dc_cleanup_push_res(ELEMENT) dc_cleanup_default_pool_push(ELEMENT, dc_result_free)
+#define dc_cleanup_push_res(ELEMENT) dc_cleanup_default_pool_push(ELEMENT, dc_res_free)
 
 /**
  * Pushes given result variable address with default standard result variable
  * cleanup in the given batch index
  */
-#define dc_cleanup_push_res2(BATCH_INDEX, ELEMENT) dc_cleanup_pool_push(BATCH_INDEX, ELEMENT, dc_result_free)
+#define dc_cleanup_push_res2(BATCH_INDEX, ELEMENT) dc_cleanup_pool_push(BATCH_INDEX, ELEMENT, dc_res_free)
 
 /**
  * Pushes given allocated memory address with default standard allocated memory

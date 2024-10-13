@@ -65,7 +65,7 @@ typedef enum
 {
     DC_RES_OK,
     DC_RES_ERR,
-} DCResultStatus;
+} DCResStatus;
 
 /**
  * Holds error data when the result is an error
@@ -95,10 +95,10 @@ typedef struct
  *
  * NOTE: See (alias.h) for usage in definition of default result types
  */
-#define DCResultType(TYPE, NAME)                                                                                               \
+#define DCResType(TYPE, NAME)                                                                                                  \
     typedef struct                                                                                                             \
     {                                                                                                                          \
-        DCResultStatus status;                                                                                                 \
+        DCResStatus status;                                                                                                    \
         union                                                                                                                  \
         {                                                                                                                      \
             DCError e;                                                                                                         \
@@ -107,38 +107,38 @@ typedef struct
     } NAME
 
 /**
- * Minimum structure to be able to be cased and used as a Result is DCResultVoid
+ * Minimum structure to be able to be cased and used as a Result is DCResVoid
  */
 typedef struct
 {
-    DCResultStatus status;
+    DCResStatus status;
     union
     {
         DCError e;
     } data;
-} DCResultVoid;
+} DCResVoid;
 
 // ***************************************************************************************
 // * DEFAULT PRIMITIVE RESULT TYPE DECLARATIONS
 // ***************************************************************************************
-DCResultType(i8, DCResultI8);
-DCResultType(i16, DCResultI16);
-DCResultType(i32, DCResultI32);
-DCResultType(i64, DCResultI64);
-DCResultType(u8, DCResultU8);
-DCResultType(u16, DCResultU16);
-DCResultType(u32, DCResultU32);
-DCResultType(u64, DCResultU64);
-DCResultType(f32, DCResultF32);
-DCResultType(f64, DCResultF64);
-DCResultType(uptr, DCResultUptr);
-DCResultType(size, DCResultSize);
-DCResultType(usize, DCResultUsize);
-DCResultType(string, DCResultString);
-DCResultType(voidptr, DCResultVoidptr);
-DCResultType(fileptr, DCResultFileptr);
+DCResType(i8, DCResI8);
+DCResType(i16, DCResI16);
+DCResType(i32, DCResI32);
+DCResType(i64, DCResI64);
+DCResType(u8, DCResU8);
+DCResType(u16, DCResU16);
+DCResType(u32, DCResU32);
+DCResType(u64, DCResU64);
+DCResType(f32, DCResF32);
+DCResType(f64, DCResF64);
+DCResType(uptr, DCResUptr);
+DCResType(size, DCResSize);
+DCResType(usize, DCResUsize);
+DCResType(string, DCResString);
+DCResType(voidptr, DCResVoidptr);
+DCResType(fileptr, DCResFileptr);
 
-DCResultType(bool, DCResultBool);
+DCResType(bool, DCResBool);
 
 // ***************************************************************************************
 // * DYNAMIC ARRAY TYPE DECLARATIONS
@@ -216,7 +216,7 @@ typedef struct
  * corresponding value that it is pointing to might need to have a clean up
  * process (see dc_dv_free)
  */
-typedef DCResultVoid (*DCDynValFreeFn)(DCDynVal*);
+typedef DCResVoid (*DCDynValFreeFn)(DCDynVal*);
 
 /**
  * Dynamic array with ability to keep any number of dynamic values
@@ -271,12 +271,12 @@ typedef struct
 /**
  * Function pointer type as an acceptable hash function for an Hash Table
  */
-typedef DCResultU32 (*DCHashFn)(voidptr);
+typedef DCResU32 (*DCHashFn)(voidptr);
 
 /**
  * Key comparison function type for an Hash Table
  */
-typedef DCResultBool (*DCKeyCompFn)(voidptr, voidptr);
+typedef DCResBool (*DCKeyCompFn)(voidptr, voidptr);
 
 /**
  * A Hash Table with track of capacity and number of registered keys
@@ -326,7 +326,7 @@ typedef struct
  * NOTE: If a dynamic value has a complex cleanup process you need to create
  * proper function with this signature and register it with the created function
  */
-typedef DCResultVoid (*DCCleanupFn)(voidptr);
+typedef DCResVoid (*DCCleanupFn)(voidptr);
 
 /**
  * Is a memory allocated object that needs to be managed
@@ -341,10 +341,10 @@ typedef struct
 // * DCOMMON CUSTOM TYPES RESULT TYPE DECLARATIONS
 // ***************************************************************************************
 
-DCResultType(DCDynVal, DCResult);
-DCResultType(DCStringView, DCResultSv);
-DCResultType(DCDynArr*, DCResultDa);
-DCResultType(DCHashTable*, DCResultHt);
-DCResultType(DCDynVal*, DCResultDv);
+DCResType(DCDynVal, DCRes);
+DCResType(DCStringView, DCResSv);
+DCResType(DCDynArr*, DCResDa);
+DCResType(DCHashTable*, DCResHt);
+DCResType(DCDynVal*, DCResDv);
 
 #endif // DC_ALIASES_H

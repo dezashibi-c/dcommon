@@ -55,7 +55,7 @@ enum
     TEMP_MEMORY_BATCH,
 };
 
-DCResultVoid testing_hash_table_merge(DCHashTable* source)
+DCResVoid testing_hash_table_merge(DCHashTable* source)
 {
     DC_RES_void();
 
@@ -69,12 +69,12 @@ DCResultVoid testing_hash_table_merge(DCHashTable* source)
     }
 
     DCHashTable table2;
-    DCResultVoid void_res = dc_ht_init(&table2, 10, string_hash, string_key_cmp, NULL);
+    DCResVoid void_res = dc_ht_init(&table2, 10, string_hash, string_key_cmp, NULL);
 
     // Pushing the result to the batch index TEMP_MEMORY_BATCH=1
     // We want to use it before taking any action on result as if it contains
     // any allocated strings they're going to be cleaned up
-    dc_cleanup_pool_push(TEMP_MEMORY_BATCH, &void_res, dc_result_free);
+    dc_cleanup_pool_push(TEMP_MEMORY_BATCH, &void_res, dc_res_free);
 
     // Using combinations of dc_action_on and result macros (version 2s) can
     // make lots of code quite shorter but easy to follow, read and understand
@@ -123,7 +123,7 @@ int main()
 
     // Trying to initiate and then checking for the result and jumping to exit
     // with error value if that's the case
-    DCResultHt table_res = dc_ht_new(10, string_hash, string_key_cmp, NULL);
+    DCResHt table_res = dc_ht_new(10, string_hash, string_key_cmp, NULL);
     dc_action_on(dc_res_is_err2(table_res), dc_return_with_val(dc_res_err_code2(table_res)), "%s", dc_res_err_msg2(table_res));
 
     // We could use dc_cleanup_push_res to push automatically to the default
@@ -160,7 +160,7 @@ int main()
     dc_ht_set(table, key3, dc_dv(u8, 50));
 
     DCDynVal* found = NULL;
-    DCResultUsize usize_res = dc_ht_find_by_key(table, key1, &found);
+    DCResUsize usize_res = dc_ht_find_by_key(table, key1, &found);
 
     dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
@@ -196,7 +196,7 @@ int main()
         printf("Key '%s' not found\n", key2);
     }
 
-    DCResultBool del_res = dc_ht_delete(table, key2);
+    DCResBool del_res = dc_ht_delete(table, key2);
     dc_action_on(dc_res_is_err2(del_res), dc_return_with_val(dc_res_err_code2(del_res)), "%s", dc_res_err_msg2(del_res));
 
     dc_cleanup_push_res(&del_res);
@@ -220,7 +220,7 @@ int main()
         printf("Key '%s' not found\n", key2);
     }
 
-    DCResultVoid void_res = dc_ht_set(table, key1, dc_dv(u8, 36));
+    DCResVoid void_res = dc_ht_set(table, key1, dc_dv(u8, 36));
     dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));
 
     void_res = dc_ht_set(table, key2, dc_dv(u8, 100));

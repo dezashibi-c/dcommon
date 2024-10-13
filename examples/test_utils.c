@@ -23,7 +23,7 @@ int main(int argc, string argv[])
     (void)argc;
 
     string s;
-    DCResultUsize res = dc_sprintf(&s, "hello, %s.", "-Reader-");
+    DCResUsize res = dc_sprintf(&s, "hello, %s.", "-Reader-");
     dc_action_on(dc_res_is_err2(res), return dc_res_err_code2(res), "%s", dc_res_err_msg2(res));
 
     printf("%s\n", s);
@@ -55,7 +55,7 @@ int main(int argc, string argv[])
 
     printf("exec path: %s\n", argv[0]);
 
-    DCResultString s_res = dc_replace_file_in_path(argv[0], "my_config.ini");
+    DCResString s_res = dc_replace_file_in_path(argv[0], "my_config.ini");
     dc_action_on(dc_res_is_err2(s_res), return dc_res_err_code2(s_res), "%s", dc_res_err_msg2(s_res));
 
     s = dc_res_val2(s_res);

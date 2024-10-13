@@ -17,7 +17,7 @@
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
 
-DCResultI8 divide_i8(i8 a, i8 b)
+DCResI8 divide_i8(i8 a, i8 b)
 {
     // Initializes a result for i8 type value and sets its status to OK by
     // default (creates __dc_res variable)
@@ -38,7 +38,7 @@ DCResultI8 divide_i8(i8 a, i8 b)
     dc_res_ret_ok(a / b);
 }
 
-DCResultI8 calculate_i8(i8 x, i8 y)
+DCResI8 calculate_i8(i8 x, i8 y)
 {
     DC_RES_i8();
 
@@ -49,7 +49,7 @@ DCResultI8 calculate_i8(i8 x, i8 y)
     dc_res_ret_ok(dc_res_val() + 10);
 }
 
-void handle_result(DCResultI8 result)
+void handle_result(DCResI8 result)
 {
     if (dc_res_is_ok2(result))
     {
@@ -64,23 +64,23 @@ int main()
 {
     DC_RES_void();
 
-    DCResultI8 result1 = calculate_i8(10, 2);
+    DCResI8 result1 = calculate_i8(10, 2);
     handle_result(result1);
 
-    DCResultI8 result2 = calculate_i8(10, 0);
+    DCResI8 result2 = calculate_i8(10, 0);
     handle_result(result2);
 
-    DCResultI8 res2_cpy;
+    DCResI8 res2_cpy;
 
     dc_res_err_cpy2(res2_cpy, result2);
     handle_result(res2_cpy);
 
     // Why freeing, messages of errors might be allocated
     // values also might be allocated, you can handle them all at once
-    dc_try(dc_result_free(&result1));
+    dc_try(dc_res_free(&result1));
     dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
 
-    dc_try(dc_result_free(&result2));
+    dc_try(dc_res_free(&result2));
     dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
 
     return 0;

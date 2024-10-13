@@ -44,7 +44,7 @@ int main(void)
     // *  STRING CONVERSIONS
     // ***************************************************************************************
     const string i8Str = "127";
-    DCResultI8 i8_cnv_res = dc_str_to_i8(i8Str);
+    DCResI8 i8_cnv_res = dc_str_to_i8(i8Str);
 
     if (dc_res_is_ok2(i8_cnv_res))
     {
@@ -56,7 +56,7 @@ int main(void)
     }
 
     const string u32Str = "4294967295";
-    DCResultU32 u32_cnv_res = dc_str_to_u32(u32Str);
+    DCResU32 u32_cnv_res = dc_str_to_u32(u32Str);
 
     if (dc_res_is_ok2(u32_cnv_res))
     {
@@ -68,7 +68,7 @@ int main(void)
     }
 
     const string f64Str = "3.14";
-    DCResultF64 f64_cnv_res = dc_str_to_f64(f64Str);
+    DCResF64 f64_cnv_res = dc_str_to_f64(f64Str);
 
     if (dc_res_is_ok2(f64_cnv_res))
     {
