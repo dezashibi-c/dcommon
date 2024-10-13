@@ -110,98 +110,14 @@ DCResVoid test2()
     LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
-    printf("========\nInserting 2 elements\n========\n");
+    printf("========\nInserting 1 element\n========\n");
     // Try to insert or fail
-    dc_try_fail(dc_da_insert(&darr, 1, dc_dv(u8, 100)));
-    LOG_DYNAMIC_ARRAY_INFO(darr);
-
-    // Try to insert or fail
-    dc_try_fail(dc_da_insert(&darr, 2, dc_dv(string, "New Item")));
+    dc_try_fail(dc_da_insert(&darr, 1, dc_dv(Person, person_new("James", 20))));
     LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
-
-
-    printf("========\nAppending 5 more elements\n========\n");
-    // Try to append values or fail
-    dc_try_fail_da_append_values(&darr, dc_dv(string, "Using append_values started"), dc_dv(u8, 11), dc_dv(u8, 12),
-                                 dc_dv(u8, 13), dc_dv(string, "Using append_values finished"));
-
-    LOG_DYNAMIC_ARRAY_INFO(darr);
-    print_da(&darr);
-
-    // Introducing the second dynamic array
-    DCDynArr darr2;
-
-    // Add elements the newly created array
-    dc_try_fail_da_init_with_values(&darr2, NULL,
-
-                                    dc_dv(string, "Using append started"), dc_dv(u8, 14), dc_dv(u8, 15), dc_dv(u8, 16),
-                                    dc_dv(string, "Using append finished")
-
-    );
-
-    printf("========\nAppending 5 more elements from "
-           "array\n========\n");
-    // Try to append the second array to the first array or fail
-    dc_try_fail(dc_da_append(&darr, &darr2));
-    LOG_DYNAMIC_ARRAY_INFO(darr);
-    print_da(&darr);
-
-    printf("========\nInserting 5 more elements in the "
-           "middle\n========\n");
-    // Try to insert 5 elements to the first array or fail
-    dc_try_fail_temp_da_insert_values(&darr, 9, dc_dv(string, "Using insert_values started"), dc_dv(u8, 11), dc_dv(u8, 12),
-                                      dc_dv(u8, 13), dc_dv(string, "Using insert_values finished"));
-    LOG_DYNAMIC_ARRAY_INFO(darr);
-    print_da(&darr);
-
-    // Introducing the third dynamic array
-    DCDynArr darr3;
-
-    // Add elements to the newly created array
-    dc_try_fail_da_init_with_values(&darr3, NULL,
-
-                                    dc_dv(string, "Using insert_from started"), dc_dv(u8, 14), dc_dv(u8, 15), dc_dv(u8, 16),
-                                    dc_dv(string, "Using insert_from finished")
-
-    );
-    printf("========\nInserting 5 more elements from another array "
-           "in the "
-           "middle\n========\n");
-    // Try inserting the third array at the index 14th of the first array or
-    // fail
-    dc_try_fail(dc_da_insert_from(&darr, 14, &darr3));
-    LOG_DYNAMIC_ARRAY_INFO(darr);
-    print_da(&darr);
-
-    printf("========\nGrowing to current cap + 20\n========\n");
-    // Try growing the first array's capacity by 20 or fail
-    dc_try_fail(dc_da_grow_by(&darr, 20));
-    LOG_DYNAMIC_ARRAY_INFO(darr);
-    print_da(&darr);
-
-    printf("========\nTruncate\n========\n");
-    // Try truncating unused capacity of the first array or fail
-    dc_try_fail(dc_da_trunc(&darr));
-    LOG_DYNAMIC_ARRAY_INFO(darr);
-    print_da(&darr);
-
-    printf("========\nPopping last 5 items\n========\n");
-    // Declaring a memory for holding popped items from the first array
-    DCDynVal* popped;
-    // Trying to pop out last 5 elements of the first array or fail
-    dc_try_fail(dc_da_pop(&darr, 5, &popped, false));
-    LOG_DYNAMIC_ARRAY_INFO(darr);
-    print_da(&darr);
-
-    printf("========\nPopped Items\n========\n");
-    for (usize i = 0; i < 5; ++i) print_dv(&popped[i]);
 
     // Free everything
     dc_try_fail(dc_da_free(&darr));
-    dc_try_fail(dc_da_free(&darr2));
-    dc_try_fail(dc_da_free(&darr3));
-    free(popped);
 
     // Returning the void result which is OK by default so if we're here we
     // haven't had any errors, yay!
