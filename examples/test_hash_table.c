@@ -22,7 +22,9 @@ DC_HT_HASH_FN_DECL(string_hash)
 {
     DC_RES_u32();
 
-    string str = (string)_key;
+    if (_key->type != dc_dvt(string)) dc_res_ret_e(dc_err(TYPE), dc_err_msg(TYPE));
+
+    string str = dc_dv_as(*_key, string);
     u32 hash = 5381;
     i32 c;
     while ((c = *str++))
@@ -35,9 +37,7 @@ DC_HT_HASH_FN_DECL(string_hash)
 
 DC_HT_KEY_CMP_FN_DECL(string_key_cmp)
 {
-    DC_RES_bool();
-
-    dc_res_ret_ok(strcmp((string)_key1, (string)_key2) == 0);
+    return dc_dv_eq(_key1, _key2);
 }
 
 /**
@@ -91,8 +91,8 @@ DCResVoid testing_hash_table_merge(DCHashTable* source)
     // we can
     dc_try_ht_set_multiple(void_res, &table2,
 
-                           {"maria", dc_dv(u8, 20)}, {"jesse", dc_dv(u8, 6)}, {"sophia", dc_dv(u8, 12)},
-                           {"erisa", dc_dv(u8, 20)});
+                           {dc_dv(string, "maria"), dc_dv(u8, 20)}, {dc_dv(string, "jesse"), dc_dv(u8, 6)},
+                           {dc_dv(string, "sophia"), dc_dv(u8, 12)}, {dc_dv(string, "erisa"), dc_dv(u8, 20)});
 
     // Checking the result and take proper action
     dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(void_res), "%s", dc_res_err_msg2(void_res));
@@ -150,13 +150,13 @@ int main()
     dc_cleanup_push_free(table);
 
 
-    string key1 = "navid";
+    DCDynVal key1 = dc_dv(string, "navid");
     dc_ht_set(table, key1, dc_dv(u8, 30));
 
-    string key2 = "james";
+    DCDynVal key2 = dc_dv(string, "james");
     dc_ht_set(table, key2, dc_dv(u8, 40));
 
-    string key3 = "bob";
+    DCDynVal key3 = dc_dv(string, "bob");
     dc_ht_set(table, key3, dc_dv(u8, 50));
 
     DCDynVal* found = NULL;
@@ -173,11 +173,11 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key1, dc_dv_as(*found, u8));
+        printf("Found value for key '%s': %d\n", dc_dv_as(key1, string), dc_dv_as(*found, u8));
     }
     else
     {
-        printf("Key '%s' not found\n", key1);
+        printf("Key '%s' not found\n", dc_dv_as(key1, string));
     }
 
     found = NULL;
@@ -189,11 +189,11 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key2, dc_dv_as(*found, u8));
+        printf("Found value for key '%s': %d\n", dc_dv_as(key2, string), dc_dv_as(*found, u8));
     }
     else
     {
-        printf("Key '%s' not found\n", key2);
+        printf("Key '%s' not found\n", dc_dv_as(key2, string));
     }
 
     DCResBool del_res = dc_ht_delete(table, key2);
@@ -213,11 +213,11 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key2, dc_dv_as(*found, u8));
+        printf("Found value for key '%s': %d\n", dc_dv_as(key2, string), dc_dv_as(*found, u8));
     }
     else
     {
-        printf("Key '%s' not found\n", key2);
+        printf("Key '%s' not found\n", dc_dv_as(key2, string));
     }
 
     DCResVoid void_res = dc_ht_set(table, key1, dc_dv(u8, 36));
@@ -236,11 +236,11 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key1, dc_dv_as(*found, u8));
+        printf("Found value for key '%s': %d\n", dc_dv_as(key1, string), dc_dv_as(*found, u8));
     }
     else
     {
-        printf("Key '%s' not found\n", key1);
+        printf("Key '%s' not found\n", dc_dv_as(key1, string));
     }
 
     found = NULL;
@@ -251,17 +251,18 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key2, dc_dv_as(*found, u8));
+        printf("Found value for key '%s': %d\n", dc_dv_as(key2, string), dc_dv_as(*found, u8));
     }
     else
     {
-        printf("Key '%s' not found\n", key2);
+        printf("Key '%s' not found\n", dc_dv_as(key2, string));
     }
 
-    dc_try_ht_set_multiple(void_res, table,
+    dc_try_ht_set_multiple(
+        void_res, table,
 
-                           dc_ht_entry("robert", dc_dv(u8, 20)), dc_ht_entry("albert", dc_dv(u8, 6)),
-                           dc_ht_entry("boris", dc_dv(u8, 12)), dc_ht_entry("navid", dc_dv(u8, 29))
+        dc_ht_entry(dc_dv(string, "robert"), dc_dv(u8, 20)), dc_ht_entry(dc_dv(string, "albert"), dc_dv(u8, 6)),
+        dc_ht_entry(dc_dv(string, "boris"), dc_dv(u8, 12)), dc_ht_entry(dc_dv(string, "navid"), dc_dv(u8, 29))
 
     );
     dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));
@@ -274,15 +275,15 @@ int main()
 
     if (found != NULL)
     {
-        printf("Found value for key '%s': %d\n", key1, dc_dv_as(*found, u8));
+        printf("Found value for key '%s': %d\n", dc_dv_as(key1, string), dc_dv_as(*found, u8));
     }
     else
     {
-        printf("Key '%s' not found\n", key1);
+        printf("Key '%s' not found\n", dc_dv_as(key1, string));
     }
 
     found = NULL;
-    usize_res = dc_ht_find_by_key(table, "boris", &found);
+    usize_res = dc_ht_find_by_key(table, dc_dv(string, "boris"), &found);
     dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
@@ -309,7 +310,7 @@ int main()
     // **************************************************************
 
     found = NULL;
-    usize_res = dc_ht_find_by_key(table, "erisa", &found);
+    usize_res = dc_ht_find_by_key(table, dc_dv(string, "erisa"), &found);
     dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
     printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
@@ -324,7 +325,7 @@ int main()
     }
 
     // get all keys
-    voidptr* all_keys = NULL;
+    DCDynVal* all_keys = NULL;
     usize_res = dc_ht_keys(table, &all_keys);
     dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
 
@@ -334,9 +335,9 @@ int main()
     dc_cleanup_push_free(all_keys);
 
     printf("=========\n got '%" PRIuMAX "' keys\n=========\n", dc_res_val2(usize_res));
-    dc_foreach(all_keys, voidptr)
+    dc_foreach(all_keys, DCDynVal)
     {
-        printf("- %s\n", (string)(*_it));
+        printf("- %s\n", dc_dv_as((*_it), string));
     }
 
     // Create an exit section label with final cleanup trigger

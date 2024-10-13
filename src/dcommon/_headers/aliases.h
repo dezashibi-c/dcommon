@@ -242,24 +242,24 @@ typedef struct
 /**
  * Each entry of a hash table can have a dynamic value
  *
- * NOTE: The key is voidptr and must be fixed or properly handled throughout
- * hash function process
+ * NOTE: The key is dynamic value and the correctness of the passed values and types
+ *       must be checked in hash and key comparaison functions
  */
 typedef struct
 {
-    voidptr key;
+    DCDynVal key;
     DCDynVal value;
 } DCHashEntry;
 
 /**
  * Function pointer type as an acceptable hash function for an Hash Table
  */
-typedef DCResU32 (*DCHashFn)(voidptr);
+typedef DCResU32 (*DCHashFn)(DCDynVal*);
 
 /**
  * Key comparison function type for an Hash Table
  */
-typedef DCResBool (*DCKeyCompFn)(voidptr, voidptr);
+typedef DCResBool (*DCKeyCompFn)(DCDynVal*, DCDynVal*);
 
 /**
  * A Hash Table with track of capacity and number of registered keys

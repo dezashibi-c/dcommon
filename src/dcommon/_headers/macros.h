@@ -200,11 +200,13 @@
 #define DC_STOPPER_size -1
 #define DC_STOPPER_usize SIZE_MAX
 
+#define DC_STOPPER_DCDynVal dc_dv_nullptr()
+#define DC_STOPPER_DCDynArr ((DCDynArr){0})
+
 #define DC_IS_ARR_TERMINATOR_i8(EL) (EL == DC_STOPPER_i8)
 #define DC_IS_ARR_TERMINATOR_i16(EL) (EL == DC_STOPPER_i16)
 #define DC_IS_ARR_TERMINATOR_i32(EL) (EL == DC_STOPPER_i32)
 #define DC_IS_ARR_TERMINATOR_i64(EL) (EL == DC_STOPPER_i64)
-
 
 #define DC_IS_ARR_TERMINATOR_u8(EL) (EL == DC_STOPPER_u8)
 #define DC_IS_ARR_TERMINATOR_u16(EL) (EL == DC_STOPPER_u16)
@@ -223,6 +225,9 @@
 
 #define DC_IS_ARR_TERMINATOR_size(EL) (EL == DC_STOPPER_size)
 #define DC_IS_ARR_TERMINATOR_usize(EL) (EL == DC_STOPPER_usize)
+
+#define DC_IS_ARR_TERMINATOR_DCDynVal(EL) ((EL).type == dc_dvt(voidptr) && (EL).value.dc_dvf(voidptr) == NULL)
+#define DC_IS_ARR_TERMINATOR_DCDynArr(EL) ((EL).cap == 0)
 
 /**
  * Provides proper stopper for given type
@@ -1575,12 +1580,12 @@
 /**
  * Expands to standard hash function declaration
  */
-#define DC_HT_HASH_FN_DECL(NAME) DCResU32 NAME(voidptr _key)
+#define DC_HT_HASH_FN_DECL(NAME) DCResU32 NAME(DCDynVal* _key)
 
 /**
  * Expands to standard hash key comparison function declaration
  */
-#define DC_HT_KEY_CMP_FN_DECL(NAME) DCResBool NAME(voidptr _key1, voidptr _key2)
+#define DC_HT_KEY_CMP_FN_DECL(NAME) DCResBool NAME(DCDynVal* _key1, DCDynVal* _key2)
 
 /**
  * Gets the results of hash table's hash function for the given key
@@ -1637,7 +1642,7 @@
  *
  * NOTE: VAR_NAME would be DCDynArr*
  */
-#define dc_ht_get_container_row(VAR_NAME, HT, HASH) DCDynArr* VAR_NAME = &((HT).container[HASH])
+#define DC_HT_GET_AND_DEF_CONTAINER_ROW(VAR_NAME, HT, HASH) DCDynArr* VAR_NAME = &((HT).container[HASH])
 
 /**
  * Creates a literal hash table key/value pair (entry)

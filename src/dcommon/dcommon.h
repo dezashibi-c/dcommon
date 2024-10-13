@@ -696,14 +696,14 @@ DCResVoid __dc_ht_free(voidptr ht);
  *
  * @return index of the value in its bucket or error
  */
-DCResUsize dc_ht_find_by_key(DCHashTable* ht, voidptr key, DCDynVal** out_result);
+DCResUsize dc_ht_find_by_key(DCHashTable* ht, DCDynVal key, DCDynVal** out_result);
 
 /**
  * Sets a value for the given key
  *
  * @return nothing or error
  */
-DCResVoid dc_ht_set(DCHashTable* ht, voidptr key, DCDynVal value);
+DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value);
 
 /**
  * Inserts multiple key/values at once
@@ -728,16 +728,18 @@ DCResVoid dc_ht_merge(DCHashTable* ht, DCHashTable* from);
  *
  * @return true if key exists, false if it doesn't or error
  */
-DCResBool dc_ht_delete(DCHashTable* ht, voidptr key);
+DCResBool dc_ht_delete(DCHashTable* ht, DCDynVal key);
 
 /**
- * Exports all the stored keys to the provided `out_arr`
+ * Exports pointers to all the stored keys to the provided `out_arr`
  *
  * @return the number of exported keys or error
  *
+ * NOTE: Making changes in the array's element can tend into undefined behavior
+ *
  * NOTE: Allocates memory
  */
-DCResUsize dc_ht_keys(DCHashTable* ht, voidptr** out_arr);
+DCResUsize dc_ht_keys(DCHashTable* ht, DCDynVal** out_arr);
 
 // ***************************************************************************************
 

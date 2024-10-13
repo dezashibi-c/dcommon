@@ -85,7 +85,7 @@ DCResVoid dc_ht_free(DCHashTable* ht)
 
     for (usize i = 0; i < ht->cap; ++i)
     {
-        dc_ht_get_container_row(darr, *ht, i);
+        DC_HT_GET_AND_DEF_CONTAINER_ROW(darr, *ht, i);
 
         dc_try_fail_temp(DCResVoid, dc_da_free(darr));
     }
@@ -117,7 +117,7 @@ DCResVoid __dc_ht_free(voidptr ht)
     dc_res_ret();
 }
 
-DCResUsize dc_ht_find_by_key(DCHashTable* ht, voidptr key, DCDynVal** out_result)
+DCResUsize dc_ht_find_by_key(DCHashTable* ht, DCDynVal key, DCDynVal** out_result)
 {
     DC_RES_usize();
 
@@ -128,9 +128,9 @@ DCResUsize dc_ht_find_by_key(DCHashTable* ht, voidptr key, DCDynVal** out_result
         dc_res_ret_e(1, "got NULL DCHashTable");
     }
 
-    dc_try_fail_temp_ht_get_hash(_index, *ht, key);
+    dc_try_fail_temp_ht_get_hash(_index, *ht, &key);
 
-    dc_ht_get_container_row(darr, *ht, _index);
+    DC_HT_GET_AND_DEF_CONTAINER_ROW(darr, *ht, _index);
 
     dc_da_for(*darr)
     {
@@ -142,9 +142,9 @@ DCResUsize dc_ht_find_by_key(DCHashTable* ht, voidptr key, DCDynVal** out_result
             dc_res_ret_e(3, "wrong type, voidptr needed");
         }
 
-        voidptr element_key = ((DCHashEntry*)element->value.voidptr_val)->key;
+        DCDynVal element_key = ((DCHashEntry*)element->value.voidptr_val)->key;
 
-        DCResBool cmp_res = ht->key_cmp_fn(element_key, key);
+        DCResBool cmp_res = ht->key_cmp_fn(&element_key, &key);
         dc_res_fail_if_err2(cmp_res);
 
         if (dc_res_val2(cmp_res))
@@ -158,7 +158,7 @@ DCResUsize dc_ht_find_by_key(DCHashTable* ht, voidptr key, DCDynVal** out_result
     dc_res_ret_ok(0);
 }
 
-DCResVoid dc_ht_set(DCHashTable* ht, voidptr key, DCDynVal value)
+DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value)
 {
     DC_RES_void();
 
@@ -169,7 +169,7 @@ DCResVoid dc_ht_set(DCHashTable* ht, voidptr key, DCDynVal value)
         dc_res_ret_e(1, "got NULL DCHashTable");
     }
 
-    dc_try_fail_temp_ht_get_hash(_index, *ht, key);
+    dc_try_fail_temp_ht_get_hash(_index, *ht, &key);
 
     DCHashEntry* new_entry = (DCHashEntry*)malloc(sizeof(DCHashEntry));
     if (new_entry == NULL)
@@ -182,7 +182,7 @@ DCResVoid dc_ht_set(DCHashTable* ht, voidptr key, DCDynVal value)
     new_entry->key = key;
     new_entry->value = value;
 
-    dc_ht_get_container_row(current, *ht, _index);
+    DC_HT_GET_AND_DEF_CONTAINER_ROW(current, *ht, _index);
 
     if (current->cap == 0)
     {
@@ -260,13 +260,13 @@ DCResVoid dc_ht_merge(DCHashTable* ht, DCHashTable* from)
     dc_res_ret();
 }
 
-DCResBool dc_ht_delete(DCHashTable* ht, voidptr key)
+DCResBool dc_ht_delete(DCHashTable* ht, DCDynVal key)
 {
     DC_RES_bool();
 
-    dc_try_fail_temp_ht_get_hash(_index, *ht, key);
+    dc_try_fail_temp_ht_get_hash(_index, *ht, &key);
 
-    dc_ht_get_container_row(current, *ht, _index);
+    DC_HT_GET_AND_DEF_CONTAINER_ROW(current, *ht, _index);
 
     if (current->count == 0) dc_res_ret_ok(false);
 
@@ -284,7 +284,7 @@ DCResBool dc_ht_delete(DCHashTable* ht, voidptr key)
     dc_res_ret_ok(true);
 }
 
-DCResUsize dc_ht_keys(DCHashTable* ht, voidptr** out_arr)
+DCResUsize dc_ht_keys(DCHashTable* ht, DCDynVal** out_arr)
 {
     DC_RES_usize();
 
@@ -297,7 +297,7 @@ DCResUsize dc_ht_keys(DCHashTable* ht, voidptr** out_arr)
 
     if (!out_arr) dc_res_ret_e(1, "got NULL pout_arr");
 
-    *out_arr = (voidptr*)malloc((ht->key_count + 1) * sizeof(voidptr));
+    *out_arr = (DCDynVal*)malloc((ht->key_count + 1) * sizeof(DCDynVal));
     if (!(*out_arr))
     {
         dc_dbg_log("Memory allocation failed");
@@ -308,7 +308,7 @@ DCResUsize dc_ht_keys(DCHashTable* ht, voidptr** out_arr)
     usize key_count = 0;
     for (usize i = 0; i < ht->cap; ++i)
     {
-        dc_ht_get_container_row(darr, *ht, i);
+        DC_HT_GET_AND_DEF_CONTAINER_ROW(darr, *ht, i);
 
         if (darr->cap == 0) continue;
 
@@ -324,13 +324,13 @@ DCResUsize dc_ht_keys(DCHashTable* ht, voidptr** out_arr)
                 dc_res_ret_e(3, "Bad type, DCHashTable elements must be of type voidptr");
             }
 
-            voidptr element_key = ((DCHashEntry*)elem->value.voidptr_val)->key;
+            DCDynVal element_key = ((DCHashEntry*)elem->value.voidptr_val)->key;
 
             (*out_arr)[key_count] = element_key;
             key_count++;
         }
     }
 
-    (*out_arr)[ht->key_count] = NULL;
+    (*out_arr)[ht->key_count] = dc_dv_nullptr();
     dc_res_ret_ok(ht->key_count);
 }

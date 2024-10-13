@@ -1925,7 +1925,7 @@ dc_try_fail_temp_ht_get_hash(VAR_NAME, HT, KEY)
  *
  * NOTE: VAR_NAME would be DCDynArr*
  */
-dc_ht_get_container_row(VAR_NAME, HT, HASH)                           
+DC_HT_GET_AND_DEF_CONTAINER_ROW(VAR_NAME, HT, HASH)                           
 
 /**
  * Creates a literal hash table key/value pair (entry)
