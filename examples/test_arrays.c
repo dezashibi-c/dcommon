@@ -35,6 +35,14 @@ typedef struct
 
 typedef MyStruct* MyStructPtr;
 
+/* if you want to use them in dc arrays that are meant to be terminated with a stopper value
+    then both of these macros per type is mandatory
+
+    Notes:
+        1. as '*' cannot be used in macro name a simple typedef for pointer to your type
+            can solve the problem
+        2. The exact type name must be used in the macro name
+*/
 #define DC_STOPPER_MyStructPtr NULL
 #define DC_IS_STOPPER_MyStructPtr(EL) ((EL) == NULL)
 
