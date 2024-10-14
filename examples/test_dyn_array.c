@@ -26,12 +26,11 @@ void print_dv(DCDynVal* dval)
 
 void print_da(DCDynArr* darr)
 {
-    dc_da_for(*darr)
-    {
+    dc_da_for(*darr, {
         printf("['%" PRIuMAX "'] ", _idx);
         DCResDv res = dc_da_get(darr, _idx);
         if (dc_res_is_ok2(res)) print_dv(dc_res_val2(res));
-    }
+    });
 }
 
 #define LOG_DYNAMIC_ARRAY_INFO(DARR)                                                                                           \
@@ -398,10 +397,7 @@ DCResVoid test7()
 
     );
 
-    dc_da_for(darr)
-    {
-        print_struct((MyStruct*)dc_da_get_as(darr, _idx, voidptr));
-    }
+    dc_da_for(darr, print_struct((MyStruct*)dc_da_get_as(darr, _idx, voidptr)));
 
     voidptr* result = NULL;
     DCResUsize len_res = dc_voidptr_da_to_flat_arr(&darr, &result, true);

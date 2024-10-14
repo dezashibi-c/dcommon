@@ -465,14 +465,13 @@ DCResVoid dc_cleanup_batch_run(DCCleanupBatch* batch)
     dc_dbg_log("cleaning up '%" PRIuMAX "' elements", batch->count);
 
     // run cleanup of each item
-    dc_da_for(*batch)
-    {
+    dc_da_for(*batch, {
         DCCleanupJob* entry = dc_da_get_as(*batch, _idx, voidptr);
 
         dc_dbg_log("cleaning index: '%" PRIuMAX "', cleanup perform: %p", _idx, (*entry).element);
 
         dc_try_fail(dc_cleanup_job_run(*entry));
-    }
+    });
 
     // clean up the dc_cleanup itself
     dc_dbg_log("freeing cleanup batch, current capacity: '%" PRIuMAX "', current "
@@ -503,8 +502,7 @@ void dc_cleanup_pool_run(i32 selection)
 
             dc_dbg_log("performing pool cleanup");
 
-            dc_da_for(dc_cleanup_pool)
-            {
+            dc_for(dc_cleanup_pool.pool, DCCleanupBatch, dc_cleanup_pool.count, {
                 dc_dbg_log("cleaning up the batch index [%" PRIuMAX "]", _idx);
                 dc_try(dc_cleanup_batch_run(&dc_cleanup_pool.pool[_idx]));
 
@@ -515,7 +513,7 @@ void dc_cleanup_pool_run(i32 selection)
 
                     exit(dc_res_err_code());
                 }
-            }
+            });
 
             if (dc_cleanup_pool.pool)
             {

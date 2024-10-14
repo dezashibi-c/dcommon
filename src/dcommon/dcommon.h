@@ -300,7 +300,7 @@ DCResBool dc_dv_eq3(DCDynVal dv1, DCDynVal dv2);
  *
  * NOTE: error code 6 means not found, other error types might happen as well
  */
-DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn);
+DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn);
 
 /**
  * Searches for given element (a literal dynamic value) in an array
@@ -312,7 +312,7 @@ DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn);
  *
  * NOTE: error code 6 means not found, other error types might happen as well
  */
-DCResUsize dc_da_find(DCDynArr* darr, DCDynVal el, DCDVEqFn dv_eq_fn);
+DCResUsize dc_da_find(DCDynArr* darr, DCDynVal el, DCDvEqFn dv_eq_fn);
 
 /**
  * Frees allocated string or voidptr, does nothing for the rest of dynamic value
@@ -383,7 +383,7 @@ DCResVoid dc_da_delete(DCDynArr* darr, usize index);
  *
  * @return nothing or error (including code 6 -> not found)
  */
-DCResVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn);
+DCResVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn);
 
 /**
  * Tries to delete an element in the given darr
@@ -396,7 +396,7 @@ DCResVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn);
  *
  * @return nothing or error (including code 6 -> not found)
  */
-DCResVoid dc_da_delete_el(DCDynArr* darr, DCDynVal el, DCDVEqFn dv_eq_fn);
+DCResVoid dc_da_delete_el(DCDynArr* darr, DCDynVal el, DCDvEqFn dv_eq_fn);
 
 /**
  * Inserts given value at the given `start_index` (resize might happen)
@@ -732,7 +732,8 @@ DCResVoid dc_ht_merge(DCHashTable* ht, DCHashTable* from);
 DCResBool dc_ht_delete(DCHashTable* ht, DCDynVal key);
 
 /**
- * Exports pointers to all the stored keys to the provided `out_arr`
+ * Exports pointers to all the stored keys to the provided `out_arr` terminated with
+ * dynamic value of null `dc_dv_nullptr()`
  *
  * @return the number of exported keys or error
  *

@@ -199,7 +199,7 @@ typedef DCResVoid (*DCDynValFreeFn)(DCDynVal*);
 /**
  * Function type for checking equality of two given pointer to dynamic values
  */
-DCDynValOpFnType(DCResBool, DCDVEqFn);
+DCDynValOpFnType(DCResBool, DCDvEqFn);
 
 /**
  * Dynamic array with ability to keep any number of dynamic values

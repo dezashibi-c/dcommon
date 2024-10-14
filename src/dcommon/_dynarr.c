@@ -566,7 +566,7 @@ DCResBool dc_dv_eq3(DCDynVal dv1, DCDynVal dv2)
     return dc_dv_eq(&dv1, &dv2);
 }
 
-DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn)
+DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn)
 {
     DC_RES_usize();
 
@@ -640,7 +640,7 @@ DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn)
     dc_res_ret_e(6, "Not Found");
 }
 
-DCResUsize dc_da_find(DCDynArr* darr, DCDynVal el, DCDVEqFn dv_eq_fn)
+DCResUsize dc_da_find(DCDynArr* darr, DCDynVal el, DCDvEqFn dv_eq_fn)
 {
     return dc_da_findp(darr, &el, dv_eq_fn);
 }
@@ -775,7 +775,7 @@ DCResVoid dc_da_delete(DCDynArr* darr, usize index)
     dc_res_ret();
 }
 
-DCResVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn)
+DCResVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn)
 {
     DC_RES_void();
 
@@ -795,7 +795,7 @@ DCResVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el, DCDVEqFn dv_eq_fn)
 }
 
 
-DCResVoid dc_da_delete_el(DCDynArr* darr, DCDynVal el, DCDVEqFn dv_eq_fn)
+DCResVoid dc_da_delete_el(DCDynArr* darr, DCDynVal el, DCDvEqFn dv_eq_fn)
 {
     return dc_da_delete_elp(darr, &el, dv_eq_fn);
 }

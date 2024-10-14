@@ -33,6 +33,15 @@ typedef struct
     int b;
 } MyStruct;
 
+typedef MyStruct* MyStructPtr;
+
+#define DC_STOPPER_MyStructPtr NULL
+#define DC_IS_STOPPER_MyStructPtr(EL) ((EL) == NULL)
+
+#define DC_STOPPER_MyStruct ((MyStruct){0})
+#define DC_IS_STOPPER_MyStruct(EL) ((EL).a == 0)
+
+
 void print_my_struct(MyStruct* m)
 {
     printf("a=%d, b=%d\n", m->a, m->b++);
@@ -82,12 +91,12 @@ int main(void)
     // ***************************************************************************************
     // *  LITERAL ARRAYS
     // ***************************************************************************************
-    DC_ARRAY(bool_list, u8, 10, 0, false, true);
-    DC_ARRAY(u8_list, u8, 10, 20, 30);
-    DC_ARRAY(i16_list, i16, -10, 2, -30);
-    DC_ARRAY(i32_list, i32, -1, -2, 3);
-    DC_ARRAY(f32_list, f32, 1.1f, 2.2f);
-    DC_ARRAY(char_list, char, 'a', 'b', 'c');
+    DC_DEF_ARRAY(bool_list, u8, 10, 0, false, true);
+    DC_DEF_ARRAY(u8_list, u8, 10, 20, 30);
+    DC_DEF_ARRAY(i16_list, i16, -10, 2, -30);
+    DC_DEF_ARRAY(i32_list, i32, -1, -2, 3);
+    DC_DEF_ARRAY(f32_list, f32, 1.1f, 2.2f);
+    DC_DEF_ARRAY(char_list, char, 'a', 'b', 'c');
 
     printf("u8_list's count='%" PRIuMAX "', u8_list's length='%" PRIuMAX "', last element=%d\n", dc_count(u8_list),
            dc_len(u8_list), dc_last(u8_list));
@@ -100,93 +109,51 @@ int main(void)
     // Example usage of for each macros
     // 👉 Note: `_it` is in fact pointer to each element which makes sense why
     // copy?
-    dc_foreach(bool_list, u8)
-    {
-        printf("bool item: %s\n", dc_tostr_bool(dc_u8_as_bool(*_it)));
-    }
+    dc_foreach(bool_list, u8, printf("bool item: %s\n", dc_tostr_bool(dc_u8_as_bool(*_it))));
 
-    dc_foreach(u8_list, u8)
-    {
-        printf("u8 item: %d\n", *_it);
-    }
+    dc_foreach(u8_list, u8, printf("u8 item: %d\n", *_it));
 
-    dc_foreach(i16_list, i16)
-    {
-        printf("i16 item: %d\n", *_it);
-    }
+    dc_foreach(i16_list, i16, printf("i16 item: %d\n", *_it));
 
-    dc_foreach(i32_list, i32)
-    {
-        printf("i32 item: %d\n", *_it);
-    }
+    dc_foreach(i32_list, i32, printf("i32 item: %d\n", *_it));
 
-    dc_foreach(f32_list, f32)
-    {
-        printf("f32 item: %f\n", *_it);
-    }
+    dc_foreach(f32_list, f32, printf("f32 item: %f\n", *_it));
 
-    dc_foreach(char_list, char)
-    {
-        printf("char item: %c\n", *_it);
-    }
+    dc_foreach(char_list, char, printf("char item: %c\n", *_it));
 
-    // 👉 Again, `_it` is pointer, so the `print` function as you can check
-    // above must receive a pointer to the desired type
-    puts("\n==========================");
-    dc_oneach(u8_list, u8, print);
-    puts("==========================\n");
-
-    dc_foreach_lit(u8, 40, 50, 60)
-    {
-        printf("Literal u8 item: %d\n", *_it); // <- Check here
-    }
-
-    puts("\n==========================");
-    dc_oneach_lit(u8, print, 23, 24, 25);
-    puts("==========================\n");
-
-    puts("\n==========================");
-    dc_oneach_lit(string, print_str, "Hello", "There", "char");
-    puts("==========================\n");
+    dc_foreach2(
+        u8,
+        {
+            printf("Literal u8 item: %d\n", *_it); // <- Check here
+        },
+        40, 50, 60);
 
     puts("\n==========================");
     MyStruct m1 = {.a = 10, .b = 12};
     MyStruct m2 = {.a = 20, .b = 14};
     MyStruct m3 = {.a = 30, .b = 16};
 
-    dc_poneach_lit(MyStruct, print_my_struct, &m1, &m2, &m3);
+    dc_foreach2(MyStructPtr, print_my_struct(*_it), &m1, &m2, &m3);
     puts("==========================\n");
 
     puts("\n==========================");
-    DC_PARRAY(my_struct_list, MyStruct, &m1, &m2, &m3);
+    DC_DEF_ARRAY(my_struct_list, MyStructPtr, &m1, &m2, &m3);
 
-    dc_pforeach(my_struct_list, MyStruct)
-    {
-        print_my_struct(*_it);
-    }
+    dc_foreach(my_struct_list, MyStructPtr, print_my_struct(*_it));
+
     puts("==========================\n");
 
     puts("\n==========================");
-    dc_soneach_lit(MyStruct, _it->a != 0, print_my_struct, {.a = 4, .b = 12}, {.a = 5, .b = 13}, {.a = 6, .b = 14}, {.a = 0});
-    puts("==========================\n");
-
-    puts("\n==========================");
-    dc_sforeach_lit(MyStruct, _it->a != 0, {.a = 4, .b = 12}, {.a = 5, .b = 13}, {.a = 6, .b = 14}, {.a = 0})
-    {
-        print_my_struct(_it);
-    }
+    dc_foreach2(MyStruct, print_my_struct(_it), {.a = 4, .b = 12}, {.a = 5, .b = 13}, {.a = 6, .b = 14});
     puts("==========================\n");
 
     puts("\n==========================");
     string s1 = "Hello";
     string s2 = "There";
     string s3 = "Hey";
-    DC_ARRAY(string_list, string, s1, s2, s3);
+    DC_DEF_ARRAY(string_list, string, s1, s2, s3);
 
-    dc_foreach(string_list, string)
-    {
-        print_str(_it);
-    }
+    dc_foreach(string_list, string, print_str(_it));
     puts("==========================\n");
 
     return 0;

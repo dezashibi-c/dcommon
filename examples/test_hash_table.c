@@ -334,10 +334,7 @@ int main()
     dc_cleanup_push_free(all_keys);
 
     printf("=========\n got '%" PRIuMAX "' keys\n=========\n", dc_res_val2(usize_res));
-    dc_foreach(all_keys, DCDynVal)
-    {
-        printf("- %s\n", dc_dv_as((*_it), string));
-    }
+    dc_foreach(all_keys, DCDynVal, printf("- %s\n", dc_dv_as((*_it), string)));
 
     // Create an exit section label with final cleanup trigger
     // We could set the cleanup to MAIN_MEMORY_BATCH and that was totally fine

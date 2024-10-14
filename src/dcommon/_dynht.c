@@ -133,27 +133,25 @@ DCResUsize dc_ht_find_by_key(DCHashTable* ht, DCDynVal key, DCDynVal** out_resul
 
     DC_HT_GET_AND_DEF_CONTAINER_ROW(darr, *ht, _index);
 
-    dc_da_for(*darr)
-    {
-        DCDynVal* element = &darr->elements[_idx];
-        if (element->type != dc_dvt(voidptr))
+    dc_da_for(*darr, {
+        if (_it->type != dc_dvt(voidptr))
         {
             dc_dbg_log("wrong type, voidptr needed");
 
             dc_res_ret_e(3, "wrong type, voidptr needed");
         }
 
-        DCDynVal element_key = ((DCHashEntry*)element->value.voidptr_val)->key;
+        DCDynVal element_key = ((DCHashEntry*)_it->value.voidptr_val)->key;
 
         DCResBool cmp_res = ht->key_cmp_fn(&element_key, &key);
         dc_res_fail_if_err2(cmp_res);
 
         if (dc_res_val2(cmp_res))
         {
-            *out_result = &((DCHashEntry*)element->value.voidptr_val)->value;
+            *out_result = &((DCHashEntry*)_it->value.voidptr_val)->value;
             dc_res_ret_ok(_idx);
         }
-    }
+    });
 
     *out_result = NULL;
     dc_res_ret_ok(0);
@@ -313,10 +311,8 @@ DCResUsize dc_ht_keys(DCHashTable* ht, DCDynVal** out_arr)
 
         if (darr->cap == 0) continue;
 
-        dc_da_for(*darr)
-        {
-            DCDynVal* elem = &darr->elements[_idx];
-            if (elem->type != DC_DYN_VAL_TYPE_voidptr)
+        dc_da_for(*darr, {
+            if (_it->type != DC_DYN_VAL_TYPE_voidptr)
             {
                 free(*out_arr);
                 *out_arr = NULL;
@@ -325,11 +321,11 @@ DCResUsize dc_ht_keys(DCHashTable* ht, DCDynVal** out_arr)
                 dc_res_ret_e(3, "Bad type, DCHashTable elements must be of type voidptr");
             }
 
-            DCDynVal element_key = ((DCHashEntry*)elem->value.voidptr_val)->key;
+            DCDynVal element_key = ((DCHashEntry*)_it->value.voidptr_val)->key;
 
             (*out_arr)[key_count] = element_key;
             key_count++;
-        }
+        });
     }
 
     (*out_arr)[ht->key_count] = dc_dv_nullptr();

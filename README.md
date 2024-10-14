@@ -45,7 +45,7 @@ It's a one header file include style (**Not to be mistaken with single header li
 - `tag.py` Script
   - Simplifies creating tag, zip artifact or file attachment for github
 
-**👉 `dcommon` lib help can be found [here](/src/dcommon/docs.md).**
+~~**👉 `dcommon` lib help can be found [here](/src/dcommon/docs.md).**~~ **Documents are being overhauled please wait**
 
 ## `tag.py` Script
 

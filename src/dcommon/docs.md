@@ -75,7 +75,7 @@ dc_stopper(TYPE)
 /**
  * Checks if the given value is an stopper for the given type
  */
-dc_is_arr_terminator(TYPE, VALUE)
+dc_is_stopper(TYPE, VALUE)
 
 // ***************************************************************************************
 // * NON-POINTER ARRAY MACROS
@@ -85,13 +85,13 @@ dc_is_arr_terminator(TYPE, VALUE)
  * Creates a literal array of the given type that is terminated by the specific
  * stopper for that type
  */
-dc_arr_lit(TYPE, ...)                                                 
+dc_array(TYPE, ...)                                                 
 
 /**
  * Defines a variable of the given `TYPE`[] and initialize it with given data
  * terminated with proper stopper
  */
-DC_ARRAY(NAME, TYPE, ...)
+DC_DEF_ARRAY(NAME, TYPE, ...)
 
 /**
  * Expands to actual number of elements in a literal array

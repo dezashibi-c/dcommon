@@ -14,9 +14,9 @@
 // *  Description:
 // ***************************************************************************************
 
-/* First definition of the custom type, can be in another header file */
-// You can use this header file to have access to basic types if you're willing
-// to use them in your custom type (struct)
+/* First definition of the custom type, can be in another header file
+    You can use this header file to have access to basic types if you're willing
+    to use them in your custom type (struct) */
 #include "../src/dcommon/dcommon_primitives.h"
 
 typedef struct
@@ -27,16 +27,32 @@ typedef struct
 
 #define person_new(NAME, AGE) ((Person){(NAME), (AGE)})
 
-/* Second definition of mandatory macros for dcommon lib to have the type included in dynamic value */
+/*
+    Second definition of mandatory macros for dcommon lib to have the type included in dynamic value
+    Important Notes:
+        1. extra types and extra fields must be declared before including dcommon header file
+        2. pay attention to ending ',' and ';' don't forget them
+        3. most important: these two must be identically declared with same types
+
+        so if let's say you've got 3 types called Shape, Person, Animal
+            A. Extra types would be
+                #define DC_DV_EXTRA_TYPES dc_dvt(Shape), dc_dvt(Person), dc_dvt(Animal),
+            B. Extra fields would be
+                #define DC_DV_EXTRA_FIELDS dc_dvf_decl(Shape); dc_dvf_decl(Person); dc_dvf_decl(Animal);
+*/
+
 #define DC_DV_EXTRA_TYPES dc_dvt(Person),
 #define DC_DV_EXTRA_FIELDS dc_dvf_decl(Person);
-
-#define DC_STOPPER_Person ((Person){0})
-#define DC_IS_ARR_TERMINATOR_Person(EL) ((EL).age == 0)
 
 /* Third inclusion of the actual dcommon.h and possibly the DCOMMON_IMPL definition */
 #define DCOMMON_IMPL
 #include "../src/dcommon/dcommon.h"
+
+/* Forth these stopper and stopper checkers can be anywhere could be at step 2,
+    if you want to use them in dc arrays that are meant to be terminated with a stopper value
+    then both of these macros per type is mandatory */
+#define DC_STOPPER_Person ((Person){0})
+#define DC_IS_STOPPER_Person(EL) ((EL).age == 0)
 
 /* Actual code starts from here */
 
@@ -60,12 +76,11 @@ void print_dv(DCDynVal* dval)
 
 void print_da(DCDynArr* darr)
 {
-    dc_da_for(*darr)
-    {
+    dc_da_for(*darr, {
         printf("['" dc_fmt(usize) "'] ", _idx);
         DCResDv res = dc_da_get(darr, _idx);
         if (dc_res_is_ok2(res)) print_dv(dc_res_val2(res));
-    }
+    });
 }
 
 #define LOG_DYNAMIC_ARRAY_INFO(DARR)                                                                                           \
@@ -75,9 +90,9 @@ DCResVoid test1()
 {
     DC_RES_void();
 
-    DC_ARRAY(people, Person, person_new("Navid", 30), person_new("James", 40), person_new("Bob", 50));
+    DC_DEF_ARRAY(people, Person, person_new("Navid", 30), person_new("James", 40), person_new("Bob", 50));
 
-    dc_oneach(people, Person, print_person);
+    dc_foreach(people, Person, print_person(_it));
 
     dc_res_ret();
 }
