@@ -181,6 +181,10 @@ DCResString dc_tostr_dv(DCDynVal* dv)
         stringify(size);
         stringify(usize);
 
+        case dc_dvt(DCStringView):
+            dc_sprintf(&result, DCPRIsv, dc_sv_fmt(dc_dv_as(*dv, DCStringView)));
+            break;
+
         default:
             dc_sprintf(&result, "%s", "(unknown dynamic value)");
             break;
