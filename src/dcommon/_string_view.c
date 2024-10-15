@@ -36,6 +36,15 @@ DCResSv dc_sv_create(string base, usize start, usize length)
         dc_res_ret_e(1, "got NULL base string");
     }
 
+    if (start + length > strlen(base))
+    {
+        dc_dbg_log("starting at index " dc_fmt(usize) " cannot get " dc_fmt(
+                       usize) " characters out of a string with length=" dc_fmt(usize),
+                   start, length, strlen(base));
+
+        dc_res_ret_e(dc_err_code(INDEX), "starting at the given index cannot provide desired sub string with the given length");
+    }
+
     DCStringView view;
     view.cstr = NULL;
     view.str = base + start;

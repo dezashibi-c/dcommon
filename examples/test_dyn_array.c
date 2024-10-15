@@ -48,7 +48,7 @@ DCResVoid test1()
                                     dc_dv(u8, 42), dc_dv(i32, -12345),
 
                                     // here it is a literal string so it doesn't need
-                                    // to be mark as allocated (that's why dc_dv us used)
+                                    // to be mark as allocated (that's why dc_dv is used)
                                     dc_dv(string, "Hello")
 
     );

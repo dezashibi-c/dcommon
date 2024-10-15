@@ -711,8 +711,7 @@ DCResVoid dc_dv_free(DCDynVal* element, DCDynValFreeFn custom_free_fn)
         {
             if (custom_free_fn) dc_try_fail_temp(DCResVoid, custom_free_fn(element));
 
-            if (dc_dv_is_allocated(*element) && dc_dv_as(*element, DCStringView).cstr)
-                dc_try_fail_temp(DCResVoid, dc_sv_free(&dc_dv_as(*element, DCStringView)));
+            dc_try_fail_temp(DCResVoid, dc_sv_free(&dc_dv_as(*element, DCStringView)));
 
             break;
         }

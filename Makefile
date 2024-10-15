@@ -26,7 +26,7 @@ ifeq ($(OS),Windows_NT)
 	VALGRIND =
 else
 	TARGET_EXT = .out
-	CFLAGS += -lpthread
+	CFLAGS +=
 	VALGRIND = valgrind
 endif
 
