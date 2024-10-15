@@ -211,7 +211,7 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value, DCHashTableSe
 
         // And if it's DC_HT_SET_UPDATE_OR_FAIL we need to return an error
         if (set_status == DC_HT_SET_UPDATE_OR_FAIL)
-            dc_res_ret_e(dc_err_code(NF), "can only update existing hash table entry, provided key not found");
+            dc_res_ret_e(dc_err_code(HT_SET), "can only update existing hash table entry, provided key not found");
 
         // Otherwise just return ok
         dc_res_ret();
@@ -249,7 +249,7 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value, DCHashTableSe
 
         // And if it's DC_HT_SET_CREATE_OR_FAIL we need to return an error
         if (set_status == DC_HT_SET_CREATE_OR_FAIL)
-            dc_res_ret_e(dc_err_code(INTERNAL), "can only create hash table entry, provided key already exists");
+            dc_res_ret_e(dc_err_code(HT_SET), "can only create hash table entry, provided key already exists");
 
         // Otherwise just return ok
         dc_res_ret();
@@ -278,7 +278,7 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value, DCHashTableSe
 
     // And if it's DC_HT_SET_UPDATE_OR_FAIL we need to return an error
     if (set_status == DC_HT_SET_UPDATE_OR_FAIL)
-        dc_res_ret_e(dc_err_code(NF), "can only update existing hash table entry, provided key not found");
+        dc_res_ret_e(dc_err_code(HT_SET), "can only update existing hash table entry, provided key not found");
 
     // Otherwise just return ok
     dc_res_ret();

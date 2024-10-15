@@ -347,6 +347,7 @@
 #define DC_ERR_INDEX 4
 #define DC_ERR_INTERNAL 5
 #define DC_ERR_NF 6
+#define DC_ERR_HT_SET 7
 
 #define DC_ERR_NV_MSG "NULL value received"
 #define DC_ERR_MEM_MSG "memory allocation/re-allocation failed"
@@ -354,18 +355,19 @@
 #define DC_ERR_INDEX_MSG "index out of bound"
 #define DC_ERR_INTERNAL_MSG "internal error occurred"
 #define DC_ERR_NF_MSG "not found"
+#define DC_ERR_HT_SET_MSG "cannot perform update/create on provided key"
 
 /**
  * `[MACRO]` Expands to proper enum for error code
  *
- * @param ERR is the error short names, pre-defined options are: `NV`, `MEM`, `TYPE`, `INDEX`, `INTERNAL`, `NF`.
+ * @param ERR is the error short names, pre-defined options are: `NV`, `MEM`, `TYPE`, `INDEX`, `INTERNAL`, `NF`, `HT_SET`.
  */
 #define dc_err_code(ERR) DC_ERR_##ERR
 
 /**
  * `[MACRO]` Expands to proper enum for error message literal string
  *
- * @param ERR is the error short names, pre-defined options are: `NV`, `MEM`, `TYPE`, `INDEX`, `INTERNAL`, `NF`.
+ * @param ERR is the error short names, pre-defined options are: `NV`, `MEM`, `TYPE`, `INDEX`, `INTERNAL`, `NF`, `HT_SET`.
  */
 #define dc_err_msg(ERR) DC_ERR_##ERR##_MSG
 
@@ -1593,7 +1595,8 @@
 /**
  * `[MACRO]` Sets multiple key value pairs in a hash table without providing the count
  *
- * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`
+ * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`, in case of failure
+ * error code 7 will be returned
  *
  * NOTE: It does not check whether the result of the success is OK or error
  */
@@ -1609,7 +1612,8 @@
  * count and saves the result in the given RES (must be defined beforehand of
  * type DCResVoid)
  *
- * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`
+ * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`, in case of failure
+ * error code 7 will be returned
  *
  * NOTE: It does not check whether the result of the success is OK or error
  */
@@ -1625,7 +1629,8 @@
  * count and saves the result in the given main result variable (__dc_res) and
  * returns if the result is a failure
  *
- * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`
+ * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`, in case of failure
+ * error code 7 will be returned
  */
 #define dc_try_fail_ht_set_multiple(HT, STATUS, ...)                                                                           \
     do                                                                                                                         \
@@ -1639,7 +1644,8 @@
  * count and saves the result in a temporary variable of type DCResVoid and
  * returns if the result is a failure
  *
- * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`
+ * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`, in case of failure
+ * error code 7 will be returned
  */
 #define dc_try_fail_temp_ht_set_multiple(HT, STATUS, ...)                                                                      \
     do                                                                                                                         \
