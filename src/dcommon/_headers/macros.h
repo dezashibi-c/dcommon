@@ -1666,6 +1666,9 @@
  */
 #define DCPRIsv "%.*s"
 
+/**
+ * `[MACRO]` expands to literal string view
+ */
 #define dc_sv(STR, LEN) ((DCStringView){.cstr = NULL, .str = (STR), .len = (LEN)})
 
 /**
