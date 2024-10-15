@@ -103,10 +103,14 @@ DCResVoid test2()
 
     DCDynArr darr;
 
+    string some_text = "This is Navid";
+
     // Add elements
     dc_try_fail_da_init_with_values(&darr, NULL,
 
                                     dc_dv(u8, 42), dc_dv(i32, -12345), dc_dv(Person, person_new("Navid", 30)),
+
+                                    dc_dv(DCStringView, dc_sv((some_text + 8), 5)),
 
                                     // here it is a literal string so it doesn't need
                                     // to be mark as allocated (that's why dc_dv us used)

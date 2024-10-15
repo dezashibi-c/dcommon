@@ -1666,6 +1666,8 @@
  */
 #define DCPRIsv "%.*s"
 
+#define dc_sv(STR, LEN) ((DCStringView){.cstr = NULL, .str = (STR), .len = (LEN)})
+
 /**
  * `[MACRO]` If DCPRIsv is used as format specifier this macro should be used to provide
  * both length and pointer to the base string
