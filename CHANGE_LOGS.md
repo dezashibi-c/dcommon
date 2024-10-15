@@ -1,7 +1,8 @@
-## v1.3.5-stable
+## v1.3.7-stable
 
-Release Date: 2024-10-14
+Release Date: 2024-10-15
 
+- add status for hash table set and merge (can only be updated, created or both)
 - remove many redundant macros
 - improve namings
 - format specifier for each primitive type

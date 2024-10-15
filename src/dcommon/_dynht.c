@@ -157,7 +157,7 @@ DCResUsize dc_ht_find_by_key(DCHashTable* ht, DCDynVal key, DCDynVal** out_resul
     dc_res_ret_ok(0);
 }
 
-DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value)
+DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value, DCHashTableSetStatus set_status)
 {
     DC_RES_void();
 
@@ -181,15 +181,39 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value)
     new_entry->key = key;
     new_entry->value = value;
 
-    DC_HT_GET_AND_DEF_CONTAINER_ROW(current, *ht, _index);
+    DC_HT_GET_AND_DEF_CONTAINER_ROW(current_row, *ht, _index);
 
-    if (current->cap == 0)
+    // The row has not been initialized before
+    // So the key definitely does not exist
+    if (current_row->cap == 0)
     {
-        dc_try_fail(dc_da_init(current, ht->hash_entry_custom_free_fn));
-        dc_try_fail(dc_da_push(current, dc_dva(voidptr, new_entry)));
+        // We can only create the key when the set status is one of
+        //  - DC_HT_SET_CREATE_OR_UPDATE
+        //  - DC_HT_SET_CREATE_OR_NOTHING
+        //  - DC_HT_SET_CREATE_OR_FAIL
+        if (set_status == DC_HT_SET_CREATE_OR_UPDATE || set_status == DC_HT_SET_CREATE_OR_NOTHING ||
+            set_status == DC_HT_SET_CREATE_OR_FAIL)
+        {
+            dc_try_fail(dc_da_init(current_row, ht->hash_entry_custom_free_fn));
+            dc_try_fail(dc_da_push(current_row, dc_dva(voidptr, new_entry)));
 
-        ht->key_count++;
+            ht->key_count++;
 
+            dc_res_ret();
+        }
+
+        // Otherwise it's one of the following:
+        //  - DC_HT_SET_UPDATE_OR_FAIL
+        //  - DC_HT_SET_UPDATE_OR_NOTHING
+        // That indicates user assumes key must already exist
+        // First we need to free the allocated entry
+        free(new_entry);
+
+        // And if it's DC_HT_SET_UPDATE_OR_FAIL we need to return an error
+        if (set_status == DC_HT_SET_UPDATE_OR_FAIL)
+            dc_res_ret_e(dc_err_code(NF), "can only update existing hash table entry, provided key not found");
+
+        // Otherwise just return ok
         dc_res_ret();
     }
 
@@ -199,22 +223,68 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value)
 
     usize existed_index = dc_res_val2(find_res);
 
+    // key does exists in the row
     if (existed != NULL)
     {
-        dc_try_fail(dc_dv_free(&current->elements[existed_index], ht->hash_entry_custom_free_fn));
+        // We can only update the key when the set status is one of
+        //  - DC_HT_SET_CREATE_OR_UPDATE
+        //  - DC_HT_SET_UPDATE_OR_NOTHING
+        //  - DC_HT_SET_UPDATE_OR_FAIL
+        if (set_status == DC_HT_SET_CREATE_OR_UPDATE || set_status == DC_HT_SET_UPDATE_OR_NOTHING ||
+            set_status == DC_HT_SET_UPDATE_OR_FAIL)
+        {
+            dc_try_fail(dc_dv_free(&current_row->elements[existed_index], ht->hash_entry_custom_free_fn));
 
-        current->elements[existed_index] = dc_dva(voidptr, new_entry);
+            current_row->elements[existed_index] = dc_dva(voidptr, new_entry);
+
+            dc_res_ret();
+        }
+
+        // Otherwise it's one of the following:
+        //  - DC_HT_SET_CREATE_OR_FAIL
+        //  - DC_HT_SET_CREATE_OR_NOTHING
+        // That indicates user assumes key must not exist beforehand
+        // First we need to free the allocated entry
+        free(new_entry);
+
+        // And if it's DC_HT_SET_CREATE_OR_FAIL we need to return an error
+        if (set_status == DC_HT_SET_CREATE_OR_FAIL)
+            dc_res_ret_e(dc_err_code(INTERNAL), "can only create hash table entry, provided key already exists");
+
+        // Otherwise just return ok
+        dc_res_ret();
+    }
+
+    // And at last key does not exists in the row
+    // We can only create the key when the set status is one of
+    //  - DC_HT_SET_CREATE_OR_UPDATE
+    //  - DC_HT_SET_CREATE_OR_NOTHING
+    //  - DC_HT_SET_CREATE_OR_FAIL
+    if (set_status == DC_HT_SET_CREATE_OR_UPDATE || set_status == DC_HT_SET_CREATE_OR_NOTHING ||
+        set_status == DC_HT_SET_CREATE_OR_FAIL)
+    {
+        dc_try_fail(dc_da_push(current_row, dc_dva(voidptr, new_entry)));
+        ht->key_count++;
 
         dc_res_ret();
     }
 
-    dc_try_fail(dc_da_push(current, dc_dva(voidptr, new_entry)));
-    ht->key_count++;
+    /// Otherwise it's one of the following:
+    //  - DC_HT_SET_UPDATE_OR_FAIL
+    //  - DC_HT_SET_UPDATE_OR_NOTHING
+    // That indicates user assumes key must exists
+    // First we need to free the allocated entry
+    free(new_entry);
 
+    // And if it's DC_HT_SET_UPDATE_OR_FAIL we need to return an error
+    if (set_status == DC_HT_SET_UPDATE_OR_FAIL)
+        dc_res_ret_e(dc_err_code(NF), "can only update existing hash table entry, provided key not found");
+
+    // Otherwise just return ok
     dc_res_ret();
 }
 
-DCResVoid __dc_ht_set_multiple(DCHashTable* ht, usize count, DCHashEntry entries[])
+DCResVoid __dc_ht_set_multiple(DCHashTable* ht, usize count, DCHashEntry entries[], DCHashTableSetStatus set_status)
 {
     DC_RES_void();
 
@@ -227,13 +297,13 @@ DCResVoid __dc_ht_set_multiple(DCHashTable* ht, usize count, DCHashEntry entries
 
     for (usize i = 0; i < count; ++i)
     {
-        dc_try_fail(dc_ht_set(ht, entries[i].key, entries[i].value));
+        dc_try_fail(dc_ht_set(ht, entries[i].key, entries[i].value, set_status));
     }
 
     dc_res_ret();
 }
 
-DCResVoid dc_ht_merge(DCHashTable* ht, DCHashTable* from)
+DCResVoid dc_ht_merge(DCHashTable* ht, DCHashTable* from, DCHashTableSetStatus set_status)
 {
     DC_RES_void();
 
@@ -252,7 +322,7 @@ DCResVoid dc_ht_merge(DCHashTable* ht, DCHashTable* from)
         {
             DCHashEntry* entry = dc_da_get_as(from->container[i], j, voidptr);
 
-            dc_try_fail(dc_ht_set(ht, entry->key, entry->value));
+            dc_try_fail(dc_ht_set(ht, entry->key, entry->value, set_status));
         }
     }
 

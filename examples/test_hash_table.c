@@ -22,7 +22,7 @@ DC_HT_HASH_FN_DECL(string_hash)
 {
     DC_RES_u32();
 
-    if (_key->type != dc_dvt(string)) dc_res_ret_e(dc_err(TYPE), dc_err_msg(TYPE));
+    if (_key->type != dc_dvt(string)) dc_res_ret_e(dc_err_code(TYPE), dc_err_msg(TYPE));
 
     string str = dc_dv_as(*_key, string);
     u32 hash = 5381;
@@ -89,7 +89,7 @@ DCResVoid testing_hash_table_merge(DCHashTable* source)
     // Trying to do it in fact and save the result in void_res
     // It's really ok and even advised that we should reuse results as much as
     // we can
-    dc_try_ht_set_multiple(void_res, &table2,
+    dc_try_ht_set_multiple(void_res, &table2, DC_HT_SET_CREATE_OR_UPDATE,
 
                            {dc_dv(string, "maria"), dc_dv(u8, 20)}, {dc_dv(string, "jesse"), dc_dv(u8, 6)},
                            {dc_dv(string, "sophia"), dc_dv(u8, 12)}, {dc_dv(string, "erisa"), dc_dv(u8, 20)});
@@ -98,7 +98,7 @@ DCResVoid testing_hash_table_merge(DCHashTable* source)
     dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(void_res), "%s", dc_res_err_msg2(void_res));
 
     // Now trying to merge the table2 into given hash table
-    void_res = dc_ht_merge(source, &table2);
+    void_res = dc_ht_merge(source, &table2, DC_HT_SET_CREATE_OR_UPDATE);
     dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(void_res), "%s", dc_res_err_msg2(void_res));
 
     // Initiating exit section that cleans up the memory batch index
@@ -151,13 +151,13 @@ int main()
 
 
     DCDynVal key1 = dc_dv(string, "navid");
-    dc_ht_set(table, key1, dc_dv(u8, 30));
+    dc_ht_set(table, key1, dc_dv(u8, 30), DC_HT_SET_CREATE_OR_UPDATE);
 
     DCDynVal key2 = dc_dv(string, "james");
-    dc_ht_set(table, key2, dc_dv(u8, 40));
+    dc_ht_set(table, key2, dc_dv(u8, 40), DC_HT_SET_CREATE_OR_UPDATE);
 
     DCDynVal key3 = dc_dv(string, "bob");
-    dc_ht_set(table, key3, dc_dv(u8, 50));
+    dc_ht_set(table, key3, dc_dv(u8, 50), DC_HT_SET_CREATE_OR_UPDATE);
 
     DCDynVal* found = NULL;
     DCResUsize usize_res = dc_ht_find_by_key(table, key1, &found);
@@ -220,10 +220,10 @@ int main()
         printf("Key '%s' not found\n", dc_dv_as(key2, string));
     }
 
-    DCResVoid void_res = dc_ht_set(table, key1, dc_dv(u8, 36));
+    DCResVoid void_res = dc_ht_set(table, key1, dc_dv(u8, 36), DC_HT_SET_CREATE_OR_UPDATE);
     dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));
 
-    void_res = dc_ht_set(table, key2, dc_dv(u8, 100));
+    void_res = dc_ht_set(table, key2, dc_dv(u8, 100), DC_HT_SET_CREATE_OR_UPDATE);
     dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));
 
     dc_action_on(table->key_count != 3, dc_return_with_val(1), "key_count must be 3");
@@ -243,6 +243,27 @@ int main()
         printf("Key '%s' not found\n", dc_dv_as(key1, string));
     }
 
+    DCDynVal key_to_not_being_added = dc_dv(string, "Simba");
+    void_res = dc_ht_set(table, key_to_not_being_added, dc_dv(u8, 100), DC_HT_SET_UPDATE_OR_NOTHING);
+    dc_action_on(dc_res_is_err2(void_res), dc_return_with_val(dc_res_err_code2(void_res)), "%s", dc_res_err_msg2(void_res));
+
+    dc_action_on(table->key_count != 3, dc_return_with_val(1), "key_count must be 3");
+
+    found = NULL;
+    usize_res = dc_ht_find_by_key(table, key_to_not_being_added, &found);
+    dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
+
+    printf("Found index: '%" PRIuMAX "'\n", dc_res_val2(usize_res));
+
+    if (found != NULL)
+    {
+        printf("Found value for key '%s': %d\n", dc_dv_as(key_to_not_being_added, string), dc_dv_as(*found, u8));
+    }
+    else
+    {
+        printf("Key '%s' not found\n", dc_dv_as(key_to_not_being_added, string));
+    }
+
     found = NULL;
     usize_res = dc_ht_find_by_key(table, key2, &found);
     dc_action_on(dc_res_is_err2(usize_res), dc_return_with_val(dc_res_err_code2(usize_res)), "%s", dc_res_err_msg2(usize_res));
@@ -258,7 +279,7 @@ int main()
         printf("Key '%s' not found\n", dc_dv_as(key2, string));
     }
 
-    dc_try_ht_set_multiple(void_res, table,
+    dc_try_ht_set_multiple(void_res, table, DC_HT_SET_CREATE_OR_UPDATE,
 
                            dc_ht_entry(string, "robert", u8, 20), dc_ht_entry(string, "albert", u8, 6),
                            dc_ht_entry(string, "boris", u8, 12), dc_ht_entry(string, "navid", u8, 29)

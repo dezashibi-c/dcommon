@@ -348,18 +348,19 @@
 #define DC_ERR_INTERNAL 5
 #define DC_ERR_NF 6
 
-#define DC_ERR_NV_MSG "Null value received"
-#define DC_ERR_MEM_MSG "Memory allocation/re-allocation failed"
-#define DC_ERR_TYPE_MSG "Unknown type received"
-#define DC_ERR_INDEX_MSG "Index out of bound"
-#define DC_ERR_NF_MSG "Not Found"
+#define DC_ERR_NV_MSG "NULL value received"
+#define DC_ERR_MEM_MSG "memory allocation/re-allocation failed"
+#define DC_ERR_TYPE_MSG "unknown type received"
+#define DC_ERR_INDEX_MSG "index out of bound"
+#define DC_ERR_INTERNAL_MSG "internal error occurred"
+#define DC_ERR_NF_MSG "not found"
 
 /**
  * `[MACRO]` Expands to proper enum for error code
  *
  * @param ERR is the error short names, pre-defined options are: `NV`, `MEM`, `TYPE`, `INDEX`, `INTERNAL`, `NF`.
  */
-#define dc_err(ERR) DC_ERR_##ERR
+#define dc_err_code(ERR) DC_ERR_##ERR
 
 /**
  * `[MACRO]` Expands to proper enum for error message literal string
@@ -1592,13 +1593,15 @@
 /**
  * `[MACRO]` Sets multiple key value pairs in a hash table without providing the count
  *
+ * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`
+ *
  * NOTE: It does not check whether the result of the success is OK or error
  */
-#define dc_ht_set_multiple(HT, ...)                                                                                            \
+#define dc_ht_set_multiple(HT, STATUS, ...)                                                                                    \
     do                                                                                                                         \
     {                                                                                                                          \
         DCHashEntry __initial_values[] = {__VA_ARGS__};                                                                        \
-        __dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values);                                                \
+        __dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values, STATUS);                                        \
     } while (0)
 
 /**
@@ -1606,37 +1609,43 @@
  * count and saves the result in the given RES (must be defined beforehand of
  * type DCResVoid)
  *
+ * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`
+ *
  * NOTE: It does not check whether the result of the success is OK or error
  */
-#define dc_try_ht_set_multiple(RES, HT, ...)                                                                                   \
+#define dc_try_ht_set_multiple(RES, HT, STATUS, ...)                                                                           \
     do                                                                                                                         \
     {                                                                                                                          \
         DCHashEntry __initial_values[] = {__VA_ARGS__};                                                                        \
-        RES = __dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values);                                          \
+        RES = __dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values, STATUS);                                  \
     } while (0)
 
 /**
  * `[MACRO]` Tries to sets multiple key value pairs in a hash table without providing the
  * count and saves the result in the given main result variable (__dc_res) and
  * returns if the result is a failure
+ *
+ * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`
  */
-#define dc_try_fail_ht_set_multiple(HT, ...)                                                                                   \
+#define dc_try_fail_ht_set_multiple(HT, STATUS, ...)                                                                           \
     do                                                                                                                         \
     {                                                                                                                          \
         DCHashEntry __initial_values[] = {__VA_ARGS__};                                                                        \
-        dc_try_fail(__dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values));                                   \
+        dc_try_fail(__dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values, STATUS));                           \
     } while (0)
 
 /**
  * `[MACRO]` Tries to sets multiple key value pairs in a hash table without providing the
- * count and saves the result in a temporary variable of type DCResVoid) and
+ * count and saves the result in a temporary variable of type DCResVoid and
  * returns if the result is a failure
+ *
+ * @param STATUS indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`
  */
-#define dc_try_fail_temp_ht_set_multiple(HT, ...)                                                                              \
+#define dc_try_fail_temp_ht_set_multiple(HT, STATUS, ...)                                                                      \
     do                                                                                                                         \
     {                                                                                                                          \
         DCHashEntry __initial_values[] = {__VA_ARGS__};                                                                        \
-        dc_try_fail_temp(__dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values));                              \
+        dc_try_fail_temp(__dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values, STATUS));                      \
     } while (0)
 
 // ***************************************************************************************

@@ -240,6 +240,20 @@ typedef struct
 // ***************************************************************************************
 
 /**
+ * Enum to indicate the action that hash table must take toward
+ * When trying to set a key value entry
+ */
+typedef enum
+{
+    DC_HT_SET_CREATE_OR_UPDATE,
+    DC_HT_SET_CREATE_OR_FAIL,
+    DC_HT_SET_CREATE_OR_NOTHING,
+
+    DC_HT_SET_UPDATE_OR_FAIL,
+    DC_HT_SET_UPDATE_OR_NOTHING,
+} DCHashTableSetStatus;
+
+/**
  * Each entry of a hash table can have a dynamic value
  *
  * NOTE: The key is dynamic value and the correctness of the passed values and types
