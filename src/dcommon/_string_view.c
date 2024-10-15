@@ -23,6 +23,7 @@
 #include "_headers/aliases.h"
 #include "_headers/general.h"
 #include "_headers/macros.h"
+#include "dcommon_primitives.h"
 
 DCResSv dc_sv_create(string base, usize start, usize length)
 {
@@ -75,10 +76,13 @@ DCResVoid dc_sv_free(DCStringView* sv)
 {
     DC_RES_void();
 
-    if (!sv || sv->cstr == NULL) dc_res_ret();
+    if (!sv) dc_res_ret_e(dc_err_code(NV), dc_err_msg(NV));
 
-    free(sv->cstr);
+    if (sv->cstr) free(sv->cstr);
+
     sv->cstr = NULL;
+    sv->str = NULL;
+    sv->len = 0;
 
     dc_res_ret();
 }

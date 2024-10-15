@@ -110,6 +110,23 @@ DCResType(fileptr, DCResFileptr);
 DCResType(bool, DCResBool);
 
 // ***************************************************************************************
+// * STRING VIEW TYPE DECLARATION
+// ***************************************************************************************
+
+/**
+ * It is used to address a portion of a string without memory allocation.
+ *
+ * NOTE: cstr when initiated will be allocated to the exact copy of the string
+ * piece SV pointing to
+ */
+struct DCStringView
+{
+    string str;
+    usize len;
+    string cstr;
+};
+
+// ***************************************************************************************
 // * DYNAMIC ARRAY TYPE DECLARATIONS
 // ***************************************************************************************
 
@@ -138,6 +155,8 @@ typedef enum
     dc_dvt(string),
     dc_dvt(voidptr),
     dc_dvt(fileptr),
+
+    dc_dvt(DCStringView),
 
 #ifdef DC_DV_EXTRA_TYPES
     DC_DV_EXTRA_TYPES
@@ -176,6 +195,8 @@ typedef struct
 
         dc_dvf_decl(size);
         dc_dvf_decl(usize);
+
+        dc_dvf_decl(DCStringView);
 
 #ifdef DC_DV_EXTRA_FIELDS
         DC_DV_EXTRA_FIELDS
@@ -217,23 +238,6 @@ typedef struct
 
     DCDynValFreeFn element_free_fn;
 } DCDynArr;
-
-// ***************************************************************************************
-// * STRING VIEW TYPE DECLARATION
-// ***************************************************************************************
-
-/**
- * It is used to address a portion of a string without memory allocation.
- *
- * NOTE: cstr when initiated will be allocated to the exact copy of the string
- * piece SV pointing to
- */
-typedef struct
-{
-    string str;
-    usize len;
-    string cstr;
-} DCStringView;
 
 // ***************************************************************************************
 // * HASH TABLE TYPE DECLARATIONS

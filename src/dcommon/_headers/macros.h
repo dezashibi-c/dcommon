@@ -148,7 +148,7 @@
 #define dc_size_as_bool(VAL) ((VAL) != 0)
 #define dc_usize_as_bool(VAL) ((VAL) != 0)
 
-#define dc_DCStringView_as_bool(VAL) ((VAL).len != 0)
+#define dc_DCStringView_as_bool(VAL) (((VAL).str) && (VAL).len != 0)
 
 /**
  * `[MACRO]` Creates an u8 based boolean dynamic value with 0 or 1
@@ -204,7 +204,6 @@
 #define DC_STOPPER_usize SIZE_MAX
 
 #define DC_STOPPER_DCDynVal dc_dv_nullptr()
-#define DC_STOPPER_DCDynArr ((DCDynArr){0})
 #define DC_STOPPER_DCStringView ((DCStringView){0})
 
 #define DC_IS_STOPPER_i8(EL) (EL == DC_STOPPER_i8)
@@ -231,7 +230,6 @@
 #define DC_IS_STOPPER_usize(EL) (EL == DC_STOPPER_usize)
 
 #define DC_IS_STOPPER_DCDynVal(EL) ((EL).type == dc_dvt(voidptr) && (EL).value.dc_dvf(voidptr) == NULL)
-#define DC_IS_STOPPER_DCDynArr(EL) ((EL).cap == 0)
 #define DC_IS_STOPPER_DCStringView(EL) (!(EL).str)
 
 /**

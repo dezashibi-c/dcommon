@@ -52,6 +52,8 @@ string dc_dv_fmt(DCDynVal* dv)
         dv_fmt_case(size);
         dv_fmt_case(usize);
 
+        dv_fmt_case(DCStringView);
+
         default:
             return "";
     };
@@ -85,6 +87,8 @@ string dc_tostr_dvt(DCDynVal* dv)
         dvt_case(fileptr);
         dvt_case(size);
         dvt_case(usize);
+
+        dvt_case(DCStringView);
 
         default:
             return "unknown or unimplemented";
@@ -123,6 +127,8 @@ DCResBool dc_dv_as_bool(DCDynVal* dv)
         type_to_bool(fileptr);
         type_to_bool(size);
         type_to_bool(usize);
+
+        type_to_bool(DCStringView);
 
         default:
             break;
@@ -536,7 +542,7 @@ DCResBool dc_dv_eq(DCDynVal* dv1, DCDynVal* dv2)
 
         case dc_dvt(string):
         {
-            if (strcmp(dv1->value.string_val, dv2->value.string_val) == 0) dc_res_ret_ok(true);
+            if (strcmp(dc_dv_as(*dv1, string), dc_dv_as(*dv2, string)) == 0) dc_res_ret_ok(true);
             break;
         }
 
@@ -545,6 +551,15 @@ DCResBool dc_dv_eq(DCDynVal* dv1, DCDynVal* dv2)
         check_eq(fileptr);
         check_eq(size);
         check_eq(usize);
+
+        case dc_dvt(DCStringView):
+        {
+            if (dc_dv_as(*dv1, DCStringView).str && dc_dv_as(*dv2, DCStringView).str 
+            && (dc_dv_as(*dv1, DCStringView).str == dc_dv_as(*dv2, DCStringView).str) 
+            && (dc_dv_as(*dv1, DCStringView).len == dc_dv_as(*dv2, DCStringView).len)) dc_res_ret_ok(true);
+
+            break;
+        }
             // clang-format on
 
         default:
@@ -611,7 +626,7 @@ DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn)
 
             case dc_dvt(string):
             {
-                if (strcmp(element->value.string_val, el->value.string_val) == 0) dc_res_ret_ok(i);
+                if (strcmp(dc_dv_as(*element, string), dc_dv_as(*el, string)) == 0) dc_res_ret_ok(i);
                 break;
             }
 
@@ -620,6 +635,15 @@ DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn)
             find_if(fileptr, i);
             find_if(size, i);
             find_if(usize, i);
+
+            case dc_dvt(DCStringView):
+            {
+                if (dc_dv_as(*element, DCStringView).str && dc_dv_as(*el, DCStringView).str 
+                && (dc_dv_as(*element, DCStringView).str == dc_dv_as(*el, DCStringView).str) 
+                && (dc_dv_as(*element, DCStringView).len == dc_dv_as(*el, DCStringView).len)) dc_res_ret_ok(i);
+
+                break;
+            }
                 // clang-format on
 
             default:
@@ -680,6 +704,16 @@ DCResVoid dc_dv_free(DCDynVal* element, DCDynValFreeFn custom_free_fn)
             if (dc_dv_is_allocated(*element) && dc_dv_as(*element, voidptr) != NULL) free(dc_dv_as(*element, voidptr));
 
             dc_dv_set(*element, voidptr, NULL);
+            break;
+        }
+
+        case dc_dvt(DCStringView):
+        {
+            if (custom_free_fn) dc_try_fail_temp(DCResVoid, custom_free_fn(element));
+
+            if (dc_dv_is_allocated(*element) && dc_dv_as(*element, DCStringView).cstr)
+                dc_try_fail_temp(DCResVoid, dc_sv_free(&dc_dv_as(*element, DCStringView)));
+
             break;
         }
 
@@ -973,4 +1007,9 @@ DCResUsize dc_voidptr_da_to_flat_arr(DCDynArr* arr, voidptr** out_arr, bool must
 DCResUsize dc_fileptr_da_to_flat_arr(DCDynArr* arr, fileptr** out_arr, bool must_fail)
 {
     __DC_DA_CONVERT_IMPL(fileptr);
+}
+
+DCResUsize dc_DCStringView_da_to_flat_arr(DCDynArr* arr, DCStringView** out_arr, bool must_fail)
+{
+    __DC_DA_CONVERT_IMPL(DCStringView);
 }

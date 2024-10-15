@@ -644,6 +644,19 @@ DCResUsize dc_voidptr_da_to_flat_arr(DCDynArr* arr, voidptr** out_arr, bool must
  */
 DCResUsize dc_fileptr_da_to_flat_arr(DCDynArr* arr, fileptr** out_arr, bool must_fail);
 
+/**
+ * Converts given array to actual array of literal values in dynamic values
+ * supposing all or most of the values are of a same type (see `must_fail`
+ * parameter)
+ *
+ * @param must_fail when true causes the process to break with error code -1
+ * when receives any type other than DCStringView, when false the unmatched types
+ * will be ignored
+ *
+ * @return the number of exported values or error
+ */
+DCResUsize dc_DCStringView_da_to_flat_arr(DCDynArr* arr, DCStringView** out_arr, bool must_fail);
+
 // ***************************************************************************************
 
 /**

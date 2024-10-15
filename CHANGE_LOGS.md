@@ -1,7 +1,8 @@
-## v1.3.8-stable
+## v1.4.0-stable
 
 Release Date: 2024-10-15
 
+- add string view to dynamic value as well
 - add status for hash table set and merge (can only be updated, created or both)
 - remove many redundant macros
 - improve namings

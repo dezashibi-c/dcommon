@@ -48,6 +48,8 @@ typedef char* string;
 typedef void* voidptr;
 typedef FILE* fileptr;
 
+typedef struct DCStringView DCStringView;
+
 #undef __DC_BYPASS_PRIVATE_PROTECTION
 
 #endif // DCOMMON_PRIMITIVES_H
