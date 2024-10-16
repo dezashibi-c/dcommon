@@ -36,7 +36,7 @@ DCResSv dc_sv_create(string base, usize start, usize length)
         dc_res_ret_e(1, "got NULL base string");
     }
 
-    if (start + length > strlen(base))
+    if (start + length + 1 > strlen(base))
     {
         dc_dbg_log("starting at index " dc_fmt(usize) " cannot get " dc_fmt(
                        usize) " characters out of a string with length=" dc_fmt(usize),

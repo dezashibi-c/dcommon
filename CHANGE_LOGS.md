@@ -1,3 +1,11 @@
+## v1.4.5-stable
+
+Release Date: 2024-10-16
+
+- fix string view bug on boundary check
+
+=======
+
 ## v1.4.4-stable
 
 Release Date: 2024-10-15
