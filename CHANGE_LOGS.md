@@ -1,8 +1,9 @@
-## v1.4.7-stable
+## v1.4.8-stable
 
 Release Date: 2024-10-16
 
 - fix string view bug on boundary check
+- move result type to primitives
 
 =======
 
