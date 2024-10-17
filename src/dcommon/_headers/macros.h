@@ -1059,7 +1059,7 @@
  *
  * NOTE: only to be used in dc_for, dc_foreach and dc_da_for
  */
-#define DC_BREAK() __dc_break = true
+#define DC_BREAK __dc_break = true
 
 /**
  * `[MACRO]` Iterator in a stopper terminated array provided with pointer to the current
