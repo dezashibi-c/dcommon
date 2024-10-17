@@ -1522,7 +1522,7 @@
 /**
  * `[MACRO]` Expands to standard hash table key value free function declaration
  */
-#define DC_HT_KEY_VALUE_FREE_FN_DECL(NAME) DCResVoid NAME(DCKeyValuePair* _key_value);
+#define DC_HT_KEY_VALUE_FREE_FN_DECL(NAME) DCResVoid NAME(DCKeyValuePair* _key_value)
 
 /**
  * `[MACRO]` Gets the results of hash table's hash function for the given key
