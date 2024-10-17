@@ -11,7 +11,7 @@
 //     or concerns, please feel free to contact me at the email address provided
 //     above.
 // ***************************************************************************************
-// *  Description: Main `dcommon` library entry point
+// *  Description: Main `dcommon` library key_value point
 // ***************************************************************************************
 
 #ifndef DC_MAIN_HEADER_H
@@ -671,13 +671,13 @@ DCResUsize dc_DCStringView_da_to_flat_arr(DCDynArr* arr, DCStringView** out_arr,
  * @param key_cmp_fn is the function that compares a provided key and keys in
  * the buckets
  *
- * @param hash_entry_custom_free_fn as each hash entry is saved as a dynamic value if they must be
+ * @param key_value_free_fn as each hash key_value is saved as a dynamic value if they must be
  * freed using special process this is the parameter to be provided
  *
  * @return nothing or error
  */
 DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn,
-                     DCDynValFreeFn hash_entry_custom_free_fn);
+                     DCHtKeyValuePairFreeFn key_value_free_fn);
 
 /**
  * Creates, allocates, initializes and returns a pointer to hash table
@@ -686,7 +686,7 @@ DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCom
  *
  * NOTE: Allocates memory
  */
-DCResHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCDynValFreeFn hash_entry_custom_free_fn);
+DCResHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCHtKeyValuePairFreeFn key_value_free_fn);
 
 /**
  * Frees the given hash table and all the values
@@ -715,7 +715,7 @@ DCResUsize dc_ht_find_by_key(DCHashTable* ht, DCDynVal key, DCDynVal** out_resul
 /**
  * Sets a value for the given key
  *
- * @param set_status indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`, in case of
+ * @param set_status indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  *
  * @return nothing or error
@@ -725,7 +725,7 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value, DCHashTableSe
 /**
  * Inserts multiple key/values at once
  *
- * @param set_status indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`, in case of
+ * @param set_status indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  *
  * NOTE: see `dc_ht_set_multiple` macro in macro.h for easy addition without
@@ -733,13 +733,13 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value, DCHashTableSe
  *
  * @return nothing or error
  */
-DCResVoid __dc_ht_set_multiple(DCHashTable* ht, usize count, DCHashEntry entries[], DCHashTableSetStatus set_status);
+DCResVoid __dc_ht_set_multiple(DCHashTable* ht, usize count, DCKeyValuePair entries[], DCHashTableSetStatus set_status);
 
 /**
  * Merges and overwrites the key/values from the `from` hash table to the
  * original `ht` hash table
  *
- * @param set_status indicates the action that must be taken when setting the entry see `DCHashTableSetStatus`, in case of
+ * @param set_status indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  *
  * @return nothing or error

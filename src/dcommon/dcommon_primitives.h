@@ -115,6 +115,8 @@ typedef struct
     } data;
 } DCResVoid;
 
+typedef struct DCKeyValuePair DCKeyValuePair;
+
 #undef __DC_BYPASS_PRIVATE_PROTECTION
 
 #endif // DCOMMON_PRIMITIVES_H

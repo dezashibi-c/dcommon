@@ -1763,7 +1763,7 @@ dc_sv_sv_eq(SV1, SV2)
 
 ```c
 /**
- * Each entry of a hash table can have a dynamic value
+ * Each key_value of a hash table can have a dynamic value
  *
  * NOTE: The key is voidptr and must be fixed or properly handled throughout
  * hash function process
@@ -1772,7 +1772,7 @@ typedef struct
 {
     voidptr key;
     DCDynVal value;
-} DCHashEntry;
+} DCKeyValuePair;
 
 /**
  * Function pointer type as an acceptable hash function for an Hash Table
@@ -1928,9 +1928,9 @@ dc_try_fail_temp_ht_get_hash(VAR_NAME, HT, KEY)
 DC_HT_GET_AND_DEF_CONTAINER_ROW(VAR_NAME, HT, HASH)                           
 
 /**
- * Creates a literal hash table key/value pair (entry)
+ * Creates a literal hash table key/value pair (key_value)
  */
-dc_ht_entry(KEY, VAL)                                                 
+dc_ht_key_value(KEY, VAL)                                                 
 
 /**
  * Sets multiple key value pairs in a hash table without providing the count
@@ -2454,7 +2454,7 @@ DC_NO_CLEANUP -2
 DC_CLEANUP_FN_DECL(NAME)
 
 /**
- * Runs the cleanup process of a cleanup job entry
+ * Runs the cleanup process of a cleanup job key_value
  */
 dc_cleanup_job_run(ENTRY)
 

@@ -180,7 +180,7 @@ typedef struct
 
 /**
  * Enum to indicate the action that hash table must take toward
- * When trying to set a key value entry
+ * When trying to set a key value key_value
  */
 typedef enum
 {
@@ -193,16 +193,16 @@ typedef enum
 } DCHashTableSetStatus;
 
 /**
- * Each entry of a hash table can have a dynamic value
+ * Each key_value of a hash table can have a dynamic value
  *
  * NOTE: The key is dynamic value and the correctness of the passed values and types
  *       must be checked in hash and key comparaison functions
  */
-typedef struct
+struct DCKeyValuePair
 {
     DCDynVal key;
     DCDynVal value;
-} DCHashEntry;
+};
 
 /**
  * Function pointer type as an acceptable hash function for an Hash Table
@@ -213,6 +213,11 @@ typedef DCResU32 (*DCHashFn)(DCDynVal*);
  * Key comparison function type for an Hash Table
  */
 typedef DCResBool (*DCKeyCompFn)(DCDynVal*, DCDynVal*);
+
+/**
+ * Key value pair free function declaration
+ */
+typedef DCResVoid (*DCHtKeyValuePairFreeFn)(DCKeyValuePair*);
 
 /**
  * A Hash Table with track of capacity and number of registered keys
@@ -228,7 +233,7 @@ typedef struct
 
     DCHashFn hash_fn;
     DCKeyCompFn key_cmp_fn;
-    DCDynValFreeFn hash_entry_custom_free_fn;
+    DCHtKeyValuePairFreeFn key_value_free_fn;
 } DCHashTable;
 
 // ***************************************************************************************

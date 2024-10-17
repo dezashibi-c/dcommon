@@ -470,11 +470,11 @@ DCResVoid dc_cleanup_batch_run(DCCleanupBatch* batch)
 
     // run cleanup of each item
     dc_da_for(*batch, {
-        DCCleanupJob* entry = dc_da_get_as(*batch, _idx, voidptr);
+        DCCleanupJob* key_value = dc_da_get_as(*batch, _idx, voidptr);
 
-        dc_dbg_log("cleaning index: '%" PRIuMAX "', cleanup perform: %p", _idx, (*entry).element);
+        dc_dbg_log("cleaning index: '%" PRIuMAX "', cleanup perform: %p", _idx, (*key_value).element);
 
-        dc_try_fail(dc_cleanup_job_run(*entry));
+        dc_try_fail(dc_cleanup_job_run(*key_value));
     });
 
     // clean up the dc_cleanup itself
@@ -588,7 +588,7 @@ void dc_cleanup_push2(DCCleanupBatch* batch, voidptr element, DCCleanupFn cleanu
 
     if (dc_res_is_err())
     {
-        dc_dbg_log("An error occurred while pushing cleanup job entry to the "
+        dc_dbg_log("An error occurred while pushing cleanup job key_value to the "
                    "cleanup batch index: (code %d) %s",
                    dc_res_err_code(), dc_res_err_msg());
 

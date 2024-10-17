@@ -1,7 +1,8 @@
-## v1.4.8-stable
+## v1.5.0-stable
 
-Release Date: 2024-10-16
+Release Date: 2024-10-17
 
+- improve hash table free process
 - fix string view bug on boundary check
 - move result type to primitives
 
