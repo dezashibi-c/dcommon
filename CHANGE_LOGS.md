@@ -1,7 +1,8 @@
-## v1.5.1-stable
+## v1.5.2-stable
 
 Release Date: 2024-10-17
 
+- add break out of loop feature with macro
 - improve hash table free process
 - fix string view bug on boundary check
 - move result type to primitives
