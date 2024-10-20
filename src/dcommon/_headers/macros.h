@@ -1123,30 +1123,8 @@
     } while (0)
 
 // ***************************************************************************************
-// * DYNAMIC ARRAY MACROS
+// * DYNAMIC VALUE MACROS
 // ***************************************************************************************
-
-#ifndef DC_DA_INITIAL_CAP
-
-/**
- * `[MACRO]` Default initial capacity for dynamic array
- *
- * NOTE: You can define it with your desired amount before including `dcommon.h`
- */
-#define DC_DA_INITIAL_CAP 4
-
-#endif
-
-#ifndef DC_DA_CAP_MULTIPLIER
-
-/**
- * `[MACRO]` Default initial capacity multiplier for dynamic array
- *
- * NOTE: You can define it with your desired amount before including `dcommon.h`
- */
-#define DC_DA_CAP_MULTIPLIER 2
-
-#endif
 
 /**
  * `[MACRO]` Macro to define custom free function for dynamic values
@@ -1260,6 +1238,32 @@
  * `[MACRO]` Checks if the dynamic value is marked as allocated
  */
 #define dc_dv_is_allocated(NAME) ((NAME).allocated)
+
+// ***************************************************************************************
+// * DYNAMIC ARRAY MACROS
+// ***************************************************************************************
+
+#ifndef DC_DA_INITIAL_CAP
+
+/**
+ * `[MACRO]` Default initial capacity for dynamic array
+ *
+ * NOTE: You can define it with your desired amount before including `dcommon.h`
+ */
+#define DC_DA_INITIAL_CAP 4
+
+#endif
+
+#ifndef DC_DA_CAP_MULTIPLIER
+
+/**
+ * `[MACRO]` Default initial capacity multiplier for dynamic array
+ *
+ * NOTE: You can define it with your desired amount before including `dcommon.h`
+ */
+#define DC_DA_CAP_MULTIPLIER 2
+
+#endif
 
 /**
  * `[MACRO]` Checks if the given index is correct according to the dynamic array number of
