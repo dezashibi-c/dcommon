@@ -29,7 +29,7 @@ void print_da(DCDynArr* darr)
     dc_da_for(*darr, {
         printf("['%" PRIuMAX "'] ", _idx);
         DCResDv res = dc_da_get(darr, _idx);
-        if (dc_res_is_ok2(res)) print_dv(dc_res_val2(res));
+        if (dc_is_ok2(res)) print_dv(dc_val2(res));
     });
 }
 
@@ -159,7 +159,7 @@ DCResVoid test1()
 
     // Returning the void result which is OK by default so if we're here we
     // haven't had any errors, yay!
-    dc_res_ret();
+    dc_ret();
 }
 
 DCResVoid test2()
@@ -183,7 +183,7 @@ DCResVoid test2()
     // Adding a string
     // in this line something risky is happening as we assumed
     // dc_strdup is successful
-    dc_dv_seta(val, string, dc_res_val2(dc_strdup("Hello, Dynamic Array!")));
+    dc_dv_seta(val, string, dc_val2(dc_strdup("Hello, Dynamic Array!")));
     dc_try_fail(dc_da_push(&darr, val));
 
     // Finding an element (search for u8 value 42)
@@ -192,39 +192,39 @@ DCResVoid test2()
 
     DCResUsize res = dc_da_findp(&darr, &search_val, NULL);
 
-    if (dc_res_is_ok2(res))
+    if (dc_is_ok2(res))
     {
-        u8 found = dc_da_get_as(darr, dc_res_val2(res), u8);
+        u8 found = dc_da_get_as(darr, dc_val2(res), u8);
         printf("Found u8: %d\n", found);
     }
-    else if (dc_res_err_code2(res) == 6)
+    else if (dc_err_code2(res) == 6)
     {
         dc_log("Element not found.\n");
     }
     else
     {
-        dc_res_fail_if_err2(res);
+        dc_fail_if_err2(res);
     }
 
     // dc_strdup allocates memory so we use the allocated version of
     // dc_dv_set (with an 'a' at the end) and in this line something
     // risky is happening too as we assumed dc_strdup is successful
-    dc_dv_seta(search_val, string, dc_res_val2(dc_strdup("Hello, Dynamic Array!")));
+    dc_dv_seta(search_val, string, dc_val2(dc_strdup("Hello, Dynamic Array!")));
 
     res = dc_da_findp(&darr, &search_val, NULL);
 
-    if (dc_res_is_ok2(res))
+    if (dc_is_ok2(res))
     {
-        string found = dc_da_get_as(darr, dc_res_val2(res), string);
+        string found = dc_da_get_as(darr, dc_val2(res), string);
         printf("Found string: %s\n", found);
     }
-    else if (dc_res_err_code2(res) == 6)
+    else if (dc_err_code2(res) == 6)
     {
         dc_log("Element not found.\n");
     }
     else
     {
-        dc_res_fail_if_err2(res);
+        dc_fail_if_err2(res);
     }
 
     dc_try_fail(dc_da_free(&darr));
@@ -249,12 +249,12 @@ DCResVoid test3()
      * the unwanted value)
      */
     DCResUsize len_res = dc_char_da_to_flat_arr(&darr, &result_str, false);
-    dc_res_fail_if_err2(len_res);
+    dc_fail_if_err2(len_res);
 
-    if (dc_res_is_ok2(len_res))
+    if (dc_is_ok2(len_res))
     {
         printf("Resulting string: %s\n", result_str);
-        printf("String length: '%" PRIuMAX "'\n", dc_res_val2(len_res));
+        printf("String length: '%" PRIuMAX "'\n", dc_val2(len_res));
         free(result_str);
     }
     else
@@ -279,13 +279,13 @@ DCResVoid test4()
 
     u8* result = NULL;
     DCResUsize len_res = dc_u8_da_to_flat_arr(&darr, &result, true);
-    dc_res_fail_if_err2(len_res);
+    dc_fail_if_err2(len_res);
 
-    if (dc_res_is_ok2(len_res))
+    if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_res_val2(len_res));
+        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_val2(len_res));
 
-        for (usize i = 0; i < dc_res_val2(len_res); ++i) printf("%d\n", result[i]);
+        for (usize i = 0; i < dc_val2(len_res); ++i) printf("%d\n", result[i]);
 
         free(result);
     }
@@ -311,13 +311,13 @@ DCResVoid test5()
 
     usize* result = NULL;
     DCResUsize len_res = dc_usize_da_to_flat_arr(&darr, &result, true);
-    dc_res_fail_if_err2(len_res);
+    dc_fail_if_err2(len_res);
 
-    if (dc_res_is_ok2(len_res))
+    if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_res_val2(len_res));
+        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_val2(len_res));
 
-        for (usize i = 0; i < dc_res_val2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
+        for (usize i = 0; i < dc_val2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
 
         free(result);
     }
@@ -343,13 +343,13 @@ DCResVoid test6()
 
     size* result = NULL;
     DCResUsize len_res = dc_size_da_to_flat_arr(&darr, &result, true);
-    dc_res_fail_if_err2(len_res);
+    dc_fail_if_err2(len_res);
 
-    if (dc_res_is_ok2(len_res))
+    if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_res_val2(len_res));
+        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_val2(len_res));
 
-        for (usize i = 0; i < dc_res_val2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
+        for (usize i = 0; i < dc_val2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
 
         free(result);
     }
@@ -401,13 +401,13 @@ DCResVoid test7()
 
     voidptr* result = NULL;
     DCResUsize len_res = dc_voidptr_da_to_flat_arr(&darr, &result, true);
-    dc_res_fail_if_err2(len_res);
+    dc_fail_if_err2(len_res);
 
-    if (dc_res_is_ok2(len_res))
+    if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_res_val2(len_res));
+        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_val2(len_res));
 
-        for (usize i = 0; i < dc_res_val2(len_res); ++i) print_struct((MyStruct*)result[i]);
+        for (usize i = 0; i < dc_val2(len_res); ++i) print_struct((MyStruct*)result[i]);
 
         free(result);
     }
@@ -428,10 +428,10 @@ int main()
      * day return just zero or any other number
      *
      * We could put DCResVoid some_res = test1();
-     * And then check with the second version of all the dc_res_... functions
+     * And then check with the second version of all the dc_... functions
      * As an example
-     * dc_action_on(dc_res_is_err2(some_res), return dc_res_err_code2(some_res),
-     *              "%s", dc_res_err_msg2(some_res));
+     * dc_action_on(dc_is_err2(some_res), return dc_err_code2(some_res),
+     *              "%s", dc_err_msg2(some_res));
      *
      * Or What I did here I declared default result variable (__dc_res) so that
      * I can use version 1 (technically unversioned! versions!) which are
@@ -441,25 +441,25 @@ int main()
     DC_RES_void();
 
     dc_try(test1());
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
 
     dc_try(test2());
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
 
     dc_try(test3());
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
 
     dc_try(test4());
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
 
     dc_try(test5());
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
 
     dc_try(test6());
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
 
     dc_try(test7());
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
 
     return 0;
 }

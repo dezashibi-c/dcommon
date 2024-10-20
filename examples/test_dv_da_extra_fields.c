@@ -79,7 +79,7 @@ void print_da(DCDynArr* darr)
     dc_da_for(*darr, {
         printf("['" dc_fmt(usize) "'] ", _idx);
         DCResDv res = dc_da_get(darr, _idx);
-        if (dc_res_is_ok2(res)) print_dv(dc_res_val2(res));
+        if (dc_is_ok2(res)) print_dv(dc_val2(res));
     });
 }
 
@@ -94,7 +94,7 @@ DCResVoid test1()
 
     dc_foreach(people, Person, print_person(_it));
 
-    dc_res_ret();
+    dc_ret();
 }
 
 DCResVoid test2()
@@ -140,7 +140,7 @@ DCResVoid test2()
 
     // Returning the void result which is OK by default so if we're here we
     // haven't had any errors, yay!
-    dc_res_ret();
+    dc_ret();
 }
 
 int main()
@@ -148,10 +148,10 @@ int main()
     DC_RES_void();
 
     dc_try(test1());
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
 
     dc_try(test2());
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
 
     return 0;
 }
