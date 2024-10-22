@@ -1055,6 +1055,17 @@
 #define dc_last(ARR) ARR[(dc_len(ARR) - 1)]
 
 /**
+ * `[MACRO]` Expands to assigning __dc_break = true
+ *
+ * NOTE: only to be used in dc_for, dc_foreach and dc_da_for
+ */
+#define DC_BREAK                                                                                                               \
+    {                                                                                                                          \
+        __dc_break = true;                                                                                                     \
+        break;                                                                                                                 \
+    }
+
+/**
  * `[MACRO]` Iterator in a stopper terminated array provided with pointer to the current
  * element in each iteration as `_it` with current index as `_idx`
  */
@@ -1063,9 +1074,13 @@
     {                                                                                                                          \
         usize _idx = 0;                                                                                                        \
         TYPE* _it = ARR;                                                                                                       \
-        while (!dc_is_stopper(TYPE, *_it))                                                                                     \
+        bool __dc_break = false;                                                                                               \
+        while (!dc_is_stopper(TYPE, *_it) && !__dc_break)                                                                      \
         {                                                                                                                      \
-            ACTIONS;                                                                                                           \
+            do                                                                                                                 \
+            {                                                                                                                  \
+                ACTIONS;                                                                                                       \
+            } while (0);                                                                                                       \
             ++_idx;                                                                                                            \
             ++_it;                                                                                                             \
         }                                                                                                                      \
@@ -1082,9 +1097,13 @@
     {                                                                                                                          \
         usize _idx = 0;                                                                                                        \
         TYPE* _it = ARR;                                                                                                       \
-        while (_idx < LIMIT)                                                                                                   \
+        bool __dc_break = false;                                                                                               \
+        while (_idx < LIMIT && !__dc_break)                                                                                    \
         {                                                                                                                      \
-            ACTIONS;                                                                                                           \
+            do                                                                                                                 \
+            {                                                                                                                  \
+                ACTIONS;                                                                                                       \
+            } while (0);                                                                                                       \
             ++_idx;                                                                                                            \
             ++_it;                                                                                                             \
         }                                                                                                                      \
@@ -1285,9 +1304,13 @@
     {                                                                                                                          \
         usize _idx = 0;                                                                                                        \
         DCDynVal* _it = (DARR).elements;                                                                                       \
-        while (_idx < (DARR).count)                                                                                            \
+        bool __dc_break = false;                                                                                               \
+        while (_idx < (DARR).count && !__dc_break)                                                                             \
         {                                                                                                                      \
-            ACTIONS;                                                                                                           \
+            do                                                                                                                 \
+            {                                                                                                                  \
+                ACTIONS;                                                                                                       \
+            } while (0);                                                                                                       \
             ++_idx;                                                                                                            \
             ++_it;                                                                                                             \
         }                                                                                                                      \
