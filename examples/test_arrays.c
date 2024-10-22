@@ -63,9 +63,9 @@ int main(void)
     const string i8Str = "127";
     DCResI8 i8_cnv_res = dc_str_to_i8(i8Str);
 
-    if (dc_res_is_ok2(i8_cnv_res))
+    if (dc_is_ok2(i8_cnv_res))
     {
-        printf("Converted i8: %" PRId8 "\n", dc_res_val2(i8_cnv_res));
+        printf("Converted i8: %" PRId8 "\n", dc_unwrap2(i8_cnv_res));
     }
     else
     {
@@ -75,9 +75,9 @@ int main(void)
     const string u32Str = "4294967295";
     DCResU32 u32_cnv_res = dc_str_to_u32(u32Str);
 
-    if (dc_res_is_ok2(u32_cnv_res))
+    if (dc_is_ok2(u32_cnv_res))
     {
-        printf("Converted u32: %" PRIu32 "\n", dc_res_val2(u32_cnv_res));
+        printf("Converted u32: %" PRIu32 "\n", dc_unwrap2(u32_cnv_res));
     }
     else
     {
@@ -87,9 +87,9 @@ int main(void)
     const string f64Str = "3.14";
     DCResF64 f64_cnv_res = dc_str_to_f64(f64Str);
 
-    if (dc_res_is_ok2(f64_cnv_res))
+    if (dc_is_ok2(f64_cnv_res))
     {
-        printf("Converted f64: %f\n", dc_res_val2(f64_cnv_res));
+        printf("Converted f64: %f\n", dc_unwrap2(f64_cnv_res));
     }
     else
     {

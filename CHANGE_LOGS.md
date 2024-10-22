@@ -1,3 +1,11 @@
+## v1.6.0-stable
+
+Release Date: 2024-10-22
+
+- simplify names
+
+=======
+
 ## v1.5.4-stable
 
 Release Date: 2024-10-17

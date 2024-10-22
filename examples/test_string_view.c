@@ -28,14 +28,14 @@ int main()
 
     string my_string = "Hello, World!";
 
-    DCStringView view = dc_res_val2(dc_sv_create(my_string, 7, 5));
-    DCStringView view2 = dc_res_val2(dc_sv_create(my_string, 0, 5));
+    DCStringView view = dc_unwrap2(dc_sv_create(my_string, 7, 5));
+    DCStringView view2 = dc_unwrap2(dc_sv_create(my_string, 0, 5));
 
     print_sv(&view);
     print_sv(&view2);
 
-    string world = dc_res_val2(dc_sv_as_cstr(&view));
-    string hello = dc_res_val2(dc_sv_as_cstr(&view2));
+    string world = dc_unwrap2(dc_sv_as_cstr(&view));
+    string hello = dc_unwrap2(dc_sv_as_cstr(&view2));
 
     // do whatever I like with this, because it's now extracted and saved in
     // view.cstr
@@ -59,10 +59,10 @@ int main()
 
     // don't forget to free it!
     dc_try(dc_sv_free(&view));
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
     // free(world); // or this (just one of them)
 
     dc_try(dc_sv_free(&view2));
-    dc_action_on(dc_res_is_err(), return dc_res_err_code(), "%s", dc_res_err_msg());
+    dc_action_on(dc_is_err(), return dc_err_code(), "%s", dc_err_msg());
     // free(hello); // or this (just one of them)
 }
