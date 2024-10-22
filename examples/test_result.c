@@ -46,14 +46,14 @@ DCResI8 calculate_i8(i8 x, i8 y)
     dc_try_fail(divide_i8(x, y));
 
     // result is ok
-    dc_ret_ok(dc_val() + 10);
+    dc_ret_ok(dc_unwrap() + 10);
 }
 
 void handle_result(DCResI8 result)
 {
     if (dc_is_ok2(result))
     {
-        dc_log("Success: %d", dc_val2(result));
+        dc_log("Success: %d", dc_unwrap2(result));
         return;
     }
 

@@ -19,7 +19,7 @@
 
 void print_sv(DCStringView* sv)
 {
-    printf("I can see '" DCPRIsv "' in the text!\n", dc_sv_fmt(*sv));
+    printf("I can see '" DCPRIstr_slice "' in the text!\n", dc_sv_fmt(*sv));
 }
 
 int main()
@@ -28,14 +28,14 @@ int main()
 
     string my_string = "Hello, World!";
 
-    DCStringView view = dc_val2(dc_sv_create(my_string, 7, 5));
-    DCStringView view2 = dc_val2(dc_sv_create(my_string, 0, 5));
+    DCStringView view = dc_unwrap2(dc_sv_create(my_string, 7, 5));
+    DCStringView view2 = dc_unwrap2(dc_sv_create(my_string, 0, 5));
 
     print_sv(&view);
     print_sv(&view2);
 
-    string world = dc_val2(dc_sv_as_cstr(&view));
-    string hello = dc_val2(dc_sv_as_cstr(&view2));
+    string world = dc_unwrap2(dc_sv_as_cstr(&view));
+    string hello = dc_unwrap2(dc_sv_as_cstr(&view2));
 
     // do whatever I like with this, because it's now extracted and saved in
     // view.cstr
@@ -53,7 +53,7 @@ int main()
     if (dc_sv_sv_eq(view, view2)) printf("Do you really expect that!?");
 
     string some_text = NULL;
-    dc_sprintf(&some_text, DCPRIsv " %s %s", dc_sv_fmt(view), "- whatever -", hello);
+    dc_sprintf(&some_text, DCPRIstr_slice " %s %s", dc_sv_fmt(view), "- whatever -", hello);
     dc_log("%s", some_text);
     free(some_text);
 

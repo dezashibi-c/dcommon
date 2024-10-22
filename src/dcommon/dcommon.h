@@ -11,16 +11,15 @@
 //     or concerns, please feel free to contact me at the email address provided
 //     above.
 // ***************************************************************************************
-// *  Description: Main `dcommon` library key_value point
+// *  Description: Main `dcommon` library pair point
 // ***************************************************************************************
 
 #ifndef DC_MAIN_HEADER_H
 #define DC_MAIN_HEADER_H
 
-
-#include "dcommon_primitives.h"
-
 #define __DC_BYPASS_PRIVATE_PROTECTION
+
+#include "_headers/general.h"
 
 #include "_headers/macros.h"
 
@@ -112,6 +111,12 @@ DCResF64 dc_str_to_f64(const string str);
 
 // ***************************************************************************************
 
+void dc_dv_set_value(DCDynVal* dv, DCDynValType type, const voidptr src, size_t size, size_t total_count, size_t start,
+                     size_t count, bool allocated);
+
+DCDynVal dc_dv_create(DCDynValType type, const voidptr src, size_t size, size_t total_count, size_t start, size_t count,
+                      bool allocated);
+
 /**
  * Return corresponding format specifier based on the current value of the DCDynVal
  *
@@ -134,6 +139,44 @@ string dc_tostr_dvt(DCDynVal* dv);
  * proper error)
  */
 DCResBool dc_dv_as_bool(DCDynVal* dv);
+
+/**
+ * Checks whether two given pointers to dynamic values are equal or not
+ *
+ * @return bool or error
+ */
+DCResBool dc_dv_eq(DCDynVal* dv1, DCDynVal* dv2);
+
+/**
+ * Checks whether a pointer to a dynamic values is equal to
+ * the given dynamic value or not
+ *
+ * @return bool or error
+ */
+DCResBool dc_dv_eq2(DCDynVal* dv1, DCDynVal dv2);
+
+/**
+ * Checks whether two given dynamic values are equal or not
+ *
+ * @return bool or error
+ */
+DCResBool dc_dv_eq3(DCDynVal dv1, DCDynVal dv2);
+
+/**
+ * Prints the current value of the dynamic value (no new line)
+ *
+ * @return nothing or error
+ */
+DCResVoid dc_dv_print(DCDynVal* dv);
+
+/**
+ * Prints the current value of the dynamic value (with new line)
+ *
+ * @return nothing or error
+ */
+DCResVoid dc_dv_println(DCDynVal* dv);
+
+// ***************************************************************************************
 
 /**
  * Initializes a given pointer to dynamic array
@@ -267,28 +310,6 @@ DCResVoid dc_da_append(DCDynArr* darr, DCDynArr* from);
  * @return a pointer to dynamic value or an error
  */
 DCResDv dc_da_get(DCDynArr* darr, usize index);
-
-/**
- * Checks whether two given pointers to dynamic values are equal or not
- *
- * @return bool or error
- */
-DCResBool dc_dv_eq(DCDynVal* dv1, DCDynVal* dv2);
-
-/**
- * Checks whether a pointer to a dynamic values is equal to
- * the given dynamic value or not
- *
- * @return bool or error
- */
-DCResBool dc_dv_eq2(DCDynVal* dv1, DCDynVal dv2);
-
-/**
- * Checks whether two given dynamic values are equal or not
- *
- * @return bool or error
- */
-DCResBool dc_dv_eq3(DCDynVal dv1, DCDynVal dv2);
 
 /**
  * Searches for given element (a pointer to a dynamic value) in an array
@@ -644,19 +665,6 @@ DCResUsize dc_voidptr_da_to_flat_arr(DCDynArr* arr, voidptr** out_arr, bool must
  */
 DCResUsize dc_fileptr_da_to_flat_arr(DCDynArr* arr, fileptr** out_arr, bool must_fail);
 
-/**
- * Converts given array to actual array of literal values in dynamic values
- * supposing all or most of the values are of a same type (see `must_fail`
- * parameter)
- *
- * @param must_fail when true causes the process to break with error code -1
- * when receives any type other than DCStringView, when false the unmatched types
- * will be ignored
- *
- * @return the number of exported values or error
- */
-DCResUsize dc_DCStringView_da_to_flat_arr(DCDynArr* arr, DCStringView** out_arr, bool must_fail);
-
 // ***************************************************************************************
 
 /**
@@ -671,13 +679,12 @@ DCResUsize dc_DCStringView_da_to_flat_arr(DCDynArr* arr, DCStringView** out_arr,
  * @param key_cmp_fn is the function that compares a provided key and keys in
  * the buckets
  *
- * @param key_value_free_fn as each hash key_value is saved as a dynamic value if they must be
+ * @param pair_free_fn as each hash pair is saved as a dynamic value if they must be
  * freed using special process this is the parameter to be provided
  *
  * @return nothing or error
  */
-DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn,
-                     DCHtKeyValuePairFreeFn key_value_free_fn);
+DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCHtPairFreeFn pair_free_fn);
 
 /**
  * Creates, allocates, initializes and returns a pointer to hash table
@@ -686,7 +693,7 @@ DCResVoid dc_ht_init(DCHashTable* ht, usize capacity, DCHashFn hash_fn, DCKeyCom
  *
  * NOTE: Allocates memory
  */
-DCResHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCHtKeyValuePairFreeFn key_value_free_fn);
+DCResHt dc_ht_new(usize capacity, DCHashFn hash_fn, DCKeyCompFn key_cmp_fn, DCHtPairFreeFn pair_free_fn);
 
 /**
  * Frees the given hash table and all the values
@@ -715,7 +722,7 @@ DCResUsize dc_ht_find_by_key(DCHashTable* ht, DCDynVal key, DCDynVal** out_resul
 /**
  * Sets a value for the given key
  *
- * @param set_status indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
+ * @param set_status indicates the action that must be taken when setting the pair see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  *
  * @return nothing or error
@@ -725,7 +732,7 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value, DCHashTableSe
 /**
  * Inserts multiple key/values at once
  *
- * @param set_status indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
+ * @param set_status indicates the action that must be taken when setting the pair see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  *
  * NOTE: see `dc_ht_set_multiple` macro in macro.h for easy addition without
@@ -733,13 +740,13 @@ DCResVoid dc_ht_set(DCHashTable* ht, DCDynVal key, DCDynVal value, DCHashTableSe
  *
  * @return nothing or error
  */
-DCResVoid __dc_ht_set_multiple(DCHashTable* ht, usize count, DCKeyValuePair entries[], DCHashTableSetStatus set_status);
+DCResVoid __dc_ht_set_multiple(DCHashTable* ht, usize count, DCPair entries[], DCHashTableSetStatus set_status);
 
 /**
  * Merges and overwrites the key/values from the `from` hash table to the
  * original `ht` hash table
  *
- * @param set_status indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
+ * @param set_status indicates the action that must be taken when setting the pair see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  *
  * @return nothing or error
@@ -764,30 +771,6 @@ DCResBool dc_ht_delete(DCHashTable* ht, DCDynVal key);
  * NOTE: Allocates memory
  */
 DCResUsize dc_ht_keys(DCHashTable* ht, DCDynVal** out_arr);
-
-// ***************************************************************************************
-
-/**
- * Creates and return a string view literal struct
- *
- * @return a literal DCStringView or error
- */
-DCResSv dc_sv_create(string base, usize start, usize length);
-
-/**
- * Renders the string view into the cstr field or returns it if it is already
- * rendered
- *
- * @return string or error
- */
-DCResString dc_sv_as_cstr(DCStringView* sv);
-
-/**
- * Frees the string view's cstr field if it is initiated
- *
- * @return nothing or error
- */
-DCResVoid dc_sv_free(DCStringView* sv);
 
 // ***************************************************************************************
 
@@ -817,27 +800,6 @@ DCResUsize dc_sappend(string* str, const string fmt, ...) __dc_attribute((format
  * NOTE: Allocates memory
  */
 DCResString dc_strdup(const string in);
-
-/**
- * Converts the current value of the dynamic value to string
- *
- * @return string or error
- */
-DCResString dc_tostr_dv(DCDynVal* dv);
-
-/**
- * Prints the current value of the dynamic value (no new line)
- *
- * @return nothing or error
- */
-DCResVoid dc_dv_print(DCDynVal* dv);
-
-/**
- * Prints the current value of the dynamic value (with new line)
- *
- * @return nothing or error
- */
-DCResVoid dc_dv_println(DCDynVal* dv);
 
 /**
  * Replaces all the '\' with '/' in the original provided path
@@ -1026,10 +988,10 @@ FILE* dc_error_logs = NULL;
  */
 DCCleanupPool dc_cleanup_pool = {0};
 
-#include "_dynarr.c"
-#include "_dynht.c"
+#include "_da.c"
+#include "_dv.c"
+#include "_ht.c"
 #include "_lit_val.c"
-#include "_string_view.c"
 #include "_utils.c"
 
 #else

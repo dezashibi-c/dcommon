@@ -65,7 +65,7 @@ int main(void)
 
     if (dc_is_ok2(i8_cnv_res))
     {
-        printf("Converted i8: %" PRId8 "\n", dc_val2(i8_cnv_res));
+        printf("Converted i8: %" PRId8 "\n", dc_unwrap2(i8_cnv_res));
     }
     else
     {
@@ -77,7 +77,7 @@ int main(void)
 
     if (dc_is_ok2(u32_cnv_res))
     {
-        printf("Converted u32: %" PRIu32 "\n", dc_val2(u32_cnv_res));
+        printf("Converted u32: %" PRIu32 "\n", dc_unwrap2(u32_cnv_res));
     }
     else
     {
@@ -89,7 +89,7 @@ int main(void)
 
     if (dc_is_ok2(f64_cnv_res))
     {
-        printf("Converted f64: %f\n", dc_val2(f64_cnv_res));
+        printf("Converted f64: %f\n", dc_unwrap2(f64_cnv_res));
     }
     else
     {

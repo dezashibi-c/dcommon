@@ -58,7 +58,7 @@ int main(int argc, string argv[])
     DCResString s_res = dc_replace_file_in_path(argv[0], "my_config.ini");
     dc_action_on(dc_is_err2(s_res), return dc_err_code2(s_res), "%s", dc_err_msg2(s_res));
 
-    s = dc_val2(s_res);
+    s = dc_unwrap2(s_res);
 
     printf("config path close to exec: " DC_FG_LGREEN "%s" DC_COLOR_RESET "\n", s);
     free(s);

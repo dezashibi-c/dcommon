@@ -29,7 +29,7 @@ void print_da(DCDynArr* darr)
     dc_da_for(*darr, {
         printf("['%" PRIuMAX "'] ", _idx);
         DCResDv res = dc_da_get(darr, _idx);
-        if (dc_is_ok2(res)) print_dv(dc_val2(res));
+        if (dc_is_ok2(res)) print_dv(dc_unwrap2(res));
     });
 }
 
@@ -49,7 +49,7 @@ DCResVoid test1()
 
                                     // here it is a literal string so it doesn't need
                                     // to be mark as allocated (that's why dc_dv is used)
-                                    dc_dv(string, "Hello")
+                                    dc_dv_string("Hello")
 
     );
 
@@ -70,15 +70,15 @@ DCResVoid test1()
     LOG_DYNAMIC_ARRAY_INFO(darr);
 
     // Try to insert or fail
-    dc_try_fail(dc_da_insert(&darr, 2, dc_dv(string, "New Item")));
+    dc_try_fail(dc_da_insert(&darr, 2, dc_dv_string("New Item")));
     LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
 
     printf("========\nAppending 5 more elements\n========\n");
     // Try to append values or fail
-    dc_try_fail_da_append_values(&darr, dc_dv(string, "Using append_values started"), dc_dv(u8, 11), dc_dv(u8, 12),
-                                 dc_dv(u8, 13), dc_dv(string, "Using append_values finished"));
+    dc_try_fail_da_append_values(&darr, dc_dv_string("Using append_values started"), dc_dv(u8, 11), dc_dv(u8, 12),
+                                 dc_dv(u8, 13), dc_dv_string("Using append_values finished"));
 
     LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
@@ -89,8 +89,8 @@ DCResVoid test1()
     // Add elements the newly created array
     dc_try_fail_da_init_with_values(&darr2, NULL,
 
-                                    dc_dv(string, "Using append started"), dc_dv(u8, 14), dc_dv(u8, 15), dc_dv(u8, 16),
-                                    dc_dv(string, "Using append finished")
+                                    dc_dv_string("Using append started"), dc_dv(u8, 14), dc_dv(u8, 15), dc_dv(u8, 16),
+                                    dc_dv_string("Using append finished")
 
     );
 
@@ -104,8 +104,8 @@ DCResVoid test1()
     printf("========\nInserting 5 more elements in the "
            "middle\n========\n");
     // Try to insert 5 elements to the first array or fail
-    dc_try_fail_temp_da_insert_values(&darr, 9, dc_dv(string, "Using insert_values started"), dc_dv(u8, 11), dc_dv(u8, 12),
-                                      dc_dv(u8, 13), dc_dv(string, "Using insert_values finished"));
+    dc_try_fail_temp_da_insert_values(&darr, 9, dc_dv_string("Using insert_values started"), dc_dv(u8, 11), dc_dv(u8, 12),
+                                      dc_dv(u8, 13), dc_dv_string("Using insert_values finished"));
     LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
@@ -115,8 +115,8 @@ DCResVoid test1()
     // Add elements to the newly created array
     dc_try_fail_da_init_with_values(&darr3, NULL,
 
-                                    dc_dv(string, "Using insert_from started"), dc_dv(u8, 14), dc_dv(u8, 15), dc_dv(u8, 16),
-                                    dc_dv(string, "Using insert_from finished")
+                                    dc_dv_string("Using insert_from started"), dc_dv(u8, 14), dc_dv(u8, 15), dc_dv(u8, 16),
+                                    dc_dv_string("Using insert_from finished")
 
     );
     printf("========\nInserting 5 more elements from another array "
@@ -173,28 +173,28 @@ DCResVoid test2()
     DCDynVal val;
 
     // Adding a u8 value
-    dc_dv_set(val, u8, 42);
+    dc_dv_set(&val, u8, 42);
     dc_try_fail(dc_da_push(&darr, val));
 
     // Adding an i32 value
-    dc_dv_set(val, i32, -12345);
+    dc_dv_set(&val, i32, -12345);
     dc_try_fail(dc_da_push(&darr, val));
 
     // Adding a string
     // in this line something risky is happening as we assumed
     // dc_strdup is successful
-    dc_dv_seta(val, string, dc_val2(dc_strdup("Hello, Dynamic Array!")));
+    dc_dv_set_string(&val, "Hello, Dynamic Array!");
     dc_try_fail(dc_da_push(&darr, val));
 
     // Finding an element (search for u8 value 42)
     DCDynVal search_val;
-    dc_dv_set(search_val, u8, 42);
+    dc_dv_set(&search_val, u8, 42);
 
     DCResUsize res = dc_da_findp(&darr, &search_val, NULL);
 
     if (dc_is_ok2(res))
     {
-        u8 found = dc_da_get_as(darr, dc_val2(res), u8);
+        u8 found = dc_da_get_as(darr, dc_unwrap2(res), u8);
         printf("Found u8: %d\n", found);
     }
     else if (dc_err_code2(res) == 6)
@@ -209,13 +209,14 @@ DCResVoid test2()
     // dc_strdup allocates memory so we use the allocated version of
     // dc_dv_set (with an 'a' at the end) and in this line something
     // risky is happening too as we assumed dc_strdup is successful
-    dc_dv_seta(search_val, string, dc_val2(dc_strdup("Hello, Dynamic Array!")));
+    dc_dv_set_string(&search_val, "Hello, Dynamic Array!");
 
     res = dc_da_findp(&darr, &search_val, NULL);
 
     if (dc_is_ok2(res))
     {
-        string found = dc_da_get_as(darr, dc_val2(res), string);
+        // string found = dc_da_get_as_string(darr, dc_unwrap2(res));
+        string found = (string)(darr.elements[res.data.v].value);
         printf("Found string: %s\n", found);
     }
     else if (dc_err_code2(res) == 6)
@@ -254,7 +255,7 @@ DCResVoid test3()
     if (dc_is_ok2(len_res))
     {
         printf("Resulting string: %s\n", result_str);
-        printf("String length: '%" PRIuMAX "'\n", dc_val2(len_res));
+        printf("String length: '%" PRIuMAX "'\n", dc_unwrap2(len_res));
         free(result_str);
     }
     else
@@ -283,9 +284,9 @@ DCResVoid test4()
 
     if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_val2(len_res));
+        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_unwrap2(len_res));
 
-        for (usize i = 0; i < dc_val2(len_res); ++i) printf("%d\n", result[i]);
+        for (usize i = 0; i < dc_unwrap2(len_res); ++i) printf("%d\n", result[i]);
 
         free(result);
     }
@@ -315,9 +316,9 @@ DCResVoid test5()
 
     if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_val2(len_res));
+        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_unwrap2(len_res));
 
-        for (usize i = 0; i < dc_val2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
+        for (usize i = 0; i < dc_unwrap2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
 
         free(result);
     }
@@ -347,9 +348,9 @@ DCResVoid test6()
 
     if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_val2(len_res));
+        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_unwrap2(len_res));
 
-        for (usize i = 0; i < dc_val2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
+        for (usize i = 0; i < dc_unwrap2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
 
         free(result);
     }
@@ -391,13 +392,13 @@ DCResVoid test7()
 
                                     // These are allocated instances of MyStruct
                                     // So We must use dc_dva (Allocated Dynamic Value)
-                                    dc_dva(voidptr, new_ms(42, 1.2)), dc_dva(voidptr, new_ms(43, 3.14)),
-                                    dc_dva(voidptr, new_ms(44, 1.0)), dc_dva(voidptr, new_ms(45, 0.5)),
-                                    dc_dva(voidptr, new_ms(46, 3.6))
+                                    dc_dv_ptr(voidptr, new_ms(42, 1.2), true), dc_dv_ptr(voidptr, new_ms(43, 3.14), true),
+                                    dc_dv_ptr(voidptr, new_ms(44, 1.0), true), dc_dv_ptr(voidptr, new_ms(45, 0.5), true),
+                                    dc_dv_ptr(voidptr, new_ms(46, 3.6), true)
 
     );
 
-    dc_da_for(darr, print_struct((MyStruct*)dc_da_get_as(darr, _idx, voidptr)));
+    dc_da_for(darr, print_struct((MyStruct*)dc_dv_as(*_it, voidptr)));
 
     voidptr* result = NULL;
     DCResUsize len_res = dc_voidptr_da_to_flat_arr(&darr, &result, true);
@@ -405,9 +406,9 @@ DCResVoid test7()
 
     if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_val2(len_res));
+        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_unwrap2(len_res));
 
-        for (usize i = 0; i < dc_val2(len_res); ++i) print_struct((MyStruct*)result[i]);
+        for (usize i = 0; i < dc_unwrap2(len_res); ++i) print_struct((MyStruct*)result[i]);
 
         free(result);
     }

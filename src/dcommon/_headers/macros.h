@@ -114,8 +114,6 @@
 #define DC_size_FMT "%" PRIdPTR
 #define DC_usize_FMT "%" PRIuMAX
 
-#define DC_DCStringView_FMT DCPRIsv
-
 // ***************************************************************************************
 // * PRIMITIVE TYPES TO BOOLEAN CONVERTER MACROS
 // ***************************************************************************************
@@ -148,33 +146,6 @@
 #define dc_size_as_bool(VAL) ((VAL) != 0)
 #define dc_usize_as_bool(VAL) ((VAL) != 0)
 
-#define dc_DCStringView_as_bool(VAL) (((VAL).str) && (VAL).len != 0)
-
-/**
- * `[MACRO]` Creates an u8 based boolean dynamic value with 0 or 1
- */
-#define dc_dv_bool(BOOL_VAL) dc_dv(u8, (bool)(BOOL_VAL))
-
-/**
- * `[MACRO]` Default value of boolean based on u8 dynamic value of 1
- */
-#define dc_dv_true() dc_dv_bool(true)
-
-/**
- * `[MACRO]` Default value of boolean based on u8 dynamic value of 0
- */
-#define dc_dv_false() dc_dv_bool(false)
-
-/**
- * `[MACRO]` Creates a NULL value of voidptr
- */
-#define dc_dv_nullptr() dc_dv(voidptr, NULL)
-
-/**
- * `[MACRO]` Creates a NULL value of fileptr
- */
-#define dc_dv_nofile() dc_dv(fileptr, NULL)
-
 // ***************************************************************************************
 // * STOPPER AND STOPPER CHECKERS
 // *    These are values that can be used as a stopping point in an array
@@ -204,7 +175,6 @@
 #define DC_STOPPER_usize SIZE_MAX
 
 #define DC_STOPPER_DCDynVal dc_dv_nullptr()
-#define DC_STOPPER_DCStringView ((DCStringView){0})
 
 #define DC_IS_STOPPER_i8(EL) (EL == DC_STOPPER_i8)
 #define DC_IS_STOPPER_i16(EL) (EL == DC_STOPPER_i16)
@@ -230,7 +200,6 @@
 #define DC_IS_STOPPER_usize(EL) (EL == DC_STOPPER_usize)
 
 #define DC_IS_STOPPER_DCDynVal(EL) ((EL).type == dc_dvt(voidptr) && (EL).value.dc_dvf(voidptr) == NULL)
-#define DC_IS_STOPPER_DCStringView(EL) (!(EL).str)
 
 /**
  * `[MACRO]` Provides proper stopper for given type
@@ -717,10 +686,7 @@
     {                                                                                                                          \
         if (dc_is_err())                                                                                                       \
         {                                                                                                                      \
-            do                                                                                                                 \
-            {                                                                                                                  \
-                PRE_RETURN_ACTIONS;                                                                                            \
-            } while (0);                                                                                                       \
+            PRE_RETURN_ACTIONS;                                                                                                \
             return __dc_res;                                                                                                   \
         }                                                                                                                      \
     } while (0)
@@ -764,10 +730,7 @@
     {                                                                                                                          \
         if (dc_is_err2(RES))                                                                                                   \
         {                                                                                                                      \
-            do                                                                                                                 \
-            {                                                                                                                  \
-                PRE_RETURN_ACTIONS;                                                                                            \
-            } while (0);                                                                                                       \
+            PRE_RETURN_ACTIONS;                                                                                                \
             dc_err_cpy(RES);                                                                                                   \
             return __dc_res;                                                                                                   \
         }                                                                                                                      \
@@ -849,14 +812,14 @@
  *
  * NOTE: You must have already checked to make sure the current status is ok
  */
-#define dc_val() (__dc_res.data.v)
+#define dc_unwrap() (__dc_res.data.v)
 
 /**
  * `[MACRO]` Retrieves the value of the given result variable
  *
  * NOTE: You must have already checked to make sure the current status is ok
  */
-#define dc_val2(RES) ((RES).data.v)
+#define dc_unwrap2(RES) ((RES).data.v)
 
 /**
  * `[MACRO]` Expands to current status of the main result variable (__dc_res)
@@ -1055,17 +1018,6 @@
 #define dc_last(ARR) ARR[(dc_len(ARR) - 1)]
 
 /**
- * `[MACRO]` Expands to assigning __dc_break = true
- *
- * NOTE: only to be used in dc_for, dc_foreach and dc_da_for
- */
-#define DC_BREAK                                                                                                               \
-    {                                                                                                                          \
-        __dc_break = true;                                                                                                     \
-        break;                                                                                                                 \
-    }
-
-/**
  * `[MACRO]` Iterator in a stopper terminated array provided with pointer to the current
  * element in each iteration as `_it` with current index as `_idx`
  */
@@ -1074,13 +1026,9 @@
     {                                                                                                                          \
         usize _idx = 0;                                                                                                        \
         TYPE* _it = ARR;                                                                                                       \
-        bool __dc_break = false;                                                                                               \
-        while (!dc_is_stopper(TYPE, *_it) && !__dc_break)                                                                      \
+        while (!dc_is_stopper(TYPE, *_it))                                                                                     \
         {                                                                                                                      \
-            do                                                                                                                 \
-            {                                                                                                                  \
-                ACTIONS;                                                                                                       \
-            } while (0);                                                                                                       \
+            ACTIONS;                                                                                                           \
             ++_idx;                                                                                                            \
             ++_it;                                                                                                             \
         }                                                                                                                      \
@@ -1097,13 +1045,9 @@
     {                                                                                                                          \
         usize _idx = 0;                                                                                                        \
         TYPE* _it = ARR;                                                                                                       \
-        bool __dc_break = false;                                                                                               \
-        while (_idx < LIMIT && !__dc_break)                                                                                    \
+        while (_idx < LIMIT)                                                                                                   \
         {                                                                                                                      \
-            do                                                                                                                 \
-            {                                                                                                                  \
-                ACTIONS;                                                                                                       \
-            } while (0);                                                                                                       \
+            ACTIONS;                                                                                                           \
             ++_idx;                                                                                                            \
             ++_it;                                                                                                             \
         }                                                                                                                      \
@@ -1125,6 +1069,10 @@
 // ***************************************************************************************
 // * DYNAMIC VALUE MACROS
 // ***************************************************************************************
+
+#ifndef DC_DV_DATA_SIZE
+#define DC_DV_DATA_SIZE 128
+#endif
 
 /**
  * `[MACRO]` Macro to define custom free function for dynamic values
@@ -1148,58 +1096,177 @@
 #define dc_dvt(TYPE) DC_DYN_VAL_TYPE_##TYPE
 
 /**
- * `[MACRO]` Expands to proper field name of the dynamic value union field (value)
- */
-#define dc_dvf(TYPE) TYPE##_val
-
-/**
- * `[MACRO]` Expands to proper field name declaration for the dynamic value union field (value)
- */
-#define dc_dvf_decl(TYPE) TYPE TYPE##_val
-
-/**
- * `[MACRO]` Defines a dynamic value literal which holds given type and value and is
- * marked as not allocated
+ * `[MACRO]` If DCPRIstr_slice is used as format specifier this macro should be used to provide
+ * both count and the base string
  *
- * NOTE: The value must not be an allocated value
+ * @example printf("Hello " DCPRIstr_slice "!", dc_dv_str_fmt(dv));
  */
-#define dc_dv(TYPE, VALUE)                                                                                                     \
-    (DCDynVal)                                                                                                                 \
-    {                                                                                                                          \
-        .type = dc_dvt(TYPE), .value.dc_dvf(TYPE) = VALUE, .allocated = false                                                  \
-    }
+#define dc_dv_str_fmt(DV) (u32)((DV).count), dc_dv_as_string(DV) + (DV).start
+
+// GETTERS
+
+#define dc_dv_as(DV, TYPE) (*((TYPE*)(DV).value))
+
+#define dc_dv_as_string(DV) (((string)(DV).value))
+
+#define dc_dv_offset_as(DV, TYPE, OFFSET) (*((TYPE*)((DV).value + ((OFFSET) * sizeof(TYPE)))))
+
+#define dc_dv_offset_as_string(DV, OFFSET) ((string)((DV).value + ((OFFSET) * sizeof(string))))
+
+#define dc_dv_ptr_offset_as(DV, TYPE, OFFSET) (dc_dv_as((DV), TYPE) + (OFFSET))
+
+// BUILDERS
+
+#define dc_dv(TYPE, VALUE) dc_dv_create(dc_dvt(TYPE), &(TYPE){VALUE}, sizeof(TYPE), 1, 0, 1, false)
+
+#define dc_dv_string_slice(VALUE, START, COUNT)                                                                                \
+    dc_dv_create(dc_dvt(string), (voidptr)VALUE, (strlen(VALUE) + 1), (strlen(VALUE) + 1), (START), (COUNT), false)
+
+#define dc_dv_string(VALUE) dc_dv_string_slice(VALUE, 0, (strlen(VALUE) + 1))
+
+#define dc_dv_struct(TYPE, ...) dc_dv_create(dc_dvt(TYPE), &(TYPE){__VA_ARGS__}, sizeof(TYPE), 1, 0, 1, false)
+
+#define dc_dv_ptr_slice(TYPE, VALUE, TOTAL_COUNT, START, COUNT, IS_ALLOC)                                                      \
+    dc_dv_create(dc_dvt(TYPE), VALUE, sizeof(TYPE), (TOTAL_COUNT), (START), (COUNT), IS_ALLOC)
+
+#define dc_dv_ptr2(TYPE, VALUE, TOTAL_COUNT, IS_ALLOC) dc_dv_ptr_slice(TYPE, VALUE, TOTAL_COUNT, 0, TOTAL_COUNT, IS_ALLOC)
+#define dc_dv_ptr(TYPE, VALUE, IS_ALLOC) dc_dv_ptr2(TYPE, VALUE, 1, IS_ALLOC)
+
 
 /**
- * `[MACRO]` Defines a dynamic value literal which holds given type and value and is
- * marked as allocated
- *
- * NOTE: The value must be an allocated value
+ * `[MACRO]` Creates an u8 based boolean dynamic value with 0 or 1
  */
-#define dc_dva(TYPE, VALUE)                                                                                                    \
-    (DCDynVal)                                                                                                                 \
-    {                                                                                                                          \
-        .type = dc_dvt(TYPE), .value.dc_dvf(TYPE) = VALUE, .allocated = true                                                   \
-    }
+#define dc_dv_bool(BOOL_VAL) dc_dv(u8, (bool)(BOOL_VAL))
 
 /**
- * `[MACRO]` Defines new variable of NAME with given type, value and allocation status
+ * `[MACRO]` Default value of boolean based on u8 dynamic value of 1
  */
-#define DC_DV_DEF(NAME, TYPE, VALUE, ALLOC)                                                                                    \
-    DCDynVal NAME = {.type = dc_dvt(TYPE), .value.dc_dvf(TYPE) = VALUE, .allocated = ALLOC}
+#define dc_dv_true() dc_dv_bool(true)
 
 /**
- * `[MACRO]` Expands to setting type and value of an existing dynamic value variable and
- * reset the allocation status to false
- *
- * NOTE: The VALUE must not be allocated
+ * `[MACRO]` Default value of boolean based on u8 dynamic value of 0
  */
-#define dc_dv_set(NAME, TYPE, VALUE)                                                                                           \
+#define dc_dv_false() dc_dv_bool(false)
+
+/**
+ * `[MACRO]` Creates a NULL value of voidptr
+ */
+#define dc_dv_nullptr() dc_dv_create(dc_dvt(voidptr), NULL, sizeof(voidptr), 0, 0, 0, false)
+
+/**
+ * `[MACRO]` Creates a NULL value of fileptr
+ */
+#define dc_dv_nofile() dc_dv_create(dc_dvt(fileptr), NULL, sizeof(fileptr), 0, 0, 0, false)
+
+
+#define dc_dv_array_slice(TYPE, START, COUNT, ...)                                                                             \
+    dc_dv_create(dc_dvt(TYPE), &(TYPE[]){__VA_ARGS__}, (sizeof((TYPE[]){__VA_ARGS__})),                                        \
+                 (sizeof((TYPE[]){__VA_ARGS__}) / sizeof(TYPE)), (START), (sizeof((TYPE[]){__VA_ARGS__}) / sizeof(TYPE)),      \
+                 false)
+
+#define dc_dv_array(TYPE, ...) dc_dv_array_slice(TYPE, 0, (sizeof((TYPE[]){__VA_ARGS__})), __VA_ARGS__)
+
+#define dc_dv_array_var_slice(TYPE, VALUE, START, COUNT)                                                                       \
+    dc_dv_create(dc_dvt(TYPE), VALUE, ((sizeof(VALUE) / sizeof(TYPE)) * sizeof(TYPE)), (sizeof(VALUE) / sizeof(TYPE)),         \
+                 (START), (sizeof(VALUE) / sizeof(TYPE)), false)
+
+#define dc_dv_array_var(TYPE, VALUE) dc_dv_array_var_slice(TYPE, VALUE, 0, (sizeof(VALUE) / sizeof(TYPE)))
+
+#define dc_dv_copy(DV) dc_dv_create((DV).type, (DV).data, (DV).size, (DV).total_count, (DV).start, (DV).count, (DV).allocated)
+
+// SETTERS
+
+#define dc_dv_set(DV, TYPE, VALUE) dc_dv_set_value((DV), dc_dvt(TYPE), &(TYPE){VALUE}, sizeof(TYPE), 1, 0, 1, false)
+
+#define dc_dv_set_string(DV, VALUE)                                                                                            \
+    dc_dv_set_value((DV), dc_dvt(string), (voidptr)VALUE, (strlen(VALUE) + 1), (strlen(VALUE) + 1), 0, (strlen(VALUE) + 1),    \
+                    false)
+
+#define dc_dv_set_struct(DV, TYPE, ...) dc_dv_set_value((DV), dc_dvt(TYPE), &(TYPE){__VA_ARGS__}, sizeof(TYPE), 1, 0, 1, false)
+
+#define dc_dv_set_struct_var(DV, TYPE, VALUE) dc_dv_set_value((DV), dc_dvt(TYPE), VALUE, sizeof(TYPE), 1, 0, 1, false)
+
+#define dc_dv_set_ptr2(DV, TYPE, VALUE, COUNT, IS_ALLOC)                                                                       \
+    dc_dv_set_value((DV), dc_dvt(TYPE), VALUE, sizeof(TYPE), COUNT, 0, COUNT, IS_ALLOC)
+
+#define dc_dv_set_ptr(DV, TYPE, VALUE, IS_ALLOC) dc_dv_set_ptr2(DV, TYPE, VALUE, 1, IS_ALLOC)
+
+#define dc_dv_set_array(DV, TYPE, ...)                                                                                         \
+    dc_dv_set_value((DV), dc_dvt(TYPE), &(TYPE[]){__VA_ARGS__}, (sizeof((TYPE[]){__VA_ARGS__})),                               \
+                    (sizeof((TYPE[]){__VA_ARGS__}) / sizeof(TYPE)), 0, (sizeof((TYPE[]){__VA_ARGS__}) / sizeof(TYPE)), false)
+
+#define dc_dv_set_array_var(DV, TYPE, VALUE)                                                                                   \
+    dc_dv_set_value((DV), dc_dvt(TYPE), VALUE, ((sizeof(VALUE) / sizeof(TYPE)) * sizeof(TYPE)),                                \
+                    (sizeof(VALUE) / sizeof(TYPE)), 0, (sizeof(VALUE) / sizeof(TYPE)), false)
+
+#define dc_dv_slice_set(DV, START, COUNT)                                                                                      \
     do                                                                                                                         \
     {                                                                                                                          \
-        (NAME).type = dc_dvt(TYPE);                                                                                            \
-        (NAME).allocated = false;                                                                                              \
-        (NAME).value.dc_dvf(TYPE) = VALUE;                                                                                     \
+        (DV).start = (START);                                                                                                  \
+        (DV).count = (COUNT);                                                                                                  \
     } while (0)
+
+#define dc_dv_slice_reset(DV)                                                                                                  \
+    do                                                                                                                         \
+    {                                                                                                                          \
+        (DV).start = 0;                                                                                                        \
+        (DV).count = (DV).total_count;                                                                                         \
+    } while (0)
+
+// LOOPS
+
+#define dc_dv_for(DV, TYPE, ACTIONS)                                                                                           \
+    do                                                                                                                         \
+    {                                                                                                                          \
+        size_t _idx = (DV).start;                                                                                              \
+        TYPE* _it;                                                                                                             \
+        while (_idx < (DV).total_count && _idx < ((DV).start + (DV).count))                                                    \
+        {                                                                                                                      \
+            _it = &dc_dv_offset_as((DV), TYPE, _idx);                                                                          \
+            ACTIONS;                                                                                                           \
+            _idx++;                                                                                                            \
+        }                                                                                                                      \
+    } while (0)
+
+#define dc_dv_for_slice(DV, TYPE, START, COUNT, ACTIONS)                                                                       \
+    do                                                                                                                         \
+    {                                                                                                                          \
+        size_t _idx = (START);                                                                                                 \
+        TYPE* _it;                                                                                                             \
+        while (_idx < (DV).total_count && _idx < (START) + (COUNT))                                                            \
+        {                                                                                                                      \
+            _it = &dc_dv_offset_as((DV), TYPE, _idx);                                                                          \
+            ACTIONS;                                                                                                           \
+            _idx++;                                                                                                            \
+        }                                                                                                                      \
+    } while (0)
+
+#define dc_dv_for_ptr(DV, TYPE, ACTIONS)                                                                                       \
+    do                                                                                                                         \
+    {                                                                                                                          \
+        size_t _idx = (DV).start;                                                                                              \
+        TYPE _it;                                                                                                              \
+        while (_idx < (DV).total_count && _idx < ((DV).start + (DV).count))                                                    \
+        {                                                                                                                      \
+            _it = dc_dv_ptr_offset_as((DV), TYPE, _idx);                                                                       \
+            ACTIONS;                                                                                                           \
+            _idx++;                                                                                                            \
+        }                                                                                                                      \
+    } while (0)
+
+#define dc_dv_for_ptr_slice(DV, TYPE, START, COUNT, ACTIONS)                                                                   \
+    do                                                                                                                         \
+    {                                                                                                                          \
+        size_t _idx = (START);                                                                                                 \
+        TYPE _it;                                                                                                              \
+        while (_idx < (DV).total_count && _idx < (START) + (COUNT))                                                            \
+        {                                                                                                                      \
+            _it = dc_dv_ptr_offset_as((DV), TYPE, _idx);                                                                       \
+            ACTIONS;                                                                                                           \
+            _idx++;                                                                                                            \
+        }                                                                                                                      \
+    } while (0)
+
 
 /**
  * `[MACRO]` Marks given dynamic value variable as allocated
@@ -1207,17 +1274,9 @@
 #define dc_dv_mark_alloc(NAME) (NAME).allocated = true
 
 /**
- * `[MACRO]` Expands to setting type and value of an existing dynamic value variable and
- * set the allocation status to true
- *
- * NOTE: The VALUE must be allocated
+ * `[MACRO]` Marks given dynamic value variable as 'not' allocated
  */
-#define dc_dv_seta(NAME, TYPE, VALUE)                                                                                          \
-    do                                                                                                                         \
-    {                                                                                                                          \
-        dc_dv_set(NAME, TYPE, VALUE);                                                                                          \
-        dc_dv_mark_alloc(NAME);                                                                                                \
-    } while (0)
+#define dc_dv_mark_not_alloc(NAME) (NAME).allocated = false
 
 /**
  * `[MACRO]` Expands to type checking for the given dynamic value variable
@@ -1228,11 +1287,6 @@
  * `[MACRO]` Expands to negative type checking for the given dynamic value variable
  */
 #define dc_dv_is_not(NAME, TYPE) ((NAME).type != dc_dvt(TYPE))
-
-/**
- * `[MACRO]` Retrieves the value of the given dynamic value for the given type
- */
-#define dc_dv_as(NAME, TYPE) ((NAME).value.dc_dvf(TYPE))
 
 /**
  * `[MACRO]` Checks if the dynamic value is marked as allocated
@@ -1269,7 +1323,7 @@
  * `[MACRO]` Checks if the given index is correct according to the dynamic array number of
  * elements
  */
-#define dc_da_check_boundary(DARR, INDEX) ((DARR).count <= (INDEX))
+#define dc_da_is_valid_index(DARR, INDEX) ((INDEX) < (DARR).count)
 
 /**
  * `[MACRO]` Retrieves dynamic value element at certain index as is
@@ -1285,19 +1339,22 @@
  */
 #define dc_da_get_as(DARR, INDEX, TYPE) dc_dv_as(dc_da_get2(DARR, INDEX), TYPE)
 
+#define dc_da_get_as_string(DARR, INDEX) dc_dv_as_string(dc_da_get2(DARR, INDEX))
+
+
 /**
  * `[MACRO]` Checks if element at certain index is of the given type
  *
  * NOTE: There is no boundary check in this macro, you have to do it beforehand
  */
-#define dc_da_is(DARR, INDEX, TYPE) dc_dv_is((DARR).elements[INDEX], TYPE)
+#define dc_da_is(DARR, INDEX, TYPE) dc_dv_is(*((DARR).elements[INDEX]), TYPE)
 
 /**
  * `[MACRO]` Checks if element at certain index is not of the given type
  *
  * NOTE: There is no boundary check in this macro, you have to do it beforehand
  */
-#define dc_da_is_not(DARR, INDEX, TYPE) dc_dv_is_not((DARR).elements[INDEX], TYPE)
+#define dc_da_is_not(DARR, INDEX, TYPE) dc_dv_is_not(*((DARR).elements[INDEX]), TYPE)
 
 /**
  * `[MACRO]` Expands to a for loop for the given dynamic array, index can be accessed by
@@ -1308,19 +1365,13 @@
     {                                                                                                                          \
         usize _idx = 0;                                                                                                        \
         DCDynVal* _it = (DARR).elements;                                                                                       \
-        bool __dc_break = false;                                                                                               \
-        while (_idx < (DARR).count && !__dc_break)                                                                             \
+        while (_idx < (DARR).count)                                                                                            \
         {                                                                                                                      \
-            do                                                                                                                 \
-            {                                                                                                                  \
-                ACTIONS;                                                                                                       \
-            } while (0);                                                                                                       \
+            ACTIONS;                                                                                                           \
             ++_idx;                                                                                                            \
             ++_it;                                                                                                             \
         }                                                                                                                      \
     } while (0)
-
-// for (usize _idx = 0; _idx < (DARR).count; _idx++)
 
 /**
  * `[MACRO]` Macro to initialize the dynamic array with initial values without providing
@@ -1540,7 +1591,7 @@
 /**
  * `[MACRO]` Expands to standard hash table key value free function declaration
  */
-#define DC_HT_KEY_VALUE_FREE_FN_DECL(NAME) DCResVoid NAME(DCKeyValuePair* _key_value)
+#define DC_HT_PAIR_FREE_FN_DECL(NAME) DCResVoid NAME(DCPair* _pair)
 
 /**
  * `[MACRO]` Gets the results of hash table's hash function for the given key
@@ -1600,23 +1651,21 @@
 #define DC_HT_GET_AND_DEF_CONTAINER_ROW(VAR_NAME, HT, HASH) DCDynArr* VAR_NAME = &((HT).container[HASH])
 
 /**
- * `[MACRO]` Creates a literal hash table key_value
+ * `[MACRO]` Creates a literal hash table pair
  *
- * @param KEY_TYPE is the type of the key dynamic value
- * @param KEY is the actual value for key
- * @param VAL_TYPE is the type of the value dynamic value
- * @param VAL is the actual value for the value
+ * @param KEY is the dynamic value for pair's first element
+ * @param VAL is the dynamic value for pair's second element
  */
-#define dc_ht_key_value(KEY_TYPE, KEY, VAL_TYPE, VAL)                                                                          \
-    (DCKeyValuePair)                                                                                                           \
+#define dc_ht_pair(KEY, VAL)                                                                                                   \
+    (DCPair)                                                                                                                   \
     {                                                                                                                          \
-        .key = dc_dv(KEY_TYPE, (KEY)), .value = dc_dv(VAL_TYPE, (VAL))                                                         \
+        .first = (KEY), .second = (VAL)                                                                                        \
     }
 
 /**
  * `[MACRO]` Sets multiple key value pairs in a hash table without providing the count
  *
- * @param STATUS indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
+ * @param STATUS indicates the action that must be taken when setting the pair see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  *
  * NOTE: It does not check whether the result of the success is OK or error
@@ -1624,7 +1673,7 @@
 #define dc_ht_set_multiple(HT, STATUS, ...)                                                                                    \
     do                                                                                                                         \
     {                                                                                                                          \
-        DCKeyValuePair __initial_values[] = {__VA_ARGS__};                                                                     \
+        DCPair __initial_values[] = {__VA_ARGS__};                                                                             \
         __dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values, STATUS);                                        \
     } while (0)
 
@@ -1633,7 +1682,7 @@
  * count and saves the result in the given RES (must be defined beforehand of
  * type DCResVoid)
  *
- * @param STATUS indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
+ * @param STATUS indicates the action that must be taken when setting the pair see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  *
  * NOTE: It does not check whether the result of the success is OK or error
@@ -1641,7 +1690,7 @@
 #define dc_try_ht_set_multiple(RES, HT, STATUS, ...)                                                                           \
     do                                                                                                                         \
     {                                                                                                                          \
-        DCKeyValuePair __initial_values[] = {__VA_ARGS__};                                                                     \
+        DCPair __initial_values[] = {__VA_ARGS__};                                                                             \
         RES = __dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values, STATUS);                                  \
     } while (0)
 
@@ -1650,13 +1699,13 @@
  * count and saves the result in the given main result variable (__dc_res) and
  * returns if the result is a failure
  *
- * @param STATUS indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
+ * @param STATUS indicates the action that must be taken when setting the pair see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  */
 #define dc_try_fail_ht_set_multiple(HT, STATUS, ...)                                                                           \
     do                                                                                                                         \
     {                                                                                                                          \
-        DCKeyValuePair __initial_values[] = {__VA_ARGS__};                                                                     \
+        DCPair __initial_values[] = {__VA_ARGS__};                                                                             \
         dc_try_fail(__dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values, STATUS));                           \
     } while (0)
 
@@ -1665,13 +1714,13 @@
  * count and saves the result in a temporary variable of type DCResVoid and
  * returns if the result is a failure
  *
- * @param STATUS indicates the action that must be taken when setting the key_value see `DCHashTableSetStatus`, in case of
+ * @param STATUS indicates the action that must be taken when setting the pair see `DCHashTableSetStatus`, in case of
  * failure error code 7 will be returned
  */
 #define dc_try_fail_temp_ht_set_multiple(HT, STATUS, ...)                                                                      \
     do                                                                                                                         \
     {                                                                                                                          \
-        DCKeyValuePair __initial_values[] = {__VA_ARGS__};                                                                     \
+        DCPair __initial_values[] = {__VA_ARGS__};                                                                             \
         dc_try_fail_temp(__dc_ht_set_multiple(HT, dc_count(__initial_values), __initial_values, STATUS));                      \
     } while (0)
 
@@ -1685,9 +1734,9 @@
  * NOTE: If used `dc_sv_fmt` must be provided to provide proper data for this
  * format specifier
  *
- * @example printf("Hello " DCPRIsv "!", dc_sv_fmt(my_string_view));
+ * @example printf("Hello " DCPRIstr_slice "!", dc_sv_fmt(my_string_view));
  */
-#define DCPRIsv "%.*s"
+#define DCPRIstr_slice "%.*s"
 
 /**
  * `[MACRO]` expands to literal string view
@@ -1699,14 +1748,6 @@
  * NOTE: There is no boundary check in this macro, be careful
  */
 #define dc_sv(STR, START, LEN) ((DCStringView){.cstr = NULL, .str = (STR) + (START), .len = (LEN)})
-
-/**
- * `[MACRO]` If DCPRIsv is used as format specifier this macro should be used to provide
- * both length and pointer to the base string
- *
- * @example printf("Hello " DCPRIsv "!", dc_sv_fmt(my_string_view));
- */
-#define dc_sv_fmt(SV) (u32)((SV).len), (SV).str
 
 /**
  * `[MACRO]` Checks if a string view and a given string are equal or not
@@ -1817,7 +1858,7 @@
 #define DC_CLEANUP_FN_DECL(NAME) DCResVoid NAME(voidptr _value)
 
 /**
- * `[MACRO]` Runs the cleanup process of a cleanup job key_value
+ * `[MACRO]` Runs the cleanup process of a cleanup job pair
  */
 #define dc_cleanup_job_run(ENTRY) (ENTRY).cleanup_fn(((ENTRY).element))
 

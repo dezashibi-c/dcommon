@@ -148,75 +148,6 @@ DCResString dc_strdup(const string in)
     dc_ret_ok(out);
 }
 
-DCResString dc_tostr_dv(DCDynVal* dv)
-{
-    DC_RES_string();
-
-    if (!dv) dc_ret_e(1, "got NULL dynamic value");
-
-#define stringify(TYPE)                                                                                                        \
-    case dc_dvt(TYPE):                                                                                                         \
-        dc_sprintf(&result, dc_dv_fmt(dv), dc_dv_as(*dv, TYPE));                                                               \
-        break
-
-    string result = NULL;
-
-    switch (dv->type)
-    {
-        stringify(u8);
-        stringify(u16);
-        stringify(u32);
-        stringify(u64);
-        stringify(i8);
-        stringify(i16);
-        stringify(i32);
-        stringify(i64);
-        stringify(f32);
-        stringify(f64);
-        stringify(uptr);
-        stringify(char);
-        stringify(string);
-        stringify(voidptr);
-        stringify(fileptr);
-        stringify(size);
-        stringify(usize);
-
-        case dc_dvt(DCStringView):
-            dc_sprintf(&result, DCPRIsv, dc_sv_fmt(dc_dv_as(*dv, DCStringView)));
-            break;
-
-        default:
-            dc_sprintf(&result, "%s", "(unknown dynamic value)");
-            break;
-    };
-
-    dc_ret_ok(result);
-
-#undef stringify
-}
-
-DCResVoid dc_dv_print(DCDynVal* dv)
-{
-    DC_RES_void();
-
-    dc_try_or_fail_with3(DCResString, res, dc_tostr_dv(dv), {});
-
-    printf("%s", dc_val2(res));
-
-    if (dc_val2(res)) free(dc_val2(res));
-
-    dc_ret();
-}
-
-DCResVoid dc_dv_println(DCDynVal* dv)
-{
-    DC_TRY_DEF2(DCResVoid, dc_dv_print(dv));
-
-    printf("%s", "\n");
-
-    dc_ret();
-}
-
 DCResVoid dc_normalize_path_to_posix(string path)
 {
     DC_RES_void();
@@ -470,11 +401,11 @@ DCResVoid dc_cleanup_batch_run(DCCleanupBatch* batch)
 
     // run cleanup of each item
     dc_da_for(*batch, {
-        DCCleanupJob* key_value = dc_da_get_as(*batch, _idx, voidptr);
+        DCCleanupJob* pair = dc_da_get_as(*batch, _idx, voidptr);
 
-        dc_dbg_log("cleaning index: '%" PRIuMAX "', cleanup perform: %p", _idx, (*key_value).element);
+        dc_dbg_log("cleaning index: '%" PRIuMAX "', cleanup perform: %p", _idx, (*pair).element);
 
-        dc_try_fail(dc_cleanup_job_run(*key_value));
+        dc_try_fail(dc_cleanup_job_run(*pair));
     });
 
     // clean up the dc_cleanup itself
@@ -584,11 +515,11 @@ void dc_cleanup_push2(DCCleanupBatch* batch, voidptr element, DCCleanupFn cleanu
     item->element = element;
     item->cleanup_fn = cleanup_fn;
 
-    dc_try(dc_da_push(batch, dc_dva(voidptr, item)));
+    dc_try(dc_da_push(batch, dc_dv_ptr(voidptr, item, true)));
 
     if (dc_is_err())
     {
-        dc_dbg_log("An error occurred while pushing cleanup job key_value to the "
+        dc_dbg_log("An error occurred while pushing cleanup job pair to the "
                    "cleanup batch index: (code %d) %s",
                    dc_err_code(), dc_err_msg());
 
@@ -713,7 +644,7 @@ void dc_error_logs_init(string filename, bool append)
         exit(dc_err_code());
     }
 
-    dc_error_logs = dc_val();
+    dc_error_logs = dc_unwrap();
 }
 
 void dc_error_logs_close()

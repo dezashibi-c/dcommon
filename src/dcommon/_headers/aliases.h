@@ -23,6 +23,98 @@
 #endif
 
 // ***************************************************************************************
+// * PRIMITIVE TYPES DECLARATIONS
+// ***************************************************************************************
+
+typedef int8_t i8;
+typedef int16_t i16;
+typedef int32_t i32;
+typedef int64_t i64;
+
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+
+typedef float f32;
+typedef double f64;
+
+typedef uintptr_t uptr;
+
+typedef ptrdiff_t size;
+typedef size_t usize;
+
+typedef char* string;
+
+typedef void* voidptr;
+typedef FILE* fileptr;
+
+// ***************************************************************************************
+// * RESULT TYPE DECLARATIONS
+// ***************************************************************************************
+
+/**
+ * Enum for two possible result status, ok and error
+ */
+typedef enum
+{
+    DC_RES_OK,
+    DC_RES_ERR,
+} DCResStatus;
+
+/**
+ * Holds error data when the result is an error
+ *
+ * Notes:
+ *
+ * 1. There are reserved codes (Not mandatory but `dcommon` follows that)
+ * - '1' Null Value detected
+ * - '2' Memory management failed, malloc, calloc, realloc, etc.
+ * - '3' Unknown type or un-matched type detected
+ * - '4' Index out of bound
+ * - '5' Internal errors
+ * - '6' Not Found
+ *
+ * NOTE: You can use macros `dc_err` and `dc_e_msg`
+ *
+ * 2. If message is allocated the `allocated` field must be set to true.
+ */
+typedef struct
+{
+    i8 code;
+    string message;
+    bool allocated;
+} DCError;
+
+/**
+ * `[MACRO]` defines new Result type
+ *
+ * NOTE: See (alias.h) for usage in definition of default result types
+ */
+#define DCResType(TYPE, NAME)                                                                                                  \
+    typedef struct                                                                                                             \
+    {                                                                                                                          \
+        DCResStatus status;                                                                                                    \
+        union                                                                                                                  \
+        {                                                                                                                      \
+            DCError e;                                                                                                         \
+            TYPE v;                                                                                                            \
+        } data;                                                                                                                \
+    } NAME
+
+/**
+ * Minimum structure to be able to be cased and used as a Result is DCResVoid
+ */
+typedef struct
+{
+    DCResStatus status;
+    union
+    {
+        DCError e;
+    } data;
+} DCResVoid;
+
+// ***************************************************************************************
 // * DEFAULT PRIMITIVE RESULT TYPE DECLARATIONS
 // ***************************************************************************************
 DCResType(i8, DCResI8);
@@ -43,23 +135,6 @@ DCResType(voidptr, DCResVoidptr);
 DCResType(fileptr, DCResFileptr);
 
 DCResType(bool, DCResBool);
-
-// ***************************************************************************************
-// * STRING VIEW TYPE DECLARATION
-// ***************************************************************************************
-
-/**
- * It is used to address a portion of a string without memory allocation.
- *
- * NOTE: cstr when initiated will be allocated to the exact copy of the string
- * piece SV pointing to
- */
-struct DCStringView
-{
-    string str;
-    usize len;
-    string cstr;
-};
 
 // ***************************************************************************************
 // * DYNAMIC ARRAY TYPE DECLARATIONS
@@ -91,7 +166,9 @@ typedef enum
     dc_dvt(voidptr),
     dc_dvt(fileptr),
 
-    dc_dvt(DCStringView),
+    dc_dvt(DCPair_ptr),
+
+    dc_dvt(DCDynVal_ptr),
 
 #ifdef DC_DV_EXTRA_TYPES
     DC_DV_EXTRA_TYPES
@@ -105,39 +182,20 @@ typedef enum
  */
 typedef struct
 {
+    u8 value[DC_DV_DATA_SIZE];
+
     DCDynValType type;
+
+    usize size;
+    usize total_count;
+
+    usize start;
+    usize count;
+
     bool allocated;
-    union
-    {
-        dc_dvf_decl(i8);
-        dc_dvf_decl(i16);
-        dc_dvf_decl(i32);
-        dc_dvf_decl(i64);
-
-        dc_dvf_decl(u8);
-        dc_dvf_decl(u16);
-        dc_dvf_decl(u32);
-        dc_dvf_decl(u64);
-
-        dc_dvf_decl(f32);
-        dc_dvf_decl(f64);
-
-        dc_dvf_decl(uptr);
-        dc_dvf_decl(char);
-        dc_dvf_decl(string);
-        dc_dvf_decl(voidptr);
-        dc_dvf_decl(fileptr);
-
-        dc_dvf_decl(size);
-        dc_dvf_decl(usize);
-
-        dc_dvf_decl(DCStringView);
-
-#ifdef DC_DV_EXTRA_FIELDS
-        DC_DV_EXTRA_FIELDS
-#endif
-    } value;
 } DCDynVal;
+
+typedef DCDynVal* DCDynVal_ptr;
 
 /**
  * Custom function type for cleaning up a dynamic value
@@ -180,7 +238,7 @@ typedef struct
 
 /**
  * Enum to indicate the action that hash table must take toward
- * When trying to set a key value key_value
+ * When trying to set a key value pair
  */
 typedef enum
 {
@@ -193,16 +251,19 @@ typedef enum
 } DCHashTableSetStatus;
 
 /**
- * Each key_value of a hash table can have a dynamic value
+ * A Pair of two dynamic values
  *
- * NOTE: The key is dynamic value and the correctness of the passed values and types
+ * NOTE: Hash Table uses pair as its key/value data (first->key, second->value)
+ *       In that case the correctness of the passed values and types
  *       must be checked in hash and key comparaison functions
  */
-struct DCKeyValuePair
+typedef struct
 {
-    DCDynVal key;
-    DCDynVal value;
-};
+    DCDynVal first;
+    DCDynVal second;
+} DCPair;
+
+typedef DCPair* DCPair_ptr;
 
 /**
  * Function pointer type as an acceptable hash function for an Hash Table
@@ -217,7 +278,7 @@ typedef DCResBool (*DCKeyCompFn)(DCDynVal*, DCDynVal*);
 /**
  * Key value pair free function declaration
  */
-typedef DCResVoid (*DCHtKeyValuePairFreeFn)(DCKeyValuePair*);
+typedef DCResVoid (*DCHtPairFreeFn)(DCPair*);
 
 /**
  * A Hash Table with track of capacity and number of registered keys
@@ -233,7 +294,7 @@ typedef struct
 
     DCHashFn hash_fn;
     DCKeyCompFn key_cmp_fn;
-    DCHtKeyValuePairFreeFn key_value_free_fn;
+    DCHtPairFreeFn pair_free_fn;
 } DCHashTable;
 
 // ***************************************************************************************
@@ -283,7 +344,6 @@ typedef struct
 // ***************************************************************************************
 
 DCResType(DCDynVal, DCRes);
-DCResType(DCStringView, DCResSv);
 DCResType(DCDynArr*, DCResDa);
 DCResType(DCHashTable*, DCResHt);
 DCResType(DCDynVal*, DCResDv);

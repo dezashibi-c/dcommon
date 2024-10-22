@@ -24,121 +24,6 @@
 #include "_headers/general.h"
 #include "_headers/macros.h"
 
-string dc_dv_fmt(DCDynVal* dv)
-{
-    if (!dv) return "";
-
-#define dv_fmt_case(TYPE)                                                                                                      \
-    case dc_dvt(TYPE):                                                                                                         \
-        return dc_fmt(TYPE)
-
-    switch (dv->type)
-    {
-        dv_fmt_case(u8);
-        dv_fmt_case(u16);
-        dv_fmt_case(u32);
-        dv_fmt_case(u64);
-        dv_fmt_case(i8);
-        dv_fmt_case(i16);
-        dv_fmt_case(i32);
-        dv_fmt_case(i64);
-        dv_fmt_case(f32);
-        dv_fmt_case(f64);
-        dv_fmt_case(uptr);
-        dv_fmt_case(char);
-        dv_fmt_case(string);
-        dv_fmt_case(voidptr);
-        dv_fmt_case(fileptr);
-        dv_fmt_case(size);
-        dv_fmt_case(usize);
-
-        dv_fmt_case(DCStringView);
-
-        default:
-            return "";
-    };
-#undef dv_fmt_case
-}
-
-string dc_tostr_dvt(DCDynVal* dv)
-{
-    if (!dv) return "(null dynamic value)";
-
-#define dvt_case(TYPE)                                                                                                         \
-    case dc_dvt(TYPE):                                                                                                         \
-        return #TYPE
-
-    switch (dv->type)
-    {
-        dvt_case(u8);
-        dvt_case(u16);
-        dvt_case(u32);
-        dvt_case(u64);
-        dvt_case(i8);
-        dvt_case(i16);
-        dvt_case(i32);
-        dvt_case(i64);
-        dvt_case(f32);
-        dvt_case(f64);
-        dvt_case(uptr);
-        dvt_case(char);
-        dvt_case(string);
-        dvt_case(voidptr);
-        dvt_case(fileptr);
-        dvt_case(size);
-        dvt_case(usize);
-
-        dvt_case(DCStringView);
-
-        default:
-            return "unknown or unimplemented";
-    };
-
-#undef dvt_case
-}
-
-DCResBool dc_dv_as_bool(DCDynVal* dv)
-{
-    DC_RES_bool();
-
-    // NULL DCDynVal is going to turn into false value
-    if (!dv) dc_ret_ok(false);
-
-#define type_to_bool(TYPE)                                                                                                     \
-    case dc_dvt(TYPE):                                                                                                         \
-        dc_ret_ok(dc_as_bool(TYPE, dv->value.dc_dvf(TYPE)));
-
-    switch (dv->type)
-    {
-        type_to_bool(u8);
-        type_to_bool(u16);
-        type_to_bool(u32);
-        type_to_bool(u64);
-        type_to_bool(i8);
-        type_to_bool(i16);
-        type_to_bool(i32);
-        type_to_bool(i64);
-        type_to_bool(f32);
-        type_to_bool(f64);
-        type_to_bool(uptr);
-        type_to_bool(char);
-        type_to_bool(string);
-        type_to_bool(voidptr);
-        type_to_bool(fileptr);
-        type_to_bool(size);
-        type_to_bool(usize);
-
-        type_to_bool(DCStringView);
-
-        default:
-            break;
-    };
-
-    dc_dbg_log("Exiting Function on an unknown type");
-    dc_ret_e(3, "unknown dynamic value type");
-#undef type_to_bool
-}
-
 DCResVoid dc_da_init(DCDynArr* darr, DCDynValFreeFn element_free_fn)
 {
     DC_RES_void();
@@ -504,83 +389,6 @@ DCResDv dc_da_get(DCDynArr* darr, usize index)
     dc_ret_ok(&darr->elements[index]);
 }
 
-DCResBool dc_dv_eq(DCDynVal* dv1, DCDynVal* dv2)
-{
-    DC_RES_bool();
-
-    if (!dv1 || !dv2)
-    {
-        dc_dbg_log("cannot compare DCDynVal with NULL");
-
-        dc_ret_e(1, "cannot compare DCDynVal with NULL");
-    }
-
-    if (dv1->type != dv2->type) dc_ret_ok(false);
-
-#define check_eq(TYPE)                                                                                                         \
-    case dc_dvt(TYPE):                                                                                                         \
-        if (dv1->value.dc_dvf(TYPE) == dv2->value.dc_dvf(TYPE)) dc_ret_ok(true);                                               \
-        break
-
-    switch (dv1->type)
-    {
-        check_eq(i8);
-        check_eq(i16);
-        check_eq(i32);
-        check_eq(i64);
-
-        check_eq(u8);
-        check_eq(u16);
-        check_eq(u32);
-        check_eq(u64);
-
-        check_eq(f32);
-        check_eq(f64);
-
-        check_eq(uptr);
-        check_eq(char);
-
-        case dc_dvt(string):
-        {
-            if (strcmp(dc_dv_as(*dv1, string), dc_dv_as(*dv2, string)) == 0) dc_ret_ok(true);
-            break;
-        }
-
-            // clang-format off
-        check_eq(voidptr);
-        check_eq(fileptr);
-        check_eq(size);
-        check_eq(usize);
-
-        case dc_dvt(DCStringView):
-        {
-            if (dc_dv_as(*dv1, DCStringView).str && dc_dv_as(*dv2, DCStringView).str 
-            && (dc_dv_as(*dv1, DCStringView).str == dc_dv_as(*dv2, DCStringView).str) 
-            && (dc_dv_as(*dv1, DCStringView).len == dc_dv_as(*dv2, DCStringView).len)) dc_ret_ok(true);
-
-            break;
-        }
-            // clang-format on
-
-        default:
-            break;
-    }
-
-    dc_ret_ok(false);
-
-#undef check_eq
-}
-
-DCResBool dc_dv_eq2(DCDynVal* dv1, DCDynVal dv2)
-{
-    return dc_dv_eq(dv1, &dv2);
-}
-
-DCResBool dc_dv_eq3(DCDynVal dv1, DCDynVal dv2)
-{
-    return dc_dv_eq(&dv1, &dv2);
-}
-
 DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn)
 {
     DC_RES_usize();
@@ -592,10 +400,13 @@ DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn)
         dc_ret_e(1, "got NULL DCDynArr");
     }
 
-#define find_if(TYPE, INDEX)                                                                                                   \
+#define find_if(TYPE)                                                                                                          \
     case dc_dvt(TYPE):                                                                                                         \
-        if (element->value.dc_dvf(TYPE) == el->value.dc_dvf(TYPE)) dc_ret_ok(INDEX);                                           \
-        break
+    {                                                                                                                          \
+        dc_try_or_fail_with3(DCResBool, cmp_res, dc_dv_eq(el, element), {});                                                   \
+        if (dc_unwrap2(cmp_res)) dc_ret_ok(i);                                                                                 \
+    }                                                                                                                          \
+    break
 
     for (usize i = 0; i < darr->count; i++)
     {
@@ -608,50 +419,36 @@ DCResUsize dc_da_findp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn)
         // check the actual value based on the type
         switch (el->type)
         {
-            find_if(i8, i);
-            find_if(i16, i);
-            find_if(i32, i);
-            find_if(i64, i);
+            find_if(i8);
+            find_if(i16);
+            find_if(i32);
+            find_if(i64);
 
-            find_if(u8, i);
-            find_if(u16, i);
-            find_if(u32, i);
-            find_if(u64, i);
+            find_if(u8);
+            find_if(u16);
+            find_if(u32);
+            find_if(u64);
 
-            find_if(f32, i);
-            find_if(f64, i);
+            find_if(f32);
+            find_if(f64);
 
-            find_if(uptr, i);
-            find_if(char, i);
+            find_if(uptr);
+            find_if(char);
 
-            case dc_dvt(string):
-            {
-                if (strcmp(dc_dv_as(*element, string), dc_dv_as(*el, string)) == 0) dc_ret_ok(i);
-                break;
-            }
+            find_if(string);
 
-                // clang-format off
-            find_if(voidptr, i);
-            find_if(fileptr, i);
-            find_if(size, i);
-            find_if(usize, i);
+            find_if(voidptr);
+            find_if(fileptr);
+            find_if(size);
+            find_if(usize);
 
-            case dc_dvt(DCStringView):
-            {
-                if (dc_dv_as(*element, DCStringView).str && dc_dv_as(*el, DCStringView).str 
-                && (dc_dv_as(*element, DCStringView).str == dc_dv_as(*el, DCStringView).str) 
-                && (dc_dv_as(*element, DCStringView).len == dc_dv_as(*el, DCStringView).len)) dc_ret_ok(i);
-
-                break;
-            }
-                // clang-format on
 
             default:
                 if (dv_eq_fn)
                 {
                     dc_try_or_fail_with3(DCResBool, cmp_res, dv_eq_fn(element, el), {});
 
-                    if (dc_val2(cmp_res) == true) dc_ret_ok(i);
+                    if (dc_unwrap2(cmp_res) == true) dc_ret_ok(i);
                 }
                 break;
         }
@@ -681,9 +478,9 @@ DCResVoid dc_dv_free(DCDynVal* element, DCDynValFreeFn custom_free_fn)
         {
             if (custom_free_fn) dc_try_fail_temp(DCResVoid, custom_free_fn(element));
 
-            if (dc_dv_is_allocated(*element) && dc_dv_as(*element, string) != NULL) free(dc_dv_as(*element, string));
+            if (dc_dv_is_allocated(*element) && dc_dv_as_string(*element) != NULL) free(dc_dv_as_string(*element));
 
-            dc_dv_set(*element, string, "");
+            dc_dv_set_string(element, "");
             break;
         }
 
@@ -693,7 +490,7 @@ DCResVoid dc_dv_free(DCDynVal* element, DCDynValFreeFn custom_free_fn)
 
             if (dc_dv_is_allocated(*element) && dc_dv_as(*element, fileptr) != NULL) fclose(dc_dv_as(*element, fileptr));
 
-            dc_dv_set(*element, fileptr, NULL);
+            dc_dv_set(element, fileptr, NULL);
             break;
         }
 
@@ -703,16 +500,7 @@ DCResVoid dc_dv_free(DCDynVal* element, DCDynValFreeFn custom_free_fn)
 
             if (dc_dv_is_allocated(*element) && dc_dv_as(*element, voidptr) != NULL) free(dc_dv_as(*element, voidptr));
 
-            dc_dv_set(*element, voidptr, NULL);
-            break;
-        }
-
-        case dc_dvt(DCStringView):
-        {
-            if (custom_free_fn) dc_try_fail_temp(DCResVoid, custom_free_fn(element));
-
-            dc_try_fail_temp(DCResVoid, dc_sv_free(&dc_dv_as(*element, DCStringView)));
-
+            dc_dv_set(element, voidptr, NULL);
             break;
         }
 
@@ -822,7 +610,7 @@ DCResVoid dc_da_delete_elp(DCDynArr* darr, DCDynVal* el, DCDvEqFn dv_eq_fn)
     DCResUsize found_res = dc_da_findp(darr, el, dv_eq_fn);
     dc_fail_if_err2(found_res);
 
-    usize index = dc_val2(found_res);
+    usize index = dc_unwrap2(found_res);
 
     return dc_da_delete(darr, index);
 }
@@ -1006,9 +794,4 @@ DCResUsize dc_voidptr_da_to_flat_arr(DCDynArr* arr, voidptr** out_arr, bool must
 DCResUsize dc_fileptr_da_to_flat_arr(DCDynArr* arr, fileptr** out_arr, bool must_fail)
 {
     __DC_DA_CONVERT_IMPL(fileptr);
-}
-
-DCResUsize dc_DCStringView_da_to_flat_arr(DCDynArr* arr, DCStringView** out_arr, bool must_fail)
-{
-    __DC_DA_CONVERT_IMPL(DCStringView);
 }

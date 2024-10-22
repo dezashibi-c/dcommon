@@ -795,14 +795,14 @@ dc_is_err2(RES)
  *
  * NOTE: You must have already checked to make sure the current status is ok
  */
-dc_val()
+dc_unwrap()
 
 /**
  * Retrieves the value of the given result variable
  *
  * NOTE: You must have already checked to make sure the current status is ok
  */
-dc_val2(RES)
+dc_unwrap2(RES)
 
 /**
  * Expands to current status of the main result variable (__dc_res)
@@ -1733,15 +1733,15 @@ DCResVoid dc_sv_free(DCStringView* sv);
  * NOTE: If used `dc_sv_fmt` must be provided to provide proper data for this
  * format specifier
  *
- * @example printf("Hello " DCPRIsv "!", dc_sv_fmt(my_string_view));
+ * @example printf("Hello " DCPRIstr_slice "!", dc_sv_fmt(my_string_view));
  */
-DCPRIsv
+DCPRIstr_slice
 
 /**
- * If DCPRIsv is used as format specifier this macro should be used to provide
+ * If DCPRIstr_slice is used as format specifier this macro should be used to provide
  * both length and pointer to the base string
  *
- * @example printf("Hello " DCPRIsv "!", dc_sv_fmt(my_string_view));
+ * @example printf("Hello " DCPRIstr_slice "!", dc_sv_fmt(my_string_view));
  */
 dc_sv_fmt(SV)
 
@@ -1763,7 +1763,7 @@ dc_sv_sv_eq(SV1, SV2)
 
 ```c
 /**
- * Each key_value of a hash table can have a dynamic value
+ * Each pair of a hash table can have a dynamic value
  *
  * NOTE: The key is voidptr and must be fixed or properly handled throughout
  * hash function process
@@ -1772,7 +1772,7 @@ typedef struct
 {
     voidptr key;
     DCDynVal value;
-} DCKeyValuePair;
+} DCPair;
 
 /**
  * Function pointer type as an acceptable hash function for an Hash Table
@@ -1928,9 +1928,9 @@ dc_try_fail_temp_ht_get_hash(VAR_NAME, HT, KEY)
 DC_HT_GET_AND_DEF_CONTAINER_ROW(VAR_NAME, HT, HASH)                           
 
 /**
- * Creates a literal hash table key/value pair (key_value)
+ * Creates a literal hash table key/value pair (pair)
  */
-dc_ht_key_value(KEY, VAL)                                                 
+dc_ht_pair(KEY, VAL)                                                 
 
 /**
  * Sets multiple key value pairs in a hash table without providing the count
@@ -2454,7 +2454,7 @@ DC_NO_CLEANUP -2
 DC_CLEANUP_FN_DECL(NAME)
 
 /**
- * Runs the cleanup process of a cleanup job key_value
+ * Runs the cleanup process of a cleanup job pair
  */
 dc_cleanup_job_run(ENTRY)
 

@@ -14,6 +14,11 @@
 // *  Description:
 // ***************************************************************************************
 
+#define DC_DV_EXTRA_TYPES dc_dvt(Person),
+
+#define DCOMMON_IMPL
+#include "../src/dcommon/dcommon.h"
+
 /* First definition of the custom type, can be in another header file
     You can use this header file to have access to basic types if you're willing
     to use them in your custom type (struct) */
@@ -41,12 +46,9 @@ typedef struct
                 #define DC_DV_EXTRA_FIELDS dc_dvf_decl(Shape); dc_dvf_decl(Person); dc_dvf_decl(Animal);
 */
 
-#define DC_DV_EXTRA_TYPES dc_dvt(Person),
-#define DC_DV_EXTRA_FIELDS dc_dvf_decl(Person);
 
 /* Third inclusion of the actual dcommon.h and possibly the DCOMMON_IMPL definition */
-#define DCOMMON_IMPL
-#include "../src/dcommon/dcommon.h"
+
 
 /* Forth these stopper and stopper checkers can be anywhere could be at step 2,
     if you want to use them in dc arrays that are meant to be terminated with a stopper value
@@ -79,7 +81,7 @@ void print_da(DCDynArr* darr)
     dc_da_for(*darr, {
         printf("['" dc_fmt(usize) "'] ", _idx);
         DCResDv res = dc_da_get(darr, _idx);
-        if (dc_is_ok2(res)) print_dv(dc_val2(res));
+        if (dc_is_ok2(res)) print_dv(dc_unwrap2(res));
     });
 }
 
@@ -108,13 +110,13 @@ DCResVoid test2()
     // Add elements
     dc_try_fail_da_init_with_values(&darr, NULL,
 
-                                    dc_dv(u8, 42), dc_dv(i32, -12345), dc_dv(Person, person_new("Navid", 30)),
+                                    dc_dv(u8, 42), dc_dv(i32, -12345), dc_dv_struct(Person, "Navid", 30),
 
-                                    dc_dv(DCStringView, dc_sv(some_text, 8, 5)),
+                                    dc_dv_string_slice(some_text, 8, 5),
 
                                     // here it is a literal string so it doesn't need
                                     // to be mark as allocated (that's why dc_dv is used)
-                                    dc_dv(string, "Hello")
+                                    dc_dv_string("Hello")
 
     );
 
@@ -131,7 +133,7 @@ DCResVoid test2()
 
     printf("========\nInserting 1 element\n========\n");
     // Try to insert or fail
-    dc_try_fail(dc_da_insert(&darr, 1, dc_dv(Person, person_new("James", 20))));
+    dc_try_fail(dc_da_insert(&darr, 1, dc_dv_struct(Person, "James", 20)));
     LOG_DYNAMIC_ARRAY_INFO(darr);
     print_da(&darr);
 
