@@ -3,6 +3,7 @@
 Release Date: 2024-10-22
 
 - simplify names
+- simplify loops
 
 =======
 
