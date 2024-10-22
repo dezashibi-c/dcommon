@@ -1,4 +1,4 @@
-## v1.6.0-stable
+## v1.6.1-stable
 
 Release Date: 2024-10-22
 
