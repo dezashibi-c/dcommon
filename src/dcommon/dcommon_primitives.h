@@ -49,8 +49,15 @@ typedef void* voidptr;
 typedef FILE* fileptr;
 
 typedef struct DCStringView DCStringView;
+
 typedef struct DCHashTable DCHashTable;
+typedef struct DCHashTable* DCHashTablePtr;
+
 typedef struct DCDynArr DCDynArr;
+typedef struct DCDynArr* DCDynArrPtr;
+
+typedef struct DCPair DCPair;
+typedef struct DCPair* DCPairPtr;
 
 // ***************************************************************************************
 // * RESULT TYPE DECLARATIONS
@@ -116,8 +123,6 @@ typedef struct
         DCError e;
     } data;
 } DCResVoid;
-
-typedef struct DCPair DCPair;
 
 #undef __DC_BYPASS_PRIVATE_PROTECTION
 
