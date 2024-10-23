@@ -281,8 +281,8 @@ int main()
 
     dc_try_ht_set_multiple(void_res, table, DC_HT_SET_CREATE_OR_UPDATE,
 
-                           dc_ht_key_value(string, "robert", u8, 20), dc_ht_key_value(string, "albert", u8, 6),
-                           dc_ht_key_value(string, "boris", u8, 12), dc_ht_key_value(string, "navid", u8, 29)
+                           dc_ht_pair(string, "robert", u8, 20), dc_ht_pair(string, "albert", u8, 6),
+                           dc_ht_pair(string, "boris", u8, 12), dc_ht_pair(string, "navid", u8, 29)
 
     );
     dc_action_on(dc_is_err2(void_res), dc_return_with_val(dc_err_code2(void_res)), "%s", dc_err_msg2(void_res));

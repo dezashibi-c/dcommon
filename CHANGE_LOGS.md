@@ -1,7 +1,8 @@
-## v1.6.2-stable
+## v1.6.5-stable
 
 Release Date: 2024-10-22
 
+- change DCKeyValue to DCPair
 - simplify names
 
 =======
