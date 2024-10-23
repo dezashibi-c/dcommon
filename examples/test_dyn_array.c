@@ -27,9 +27,8 @@ void print_dv(DCDynVal* dval)
 void print_da(DCDynArr* darr)
 {
     dc_da_for(*darr, {
-        printf("['%" PRIuMAX "'] ", _idx);
-        DCResDv res = dc_da_get(darr, _idx);
-        if (dc_is_ok2(res)) print_dv(dc_unwrap2(res));
+        printf("['" dc_fmt(usize) "'] ", _idx);
+        print_dv(_it);
     });
 }
 
