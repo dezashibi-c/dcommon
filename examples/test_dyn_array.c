@@ -396,7 +396,7 @@ DCResVoid test7()
 
     );
 
-    dc_da_for(darr, print_struct((MyStruct*)dc_da_get_as(darr, _idx, voidptr)));
+    dc_da_for(darr, print_struct((MyStruct*)dc_dv_as(*_it, voidptr)));
 
     voidptr* result = NULL;
     DCResUsize len_res = dc_voidptr_da_to_flat_arr(&darr, &result, true);
