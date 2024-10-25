@@ -1,7 +1,8 @@
-## v1.6.6-stable
+## v1.6.7-stable
 
 Release Date: 2024-10-22
 
+- add new macros
 - change DCKeyValue to DCPair
 - simplify names
 
