@@ -1,7 +1,8 @@
-## v1.6.7-stable
+## v1.7.0-stable
 
-Release Date: 2024-10-22
+Release Date: 2024-10-25
 
+- add dynamic array and hash table pointer to dynamic value with proper free and printing
 - add new macros
 - change DCKeyValue to DCPair
 - simplify names

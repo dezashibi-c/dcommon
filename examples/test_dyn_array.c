@@ -33,7 +33,7 @@ void print_da(DCDynArr* darr)
 }
 
 #define LOG_DYNAMIC_ARRAY_INFO(DARR)                                                                                           \
-    printf("-- current capacity: '%" PRIuMAX "', current count: '%" PRIuMAX "'\n", DARR.cap, DARR.count);
+    printf("-- current capacity: '" dc_fmt(usize) "', current count: '" dc_fmt(usize) "'\n", DARR.cap, DARR.count);
 
 DCResVoid test1()
 {
@@ -253,7 +253,7 @@ DCResVoid test3()
     if (dc_is_ok2(len_res))
     {
         printf("Resulting string: %s\n", result_str);
-        printf("String length: '%" PRIuMAX "'\n", dc_unwrap2(len_res));
+        printf("String length: '" dc_fmt(usize) "'\n", dc_unwrap2(len_res));
         free(result_str);
     }
     else
@@ -282,7 +282,7 @@ DCResVoid test4()
 
     if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_unwrap2(len_res));
+        printf("========\n got '" dc_fmt(usize) "' elements\n========\n", dc_unwrap2(len_res));
 
         for (usize i = 0; i < dc_unwrap2(len_res); ++i) printf("%d\n", result[i]);
 
@@ -314,9 +314,9 @@ DCResVoid test5()
 
     if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_unwrap2(len_res));
+        printf("========\n got '" dc_fmt(usize) "' elements\n========\n", dc_unwrap2(len_res));
 
-        for (usize i = 0; i < dc_unwrap2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
+        for (usize i = 0; i < dc_unwrap2(len_res); ++i) printf("'" dc_fmt(usize) "'\n", result[i]);
 
         free(result);
     }
@@ -346,9 +346,9 @@ DCResVoid test6()
 
     if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_unwrap2(len_res));
+        printf("========\n got '" dc_fmt(usize) "' elements\n========\n", dc_unwrap2(len_res));
 
-        for (usize i = 0; i < dc_unwrap2(len_res); ++i) printf("'%" PRIuMAX "'\n", result[i]);
+        for (usize i = 0; i < dc_unwrap2(len_res); ++i) printf("'" dc_fmt(usize) "'\n", result[i]);
 
         free(result);
     }
@@ -356,6 +356,8 @@ DCResVoid test6()
     {
         dc_log("Conversion failed\n");
     }
+
+    dc_dv_println(&dc_dv(DCDynArrPtr, &darr));
 
     return dc_da_free(&darr);
 }
@@ -404,7 +406,7 @@ DCResVoid test7()
 
     if (dc_is_ok2(len_res))
     {
-        printf("========\n got '%" PRIuMAX "' elements\n========\n", dc_unwrap2(len_res));
+        printf("========\n got '" dc_fmt(usize) "' elements\n========\n", dc_unwrap2(len_res));
 
         for (usize i = 0; i < dc_unwrap2(len_res); ++i) print_struct((MyStruct*)result[i]);
 

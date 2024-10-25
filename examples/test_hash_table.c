@@ -169,7 +169,7 @@ int main()
 
     dc_action_on(table->key_count != 3, dc_return_with_val(1), "key_count must be 3");
 
-    printf("Found index: '%" PRIuMAX "'\n", dc_unwrap2(usize_res));
+    printf("Found index: '" dc_fmt(usize) "'\n", dc_unwrap2(usize_res));
 
     if (found != NULL)
     {
@@ -185,7 +185,7 @@ int main()
 
     dc_action_on(dc_is_err2(usize_res), dc_return_with_val(dc_err_code2(usize_res)), "%s", dc_err_msg2(usize_res));
 
-    printf("Found index: '%" PRIuMAX "'\n", dc_unwrap2(usize_res));
+    printf("Found index: '" dc_fmt(usize) "'\n", dc_unwrap2(usize_res));
 
     if (found != NULL)
     {
@@ -209,7 +209,7 @@ int main()
 
     dc_action_on(dc_is_err2(usize_res), dc_return_with_val(dc_err_code2(usize_res)), "%s", dc_err_msg2(usize_res));
 
-    printf("Found index: '%" PRIuMAX "'\n", dc_unwrap2(usize_res));
+    printf("Found index: '" dc_fmt(usize) "'\n", dc_unwrap2(usize_res));
 
     if (found != NULL)
     {
@@ -232,7 +232,7 @@ int main()
     usize_res = dc_ht_find_by_key(table, key1, &found);
     dc_action_on(dc_is_err2(usize_res), dc_return_with_val(dc_err_code2(usize_res)), "%s", dc_err_msg2(usize_res));
 
-    printf("Found index: '%" PRIuMAX "'\n", dc_unwrap2(usize_res));
+    printf("Found index: '" dc_fmt(usize) "'\n", dc_unwrap2(usize_res));
 
     if (found != NULL)
     {
@@ -253,7 +253,7 @@ int main()
     usize_res = dc_ht_find_by_key(table, key_to_not_being_added, &found);
     dc_action_on(dc_is_err2(usize_res), dc_return_with_val(dc_err_code2(usize_res)), "%s", dc_err_msg2(usize_res));
 
-    printf("Found index: '%" PRIuMAX "'\n", dc_unwrap2(usize_res));
+    printf("Found index: '" dc_fmt(usize) "'\n", dc_unwrap2(usize_res));
 
     if (found != NULL)
     {
@@ -268,7 +268,7 @@ int main()
     usize_res = dc_ht_find_by_key(table, key2, &found);
     dc_action_on(dc_is_err2(usize_res), dc_return_with_val(dc_err_code2(usize_res)), "%s", dc_err_msg2(usize_res));
 
-    printf("Found index: '%" PRIuMAX "'\n", dc_unwrap2(usize_res));
+    printf("Found index: '" dc_fmt(usize) "'\n", dc_unwrap2(usize_res));
 
     if (found != NULL)
     {
@@ -291,7 +291,7 @@ int main()
     usize_res = dc_ht_find_by_key(table, key1, &found);
     dc_action_on(dc_is_err2(usize_res), dc_return_with_val(dc_err_code2(usize_res)), "%s", dc_err_msg2(usize_res));
 
-    printf("Found index: '%" PRIuMAX "'\n", dc_unwrap2(usize_res));
+    printf("Found index: '" dc_fmt(usize) "'\n", dc_unwrap2(usize_res));
 
     if (found != NULL)
     {
@@ -306,7 +306,7 @@ int main()
     usize_res = dc_ht_find_by_key(table, dc_dv(string, "boris"), &found);
     dc_action_on(dc_is_err2(usize_res), dc_return_with_val(dc_err_code2(usize_res)), "%s", dc_err_msg2(usize_res));
 
-    printf("Found index: '%" PRIuMAX "'\n", dc_unwrap2(usize_res));
+    printf("Found index: '" dc_fmt(usize) "'\n", dc_unwrap2(usize_res));
 
     if (found != NULL)
     {
@@ -333,7 +333,7 @@ int main()
     usize_res = dc_ht_find_by_key(table, dc_dv(string, "erisa"), &found);
     dc_action_on(dc_is_err2(usize_res), dc_return_with_val(dc_err_code2(usize_res)), "%s", dc_err_msg2(usize_res));
 
-    printf("Found index: '%" PRIuMAX "'\n", dc_unwrap2(usize_res));
+    printf("Found index: '" dc_fmt(usize) "'\n", dc_unwrap2(usize_res));
 
     if (found != NULL)
     {
@@ -354,8 +354,10 @@ int main()
     // function
     dc_cleanup_push_free(all_keys);
 
-    printf("=========\n got '%" PRIuMAX "' keys\n=========\n", dc_unwrap2(usize_res));
+    printf("=========\n got '" dc_fmt(usize) "' keys\n=========\n", dc_unwrap2(usize_res));
     dc_foreach(all_keys, DCDynVal, printf("- %s\n", dc_dv_as((*_it), string)));
+
+    dc_dv_println(&dc_dv(DCHashTablePtr, table));
 
     // Create an exit section label with final cleanup trigger
     // We could set the cleanup to MAIN_MEMORY_BATCH and that was totally fine

@@ -106,7 +106,7 @@ int main(void)
     DC_DEF_ARRAY(f32_list, f32, 1.1f, 2.2f);
     DC_DEF_ARRAY(char_list, char, 'a', 'b', 'c');
 
-    printf("u8_list's count='%" PRIuMAX "', u8_list's length='%" PRIuMAX "', last element=%d\n", dc_count(u8_list),
+    printf("u8_list's count='" dc_fmt(usize) "', u8_list's length='" dc_fmt(usize) "', last element=%d\n", dc_count(u8_list),
            dc_len(u8_list), dc_last(u8_list));
 
     // Example usage of dc_action_on
