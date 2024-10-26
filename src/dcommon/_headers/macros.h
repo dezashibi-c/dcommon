@@ -546,10 +546,10 @@
 #define DC_RES_ht() DC_RES2(DCResHt)
 
 /**
- * `[MACRO]` Defines the main result variable (__dc_res) as DCResDv type and
+ * `[MACRO]` Defines the main result variable (__dc_res) as DCResPtr type and
  * initiates it as DC_RES_OK
  */
-#define DC_RES_dv() DC_RES2(DCResDv)
+#define DC_RES_dv() DC_RES2(DCResPtr)
 
 /**
  * `[MACRO]` Defines the main result variable (__dc_res) as DCResI8 type and

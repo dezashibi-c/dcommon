@@ -266,7 +266,7 @@ DCResVoid dc_da_append(DCDynArr* darr, DCDynArr* from);
  *
  * @return a pointer to dynamic value or an error
  */
-DCResDv dc_da_get(DCDynArr* darr, usize index);
+DCResPtr dc_da_get(DCDynArr* darr, usize index);
 
 /**
  * Checks whether two given pointers to dynamic values are equal or not

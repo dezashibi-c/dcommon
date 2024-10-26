@@ -368,7 +368,7 @@ DCResVoid dc_da_append(DCDynArr* darr, DCDynArr* from)
     dc_ret();
 }
 
-DCResDv dc_da_get(DCDynArr* darr, usize index)
+DCResPtr dc_da_get(DCDynArr* darr, usize index)
 {
     DC_RES_dv();
 

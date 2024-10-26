@@ -272,6 +272,6 @@ DCResType(DCDynVal, DCRes);
 DCResType(DCStringView, DCResSv);
 DCResType(DCDynArr*, DCResDa);
 DCResType(DCHashTable*, DCResHt);
-DCResType(DCDynVal*, DCResDv);
+DCResType(DCDynVal*, DCResPtr);
 
 #endif // DC_ALIASES_H
