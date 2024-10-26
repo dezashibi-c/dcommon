@@ -8,9 +8,9 @@ So you still need to know what you're writing and it might fail or causes undefi
 
 Which comes with this question that should you use it or not!?
 
-The answer is **I really don't care!**, just kidding 😄. You can use it because it's really clean and straight forward whether you want to hack it or learn from it, so if you want to have things already done and ready to be used and also easy to debug sure use it, if you're seeking something magical or you recently fell in love with `C` with some background on other languages it **does** provide a few features like dynamic values, dynamic arrays, hash tables, `result` type, etc. but in no way it's not going to remove the need for being actively focused on where you've allocated memory, when to free, etc.
+Short answer: try to see if you should or you shouldn't.
 
-**👉 By the way, you might have this idea that this library is sort of opinionated, well it is and I'll take that as a compliment 😊🤝.**
+Long answer: You can use it because it's really clean and straight forward whether you want to hack it or learn from it, so if you want to have things already done and ready to be used and also easy to debug sure use it, if you're seeking something magical or you recently fell in love with `C` with some background on other languages it **does** provide a few features like dynamic values, dynamic arrays, hash tables, `result` type, etc. but in no way it's not going to remove the need for being actively focused on where you've allocated memory, when to free, etc.
 
 So if you're ready to give it a try by all means please go ahead and use this and I can't wait for your opinions.
 
