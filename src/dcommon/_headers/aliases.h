@@ -23,28 +23,6 @@
 #endif
 
 // ***************************************************************************************
-// * DEFAULT PRIMITIVE RESULT TYPE DECLARATIONS
-// ***************************************************************************************
-DCResType(i8, DCResI8);
-DCResType(i16, DCResI16);
-DCResType(i32, DCResI32);
-DCResType(i64, DCResI64);
-DCResType(u8, DCResU8);
-DCResType(u16, DCResU16);
-DCResType(u32, DCResU32);
-DCResType(u64, DCResU64);
-DCResType(f32, DCResF32);
-DCResType(f64, DCResF64);
-DCResType(uptr, DCResUptr);
-DCResType(size, DCResSize);
-DCResType(usize, DCResUsize);
-DCResType(string, DCResString);
-DCResType(voidptr, DCResVoidptr);
-DCResType(fileptr, DCResFileptr);
-
-DCResType(bool, DCResBool);
-
-// ***************************************************************************************
 // * STRING VIEW TYPE DECLARATION
 // ***************************************************************************************
 
@@ -107,7 +85,7 @@ typedef enum
  * Dynamic value type with ability to keep track of holding allocated string or
  * voidptr for further cleanup
  */
-typedef struct
+struct DCDynVal
 {
     DCDynValType type;
     bool allocated;
@@ -145,7 +123,7 @@ typedef struct
         DC_DV_EXTRA_FIELDS
 #endif
     } value;
-} DCDynVal;
+};
 
 /**
  * Custom function type for cleaning up a dynamic value

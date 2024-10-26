@@ -48,6 +48,8 @@ typedef char* string;
 typedef void* voidptr;
 typedef FILE* fileptr;
 
+typedef struct DCDynVal DCDynVal;
+
 typedef struct DCStringView DCStringView;
 
 typedef struct DCHashTable DCHashTable;
@@ -123,6 +125,28 @@ typedef struct
         DCError e;
     } data;
 } DCResVoid;
+
+// ***************************************************************************************
+// * DEFAULT PRIMITIVE RESULT TYPE DECLARATIONS
+// ***************************************************************************************
+DCResType(i8, DCResI8);
+DCResType(i16, DCResI16);
+DCResType(i32, DCResI32);
+DCResType(i64, DCResI64);
+DCResType(u8, DCResU8);
+DCResType(u16, DCResU16);
+DCResType(u32, DCResU32);
+DCResType(u64, DCResU64);
+DCResType(f32, DCResF32);
+DCResType(f64, DCResF64);
+DCResType(uptr, DCResUptr);
+DCResType(size, DCResSize);
+DCResType(usize, DCResUsize);
+DCResType(string, DCResString);
+DCResType(voidptr, DCResVoidptr);
+DCResType(fileptr, DCResFileptr);
+
+DCResType(bool, DCResBool);
 
 #undef __DC_BYPASS_PRIVATE_PROTECTION
 

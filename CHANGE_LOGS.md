@@ -1,7 +1,8 @@
-## v1.7.0-stable
+## v0.9.7-beta
 
 Release Date: 2024-10-25
 
+- improve primitive types
 - add dynamic array and hash table pointer to dynamic value with proper free and printing
 - add new macros
 - change DCKeyValue to DCPair
@@ -9,7 +10,7 @@ Release Date: 2024-10-25
 
 =======
 
-## v1.5.4-stable
+## v0.9.6-beta
 
 Release Date: 2024-10-17
 
@@ -20,7 +21,7 @@ Release Date: 2024-10-17
 
 =======
 
-## v1.4.4-stable
+## v0.9.5-beta
 
 Release Date: 2024-10-15
 
@@ -39,7 +40,7 @@ Release Date: 2024-10-15
 
 =======
 
-## v1.1.0-stable
+## v0.9.1-beta
 
 Release Date: 2024-09-27
 
@@ -48,7 +49,7 @@ Release Date: 2024-09-27
 
 =======
 
-## v1.0.0-beta
+## v0.9.0-beta
 
 Release Date: 2024-09-26
 
