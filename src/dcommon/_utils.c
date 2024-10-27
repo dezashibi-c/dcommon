@@ -624,7 +624,7 @@ void dc_date(fileptr stream)
     dc_fprintf_datetime(stream, "%Y-%m-%d");
 }
 
-void dc_error_logs_init(string filename, bool append)
+void dc_error_logs_init(string filename, b1 append)
 {
     DC_RES_fileptr();
 

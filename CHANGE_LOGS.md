@@ -1,7 +1,9 @@
-## v0.9.7-beta
+## v0.9.5-beta
 
 Release Date: 2024-10-25
 
+- add boolean type as b1
+- add both union extra fields and regular struct extra fields for dynamic value
 - improve primitive types
 - add dynamic array and hash table pointer to dynamic value with proper free and printing
 - add new macros
@@ -10,7 +12,7 @@ Release Date: 2024-10-25
 
 =======
 
-## v0.9.6-beta
+## v0.9.2-beta
 
 Release Date: 2024-10-17
 
@@ -21,7 +23,7 @@ Release Date: 2024-10-17
 
 =======
 
-## v0.9.5-beta
+## v0.9.0-beta
 
 Release Date: 2024-10-15
 
@@ -40,7 +42,7 @@ Release Date: 2024-10-15
 
 =======
 
-## v0.9.1-beta
+## v0.8.1-beta
 
 Release Date: 2024-09-27
 
@@ -49,7 +51,7 @@ Release Date: 2024-09-27
 
 =======
 
-## v0.9.0-beta
+## v0.8.0-beta
 
 Release Date: 2024-09-26
 

@@ -48,6 +48,8 @@ struct DCStringView
  */
 typedef enum
 {
+    dc_dvt(b1),
+
     dc_dvt(i8),
     dc_dvt(i16),
     dc_dvt(i32),
@@ -69,6 +71,8 @@ typedef enum
     dc_dvt(voidptr),
     dc_dvt(fileptr),
 
+    dc_dvt(DCDynValPtr),
+
     dc_dvt(DCStringView),
 
     dc_dvt(DCHashTablePtr),
@@ -88,9 +92,16 @@ typedef enum
 struct DCDynVal
 {
     DCDynValType type;
-    bool allocated;
+    b1 allocated;
+
+#ifdef DC_DV_EXTRA_FIELDS
+    DC_DV_EXTRA_FIELDS
+#endif
+
     union
     {
+        dc_dvf_decl(b1);
+
         dc_dvf_decl(i8);
         dc_dvf_decl(i16);
         dc_dvf_decl(i32);
@@ -113,14 +124,16 @@ struct DCDynVal
         dc_dvf_decl(size);
         dc_dvf_decl(usize);
 
+        dc_dvf_decl(DCDynValPtr);
+
         dc_dvf_decl(DCStringView);
 
         dc_dvf_decl(DCDynArrPtr);
         dc_dvf_decl(DCHashTablePtr);
         dc_dvf_decl(DCPairPtr);
 
-#ifdef DC_DV_EXTRA_FIELDS
-        DC_DV_EXTRA_FIELDS
+#ifdef DC_DV_EXTRA_UNION_FIELDS
+        DC_DV_EXTRA_UNION_FIELDS
 #endif
     } value;
 };

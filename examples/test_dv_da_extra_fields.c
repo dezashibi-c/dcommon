@@ -38,11 +38,11 @@ typedef struct
             A. Extra types would be
                 #define DC_DV_EXTRA_TYPES dc_dvt(Shape), dc_dvt(Person), dc_dvt(Animal),
             B. Extra fields would be
-                #define DC_DV_EXTRA_FIELDS dc_dvf_decl(Shape); dc_dvf_decl(Person); dc_dvf_decl(Animal);
+                #define DC_DV_EXTRA_UNION_FIELDS dc_dvf_decl(Shape); dc_dvf_decl(Person); dc_dvf_decl(Animal);
 */
 
 #define DC_DV_EXTRA_TYPES dc_dvt(Person),
-#define DC_DV_EXTRA_FIELDS dc_dvf_decl(Person);
+#define DC_DV_EXTRA_UNION_FIELDS dc_dvf_decl(Person);
 
 /* Third inclusion of the actual dcommon.h and possibly the DCOMMON_IMPL definition */
 #define DCOMMON_IMPL

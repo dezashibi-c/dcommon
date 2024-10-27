@@ -117,7 +117,7 @@ int main(void)
     // Example usage of for each macros
     // 👉 Note: `_it` is in fact pointer to each element which makes sense why
     // copy?
-    dc_foreach(bool_list, u8, printf("bool item: %s\n", dc_tostr_bool(dc_u8_as_bool(*_it))));
+    dc_foreach(bool_list, u8, printf("b1 item: %s\n", dc_tostr_bool(dc_u8_to_bool(*_it))));
 
     dc_foreach(u8_list, u8, printf("u8 item: %d\n", *_it));
 
