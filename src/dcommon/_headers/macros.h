@@ -1769,6 +1769,22 @@
 #define dc_sv(STR, START, LEN) ((DCStringView){.cstr = NULL, .str = (STR) + (START), .len = (LEN)})
 
 /**
+ * `[MACRO]` expands to set the SV to a literal string view
+ *
+ * @param SV is a variable name or field of type DCStringView to be set to the string view
+ * @param STR is a pointer to an array of chars (`string` or `char*`)
+ * @param START is the start index
+ * @param LEN is the length we need from and including the start index
+ *
+ * NOTE: There is no boundary check in this macro, be careful
+ */
+#define dc_sv_set(SV, STR, START, LEN)                                                                                         \
+    do                                                                                                                         \
+    {                                                                                                                          \
+        SV = dc_sv(STR, START, LEN);                                                                                           \
+    } while (0)
+
+/**
  * `[MACRO]` If DCPRIsv is used as format specifier this macro should be used to provide
  * both length and pointer to the base string
  *

@@ -23,7 +23,7 @@ int main(int argc, string argv[])
     (void)argc;
 
     string s;
-    DCResUsize res = dc_sprintf(&s, "hello, %s.", "-Reader-");
+    DCResUsize res = dc_sprintf(&s, "hello, %s.", "-User-");
     dc_action_on(dc_is_err2(res), return dc_err_code2(res), "%s", dc_err_msg2(res));
 
     printf("%s\n", s);
