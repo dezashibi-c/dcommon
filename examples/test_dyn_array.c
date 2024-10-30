@@ -26,7 +26,7 @@ void print_dv(DCDynVal* dval)
 
 void print_da(DCDynArr* darr)
 {
-    dc_da_for(*darr, {
+    dc_da_for(print_loop, *darr, {
         printf("['" dc_fmt(usize) "'] ", _idx);
         print_dv(_it);
     });
@@ -398,7 +398,7 @@ DCResVoid test7()
 
     );
 
-    dc_da_for(darr, print_struct((MyStruct*)dc_dv_as(*_it, voidptr)));
+    dc_da_for(print_struct_loop, darr, print_struct((MyStruct*)dc_dv_as(*_it, voidptr)));
 
     voidptr* result = NULL;
     DCResUsize len_res = dc_voidptr_da_to_flat_arr(&darr, &result, true);

@@ -76,7 +76,7 @@ void print_dv(DCDynVal* dval)
 
 void print_da(DCDynArr* darr)
 {
-    dc_da_for(*darr, {
+    dc_da_for(loop1, *darr, {
         printf("['" dc_fmt(usize) "'] ", _idx);
         print_dv(_it);
     });
@@ -91,7 +91,7 @@ DCResVoid test1()
 
     DC_DEF_ARRAY(people, Person, person_new("Navid", 30), person_new("James", 40), person_new("Bob", 50));
 
-    dc_foreach(people, Person, print_person(_it));
+    dc_foreach(loop2, people, Person, print_person(_it));
 
     dc_ret();
 }

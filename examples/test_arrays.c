@@ -117,20 +117,20 @@ int main(void)
     // Example usage of for each macros
     // 👉 Note: `_it` is in fact pointer to each element which makes sense why
     // copy?
-    dc_foreach(bool_list, u8, printf("b1 item: %s\n", dc_tostr_bool(dc_u8_to_bool(*_it))));
+    dc_foreach(loop1, bool_list, u8, printf("b1 item: %s\n", dc_tostr_bool(dc_u8_to_bool(*_it))));
 
-    dc_foreach(u8_list, u8, printf("u8 item: %d\n", *_it));
+    dc_foreach(loop2, u8_list, u8, printf("u8 item: %d\n", *_it));
 
-    dc_foreach(i16_list, i16, printf("i16 item: %d\n", *_it));
+    dc_foreach(loop3, i16_list, i16, printf("i16 item: %d\n", *_it));
 
-    dc_foreach(i32_list, i32, printf("i32 item: %d\n", *_it));
+    dc_foreach(loop4, i32_list, i32, printf("i32 item: %d\n", *_it));
 
-    dc_foreach(f32_list, f32, printf("f32 item: %f\n", *_it));
+    dc_foreach(loop5, f32_list, f32, printf("f32 item: %f\n", *_it));
 
-    dc_foreach(char_list, char, printf("char item: %c\n", *_it));
+    dc_foreach(loop6, char_list, char, printf("char item: %c\n", *_it));
 
     dc_foreach2(
-        u8,
+        loop7, u8,
         {
             printf("Literal u8 item: %d\n", *_it); // <- Check here
         },
@@ -141,18 +141,18 @@ int main(void)
     MyStruct m2 = {.a = 20, .b = 14};
     MyStruct m3 = {.a = 30, .b = 16};
 
-    dc_foreach2(MyStructPtr, print_my_struct(*_it), &m1, &m2, &m3);
+    dc_foreach2(, MyStructPtr, print_my_struct(*_it), &m1, &m2, &m3);
     puts("==========================\n");
 
     puts("\n==========================");
     DC_DEF_ARRAY(my_struct_list, MyStructPtr, &m1, &m2, &m3);
 
-    dc_foreach(my_struct_list, MyStructPtr, print_my_struct(*_it));
+    dc_foreach(loop9, my_struct_list, MyStructPtr, print_my_struct(*_it));
 
     puts("==========================\n");
 
     puts("\n==========================");
-    dc_foreach2(MyStruct, print_my_struct(_it), {.a = 4, .b = 12}, {.a = 5, .b = 13}, {.a = 6, .b = 14});
+    dc_foreach2(loop10, MyStruct, print_my_struct(_it), {.a = 4, .b = 12}, {.a = 5, .b = 13}, {.a = 6, .b = 14});
     puts("==========================\n");
 
     puts("\n==========================");
@@ -161,7 +161,7 @@ int main(void)
     string s3 = "Hey";
     DC_DEF_ARRAY(string_list, string, s1, s2, s3);
 
-    dc_foreach(string_list, string, print_str(_it));
+    dc_foreach(loop11, string_list, string, print_str(_it));
     puts("==========================\n");
 
     return 0;

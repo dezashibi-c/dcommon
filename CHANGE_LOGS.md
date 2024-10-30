@@ -1,7 +1,8 @@
 ## v0.9.5-beta
 
-Release Date: 2024-10-25
+Release Date: 2024-10-30
 
+- improve loops
 - add boolean type as b1
 - add both union extra fields and regular struct extra fields for dynamic value
 - improve primitive types

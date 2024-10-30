@@ -355,7 +355,7 @@ int main()
     dc_cleanup_push_free(all_keys);
 
     printf("=========\n got '" dc_fmt(usize) "' keys\n=========\n", dc_unwrap2(usize_res));
-    dc_foreach(all_keys, DCDynVal, printf("- %s\n", dc_dv_as((*_it), string)));
+    dc_foreach(key_loop, all_keys, DCDynVal, printf("- %s\n", dc_dv_as((*_it), string)));
 
     dc_dv_println(&dc_dv(DCHashTablePtr, table));
 
