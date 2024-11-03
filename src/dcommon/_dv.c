@@ -504,13 +504,10 @@ DCResVoid dc_dv_free(DCDynVal* element, DCDynValFreeFn custom_free_fn)
         case dc_dvt(DCDynValPtr):
             if (custom_free_fn) dc_try_fail(custom_free_fn(element));
 
-            // always try to call dv_free for the dynamic value it's pointing to
-            // and being allocated or not for the target dynamic value will still be counted
-            dc_try_fail(dc_dv_free(dc_dv_as(*element, DCDynValPtr), custom_free_fn));
-
-            // but free it only if it also is an allocated dynamic value
-            // if for whatever reason someone used malloc to allocate memory for a dynamic value beforehand
-            if (dc_dv_is_allocated(*element)) free(dc_dv_as(*element, DCDynValPtr));
+            // This is tricky, a DCDynVal is not a type to be created using malloc
+            // so being allocated here simply means that this pointer is responsible to free out the
+            // guest dynamic value not that it itself is an allocated one
+            if (dc_dv_is_allocated(*element)) dc_try_fail(dc_dv_free(dc_dv_as(*element, DCDynValPtr), custom_free_fn));
 
             break;
 
