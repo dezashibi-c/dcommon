@@ -14,7 +14,7 @@ Long answer: You can use it because it's really clean and straight forward wheth
 
 So if you're ready to give it a try by all means please go ahead and use this and I can't wait for your opinions.
 
-**👉 NOTE:** The library is stable enough to be used, but I might want to add/remove a few macros and also improve documentation or I might add a quick start guide, that sort of things. that being said, don't trust me, use it in a smaller scale first, see if you can connect with it, let me know what you think.
+**👉 NOTE:** The library is stable enough to be used, but I might want to add/remove a few macros and also improve documentation or I might add a quick start guide, that sort of things. that being said, don't trust me, use it in a smaller scale first, see if you can connect with it, let me know what you think. **and I'm not claiming the implementation is anything near as perfect or performant, so be aware**.
 
 ## How the library is structured?
 
